@@ -108,6 +108,9 @@
 				Models/Habit.swift,
 				Models/HabitCompletion.swift,
 				Models/HabitIconColor.swift,
+				Models/HabitPriority.swift,
+				Models/HabitSubtask.swift,
+				Models/HabitTimeOfDay.swift,
 				Models/HabitType.swift,
 				Models/Weekday.swift,
 				"Views/Shared/UI Components/HabitIconView.swift",
@@ -588,10 +591,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = TeymiaHabit/TeymiaHabit.entitlements;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = SXCBCPV7Y9;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = TeymiaHabit/Info.plist;
@@ -612,6 +615,7 @@
 				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.amanbayserkeev.teymiahabit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -630,10 +634,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = TeymiaHabit/TeymiaHabit.entitlements;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = SXCBCPV7Y9;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = TeymiaHabit/Info.plist;
@@ -654,6 +658,7 @@
 				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.amanbayserkeev.teymiahabit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -672,7 +677,7 @@
 				CODE_SIGN_ENTITLEMENTS = TeymiaHabitWidgets/TeymiaHabitWidgetsExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = SXCBCPV7Y9;
+				DEVELOPMENT_TEAM = 6DWP2GV6ZV;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TeymiaHabitWidgets/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = TeymiaHabitWidgets;
@@ -705,7 +710,7 @@
 				CODE_SIGN_ENTITLEMENTS = TeymiaHabitWidgets/TeymiaHabitWidgetsExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = SXCBCPV7Y9;
+				DEVELOPMENT_TEAM = 6DWP2GV6ZV;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TeymiaHabitWidgets/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = TeymiaHabitWidgets;

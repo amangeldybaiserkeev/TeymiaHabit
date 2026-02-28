@@ -1,3 +1,4 @@
+// File: TeymiaHabit/Models/Habit.swift
 import Foundation
 import SwiftData
 
@@ -18,6 +19,12 @@ final class Habit {
     var iconName: String? = "check"
     var iconColor: HabitIconColor = HabitIconColor.primary
     
+    /// Die geplante Tageszeit für die Ausführung (morgens, mittags, etc.)
+    var scheduledTime: HabitTimeOfDay = HabitTimeOfDay.anytime
+    
+    /// Die Priorität der Gewohnheit (niedrig, mittel, hoch)
+    var priority: HabitPriority = HabitPriority.medium
+    
     // MARK: - Status
     
     var isArchived: Bool = false
@@ -33,6 +40,10 @@ final class Habit {
     
     @Relationship(deleteRule: .cascade, inverse: \HabitCompletion.habit)
     var completions: [HabitCompletion]?
+    
+    /// Optional definierbare Unteraufgaben (To-Dos) für diese Gewohnheit
+    @Relationship(deleteRule: .cascade, inverse: \HabitSubtask.habit)
+    var subtasks: [HabitSubtask]?
     
     // MARK: - Active Days Configuration
     
@@ -88,6 +99,8 @@ final class Habit {
         goal: Int = 1,
         iconName: String? = "check",
         iconColor: HabitIconColor = .primary,
+        scheduledTime: HabitTimeOfDay = .anytime,
+        priority: HabitPriority = .medium,
         createdAt: Date = Date(),
         activeDays: [Bool]? = nil,
         reminderTimes: [Date]? = nil,
@@ -99,8 +112,11 @@ final class Habit {
         self.goal = goal
         self.iconName = iconName
         self.iconColor = iconColor
+        self.scheduledTime = scheduledTime
+        self.priority = priority
         self.createdAt = createdAt
         self.completions = []
+        self.subtasks = []
         
         // Setup active days bitmask
         if let days = activeDays {
@@ -126,7 +142,9 @@ final class Habit {
         type: HabitType,
         goal: Int,
         iconName: String?,
-        iconColor: HabitIconColor = .primary,
+        iconColor: HabitIconColor,
+        scheduledTime: HabitTimeOfDay,
+        priority: HabitPriority,
         activeDays: [Bool],
         reminderTimes: [Date]?,
         startDate: Date
@@ -136,6 +154,8 @@ final class Habit {
         self.goal = goal
         self.iconName = iconName
         self.iconColor = iconColor
+        self.scheduledTime = scheduledTime
+        self.priority = priority
         self.activeDays = activeDays
         self.reminderTimes = reminderTimes
         self.startDate = startDate
@@ -310,6 +330,10 @@ extension Habit {
     
     func complete(for date: Date, modelContext: ModelContext) {
         updateProgress(to: goal, for: date, modelContext: modelContext)
+    }
+    
+    func resolveProgressForDay(for date: Date, modelContext: ModelContext) {
+         updateProgress(to: 0, for: date, modelContext: modelContext)
     }
     
     func resetProgress(for date: Date, modelContext: ModelContext) {

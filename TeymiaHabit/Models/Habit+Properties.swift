@@ -1,10 +1,3 @@
-//
-//  Habit+Properties.swift
-//  TeymiaHabit
-//
-//  Created by Julian Schneider on 01.03.26.
-//
-
 // File: TeymiaHabit/Models/Habit+Properties.swift
 import Foundation
 import SwiftData
@@ -17,10 +10,31 @@ extension Habit {
         uuid.uuidString
     }
     
+    // MARK: - Frequency Helpers
+    
+    var frequency: HabitFrequency {
+        get { HabitFrequency(rawValue: frequencyRawValue) ?? .daily }
+        set { frequencyRawValue = newValue.rawValue }
+    }
+    
+    var customStartWeekday: Weekday? {
+        get {
+            guard let val = customPeriodStart else { return nil }
+            return Weekday(rawValue: val)
+        }
+        set { customPeriodStart = newValue?.rawValue }
+    }
+    
+    var customEndWeekday: Weekday? {
+        get {
+            guard let val = customPeriodEnd else { return nil }
+            return Weekday(rawValue: val)
+        }
+        set { customPeriodEnd = newValue?.rawValue }
+    }
+    
     // MARK: - Reminders
     
-    /// Computed property for accessing reminder times as a Date array.
-    /// Serializes and deserializes from the underlying Data attribute.
     var reminderTimes: [Date]? {
         get {
             guard let data = reminderTimesData else { return nil }
@@ -42,16 +56,12 @@ extension Habit {
     // MARK: - Update
     
     func update(
-        title: String,
-        type: HabitType,
-        goal: Int,
-        iconName: String?,
-        iconColor: HabitIconColor,
-        scheduledTime: HabitTimeOfDay,
-        priority: HabitPriority,
-        activeDays: [Bool],
-        reminderTimes: [Date]?,
-        startDate: Date
+        title: String, type: HabitType, goal: Int, iconName: String?,
+        iconColor: HabitIconColor, scheduledTime: HabitTimeOfDay,
+        priority: HabitPriority, activeDays: [Bool], reminderTimes: [Date]?,
+        startDate: Date, frequency: HabitFrequency = .daily,
+        frequencyGoal: Int? = nil, customStart: Weekday? = nil,
+        customEnd: Weekday? = nil
     ) {
         self.title = title
         self.type = type
@@ -63,5 +73,10 @@ extension Habit {
         self.activeDays = activeDays
         self.reminderTimes = reminderTimes
         self.startDate = startDate
+        
+        self.frequency = frequency
+        self.frequencyGoal = frequencyGoal
+        self.customStartWeekday = customStart
+        self.customEndWeekday = customEnd
     }
 }

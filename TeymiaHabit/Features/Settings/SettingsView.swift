@@ -4,7 +4,6 @@ import SwiftData
 struct SettingsView: View {
     @Environment(\.openURL) private var openURL
     
-    
     var body: some View {
         List {
             ProRowView()
@@ -35,7 +34,6 @@ struct SettingsView: View {
                 CloudRowView()
                 ArchiveRowView()
                 ExportRowView()
-                PrivacyRowView()
             }
             .listRowBackground(Color.rowBackground)
             

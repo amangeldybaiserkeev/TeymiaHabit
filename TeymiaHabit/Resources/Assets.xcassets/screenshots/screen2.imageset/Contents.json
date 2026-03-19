@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "inbox-full-2.svg",
+      "filename" : "Simulator Screenshot - iPhone 17 Pro - 2026-03-18 at 22.02.33.png",
       "idiom" : "universal"
     }
   ],
@@ -10,7 +10,6 @@
     "version" : 1
   },
   "properties" : {
-    "preserves-vector-representation" : true,
-    "template-rendering-intent" : "template"
+    "template-rendering-intent" : "original"
   }
 }

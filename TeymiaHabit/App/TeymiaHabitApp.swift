@@ -2,7 +2,6 @@ import SwiftUI
 import SwiftData
 import UserNotifications
 import RevenueCat
-import LocalAuthentication
 
 @main
 struct TeymiaHabitApp: App {
@@ -10,40 +9,29 @@ struct TeymiaHabitApp: App {
     
     let container: ModelContainer
     
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
     @State private var themeManager = ThemeManager.shared
     @State private var colorManager = AppColorManager.shared
     @State private var weekdayPrefs = WeekdayPreferences.shared
-    @State private var privacyManager = PrivacyManager.shared
     @State private var timerService = TimerService.shared
     @State private var pendingDeeplink: Habit? = nil
-    @State private var showingGlobalPinView = false
-    @State private var globalPinTitle = ""
-    @State private var globalPinCode = ""
-    @State private var globalPinAction: ((String) -> Void)?
-    @State private var globalPinDismiss: (() -> Void)?
-    @State private var showingBiometricPromo = false
-    @State private var globalBiometricType: LABiometryType = .none
-    @State private var globalBiometricDisplayName = ""
-    @State private var globalBiometricEnable: (() -> Void)?
-    @State private var globalBiometricDismiss: (() -> Void)?
     
     init() {
         RevenueCatConfig.configure()
-        PrivacyManager.shared.checkAndLockOnAppStart()
         
         let titleFont = UIFont.rounded(ofSize: 18, weight: .semibold)
         let largeTitleFont = UIFont.rounded(ofSize: 34, weight: .bold)
-
+        
         let standardAppearance = UINavigationBarAppearance()
         standardAppearance.configureWithDefaultBackground()
         standardAppearance.titleTextAttributes = [.font: titleFont]
         standardAppearance.largeTitleTextAttributes = [.font: largeTitleFont]
-
+        
         let scrollEdgeAppearance = UINavigationBarAppearance()
         scrollEdgeAppearance.configureWithTransparentBackground()
         scrollEdgeAppearance.titleTextAttributes = [.font: titleFont]
         scrollEdgeAppearance.largeTitleTextAttributes = [.font: largeTitleFont]
-
+        
         UINavigationBar.appearance().standardAppearance = standardAppearance
         UINavigationBar.appearance().scrollEdgeAppearance = scrollEdgeAppearance
         
@@ -66,69 +54,33 @@ struct TeymiaHabitApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ZStack {
-                MainTabView()
-                    .environment(themeManager)
-                    .environment(colorManager)
-                    .environment(weekdayPrefs)
-                    .environment(privacyManager)
-                    .environment(ProManager.shared)
-                    .environment(timerService)
-                    .environment(\.globalPin, globalPinEnvironment)
-                    .onAppear {
-                        setupLiveActivities()
-                        AppModelContext.shared.setModelContext(container.mainContext)
-                    }
-                    .onOpenURL { url in
-                        handleDeepLink(url)
-                    }
-                    .onReceive(NotificationCenter.default.publisher(for: UIApplication.willTerminateNotification)) { _ in
-                        try? container.mainContext.save()
-                    }
-                
-                if privacyManager.isAppLocked {
-                    AppLockView()
-                        .transition(.opacity)
-                        .zIndex(10000)
-                        .allowsHitTesting(true)
-                }
-                
-                if showingGlobalPinView {
-                    GlobalPinView(
-                        title: globalPinTitle,
-                        pin: $globalPinCode,
-                        onPinComplete: { pin in
-                            globalPinAction?(pin)
-                        },
-                        onDismiss: {
-                            globalPinDismiss?()
+            Group {
+                if hasCompletedOnboarding {
+                    MainTabView()
+                } else {
+                    OnBoarding(items: OnBoarding.Item.sampleData) {
+                        withAnimation(.spring()) {
+                            hasCompletedOnboarding = true
                         }
-                    )
-                    .transition(.opacity)
-                    .zIndex(2000)
-                }
-                
-                if showingBiometricPromo {
-                    BiometricPromoView(
-                        onEnable: {
-                            globalBiometricEnable?()
-                        },
-                        onDismiss: {
-                            globalBiometricDismiss?()
-                        }
-                    )
-                    .transition(.opacity)
-                    .zIndex(2500)
+                    }
                 }
             }
-            .onChange(of: privacyManager.isAppLocked) { _, newValue in
-                if !newValue && pendingDeeplink != nil {
-                    handlePendingDeeplink()
-                }
+            .environment(themeManager)
+            .environment(colorManager)
+            .environment(weekdayPrefs)
+            .environment(ProManager.shared)
+            .environment(timerService)
+            .fontDesign(.rounded)
+            .onAppear {
+                setupLiveActivities()
+                AppModelContext.shared.setModelContext(container.mainContext)
             }
-            .animation(.easeInOut(duration: 0.3), value: privacyManager.isAppLocked)
-            .animation(.easeInOut(duration: 0.3), value: showingGlobalPinView)
-            .animation(.easeInOut(duration: 0.3), value: showingBiometricPromo)
+            .onOpenURL { url in
+                handleDeepLink(url)
+            }
+            .onReceive(NotificationCenter.default.publisher(for: UIApplication.willTerminateNotification)) { _ in
+                try? container.mainContext.save()
+            }
         }
         .modelContainer(container)
         .onChange(of: scenePhase) { _, newPhase in
@@ -142,14 +94,12 @@ struct TeymiaHabitApp: App {
         switch phase {
         case .background:
             handleAppBackground()
-            privacyManager.handleAppWillResignActive()
             
         case .inactive:
             try? container.mainContext.save()
             
         case .active:
             handleAppForeground()
-            privacyManager.handleAppDidBecomeActive()
             
         @unknown default:
             break
@@ -176,19 +126,12 @@ struct TeymiaHabitApp: App {
             guard let foundHabit = try? container.mainContext.fetch(descriptor).first else {
                 return
             }
-            
-            if privacyManager.isAppLocked {
-                pendingDeeplink = foundHabit
-            } else {
-                openHabitDirectly(foundHabit)
-            }
+            openHabitDirectly(foundHabit)
         }
     }
     
     private func handlePendingDeeplink() {
         guard let habit = pendingDeeplink else { return }
-        
-        NotificationCenter.default.post(name: .dismissAllSheets, object: nil)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             self.openHabitDirectly(habit)
@@ -216,10 +159,6 @@ struct TeymiaHabitApp: App {
     private func handleAppBackground() {
         try? container.mainContext.save()
         
-        if privacyManager.isPrivacyEnabled {
-            NotificationCenter.default.post(name: .dismissAllSheets, object: nil)
-        }
-        
         TimerService.shared.handleAppDidEnterBackground()
     }
     
@@ -236,7 +175,7 @@ struct TeymiaHabitApp: App {
     }
     
     // MARK: - Widget Deep Link Handling
-
+    
     private func checkPendingHabitFromWidget() {
         guard let sharedDefaults = UserDefaults(suiteName: "group.com.amanbayserkeev.teymiahabit"),
               let habitIdString = sharedDefaults.string(forKey: "pendingHabitIdFromWidget"),
@@ -253,63 +192,4 @@ struct TeymiaHabitApp: App {
             handleDeepLink(url)
         }
     }
-    
-    // MARK: - Global PIN Environment
-    
-    private var globalPinEnvironment: GlobalPinEnvironment {
-        GlobalPinEnvironment(
-            showPin: { title, onComplete, onDismiss in
-                globalPinTitle = title
-                globalPinCode = ""
-                globalPinAction = onComplete
-                globalPinDismiss = onDismiss
-                showingGlobalPinView = true
-            },
-            hidePin: {
-                showingGlobalPinView = false
-                globalPinCode = ""
-                globalPinAction = nil
-                globalPinDismiss = nil
-            },
-            showBiometricPromo: { biometricType, displayName, onEnable, onDismiss in
-                globalBiometricType = biometricType
-                globalBiometricDisplayName = displayName
-                globalBiometricEnable = onEnable
-                globalBiometricDismiss = onDismiss
-                showingBiometricPromo = true
-            },
-            hideBiometricPromo: {
-                showingBiometricPromo = false
-                globalBiometricType = .none
-                globalBiometricDisplayName = ""
-                globalBiometricEnable = nil
-                globalBiometricDismiss = nil
-            }
-        )
-    }
-}
-
-// MARK: - Global PIN Environment
-
-struct GlobalPinEnvironment {
-    let showPin: (String, @escaping (String) -> Void, @escaping () -> Void) -> Void
-    let hidePin: () -> Void
-    let showBiometricPromo: (LABiometryType, String, @escaping () -> Void, @escaping () -> Void) -> Void
-    let hideBiometricPromo: () -> Void
-}
-
-struct GlobalPinEnvironmentKey: EnvironmentKey {
-   static let defaultValue = GlobalPinEnvironment(
-       showPin: { _, _, _ in },
-       hidePin: { },
-       showBiometricPromo: { _, _, _, _ in },
-       hideBiometricPromo: { }
-   )
-}
-
-extension EnvironmentValues {
-   var globalPin: GlobalPinEnvironment {
-       get { self[GlobalPinEnvironmentKey.self] }
-       set { self[GlobalPinEnvironmentKey.self] = newValue }
-   }
 }

@@ -41,7 +41,6 @@ struct MainTabView: View {
             case .settings: [.rotate]
             }
         }
-        .fontDesign(.rounded)
         .preferredColorScheme(themeMode.colorScheme)
         .tint(.mainApp)
         .onReceive(NotificationCenter.default.publisher(for: .openHabitFromDeeplink)) { notification in

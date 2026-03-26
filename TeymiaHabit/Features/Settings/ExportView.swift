@@ -7,7 +7,7 @@ struct ExportRowView: View {
         NavigationLink(destination: ExportView()) {
             Label(
                 title: { Text("settings_export") },
-                icon: { Image(systemName: "document.badge.arrow.up").iconStyle() }
+                icon: { Image(systemName: "arrow.up.document").iconStyle() }
             )
         }
     }

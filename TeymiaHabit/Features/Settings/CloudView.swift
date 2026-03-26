@@ -6,7 +6,7 @@ struct CloudRowView: View {
         NavigationLink(destination: CloudView()) {
             Label(
                 title: { Text("settings_icloud") },
-                icon: { Image(systemName: "checkmark.icloud").iconStyle() }
+                icon: { Image(systemName: "icloud").iconStyle() }
             )
         }
     }
@@ -19,12 +19,10 @@ struct CloudView: View {
     var body: some View {
         List {
             Section {
-                Image("ui-cloud.lock.fill")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(height: 80)
+                Image(systemName: "icloud.fill")
+                    .font(.system(size: 100))
+                    .foregroundStyle(LinearGradient(colors: [.cyan, .blue], startPoint: .leading, endPoint: .trailing))
                     .frame(maxWidth: .infinity)
-                    .foregroundStyle(.gray.gradient)
             }
             .listRowBackground(Color.clear)
 
@@ -48,9 +46,9 @@ struct CloudView: View {
             }
             
             Section("icloud_how_sync_works") {
-                CloudInfoRow(icon: "arrow.trianglehead.2.clockwise.rotate.90.icloud", title: "icloud_auto", desc: "icloud_auto_desc")
-                CloudInfoRow(icon: "macbook.badge.checkmark", title: "icloud_cross_device_sync", desc: "icloud_cross_device_sync_desc")
-                CloudInfoRow(icon: "checkmark.shield", title: "icloud_secure", desc: "icloud_secure_desc")
+                CloudInfoRow(iconName: "arrow.trianglehead.2.clockwise.rotate.90.icloud.fill", title: "icloud_auto", desc: "icloud_auto_desc")
+                CloudInfoRow(iconName: "macbook.and.iphone", title: "icloud_cross_device_sync", desc: "icloud_cross_device_sync_desc")
+                CloudInfoRow(iconName: "shield.righthalf.filled", title: "icloud_secure", desc: "icloud_secure_desc")
             }
         }
         .navigationTitle("settings_icloud")
@@ -103,7 +101,7 @@ private struct SyncActionRow: View {
     var body: some View {
         HStack {
             Text("icloud_force_sync")
-                .fontWeight(.semibold)
+                .font(.headline)
                 .foregroundStyle(.mainApp.gradient)
             Spacer()
             if isSyncing { ProgressView() }
@@ -112,17 +110,37 @@ private struct SyncActionRow: View {
 }
 
 private struct CloudInfoRow: View {
-    let icon: String
+    let iconName: String
     let title: LocalizedStringResource
     let desc: LocalizedStringResource
+    
     var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .foregroundStyle(Color.primary.gradient)
+        Label {
             VStack(alignment: .leading) {
-                Text(title).fontWeight(.medium)
-                Text(desc).font(.footnote).foregroundStyle(.secondary)
+                Text(title)
+                    .font(.headline)
+                Text(desc)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
+        } icon: {
+            Image(systemName: iconName)
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(
+                    LinearGradient(colors: [.blue, .cyan], startPoint: .top, endPoint: .bottom)
+                )
+                .frame(width: 28, height: 28)
+                .background(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(Color.primaryInverse.gradient)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .stroke(
+                            Color(.systemGray5), lineWidth: 0.8
+                        )
+                )
+//                .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
         }
     }
 }

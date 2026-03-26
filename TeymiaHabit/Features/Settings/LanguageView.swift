@@ -7,7 +7,7 @@ struct LanguageRowView: View {
             HStack {
                 Label(
                     title: { Text("settings_language").foregroundStyle(Color.primary) },
-                    icon: { Image(systemName: "globe.badge.clock").iconStyle() }
+                    icon: { Image(systemName: "globe").iconStyle() }
                 )
                 Spacer()
                 Text(currentLanguage).foregroundStyle(Color.secondary)

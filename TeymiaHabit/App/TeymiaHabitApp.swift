@@ -10,7 +10,6 @@ struct TeymiaHabitApp: App {
     let container: ModelContainer
     
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
-    @State private var themeManager = ThemeManager.shared
     @State private var colorManager = AppColorManager.shared
     @State private var weekdayPrefs = WeekdayPreferences.shared
     @State private var timerService = TimerService.shared
@@ -65,7 +64,6 @@ struct TeymiaHabitApp: App {
                     }
                 }
             }
-            .environment(themeManager)
             .environment(colorManager)
             .environment(weekdayPrefs)
             .environment(ProManager.shared)

@@ -8,7 +8,7 @@ struct AppearanceRowView: View {
             HStack {
                 Label(
                     title: { Text("settings_appearance") },
-                    icon: { Image(systemName: "moon.stars").iconStyle() }
+                    icon: { Image(systemName: themeMode.iconName).iconStyle() }
                 )
                 Spacer()
                 Text(themeMode.localizedName).foregroundStyle(Color.secondary)
@@ -19,7 +19,6 @@ struct AppearanceRowView: View {
 
 struct AppearanceView: View {
     @AppStorage("themeMode") private var themeMode: ThemeMode = .system
-    @Environment(ThemeManager.self) private var themeManager
     
     var body: some View {
         List {
@@ -34,7 +33,8 @@ struct AppearanceView: View {
                                 title: { Text(mode.localizedName).foregroundStyle(Color.primary) },
                                 icon: {
                                     Image(systemName: mode.iconName)
-                                        .font(.system(size: 16, weight: .medium, design: .rounded))
+                                        .font(.footnote)
+                                        .fontWeight(.medium)
                                         .foregroundStyle(Color.primary.gradient)
                                 }
                             )
@@ -47,5 +47,33 @@ struct AppearanceView: View {
             .animation(.snappy, value: themeMode)
         }
         .navigationTitle("settings_appearance")
+    }
+}
+
+enum ThemeMode: Int, CaseIterable {
+    case system = 0, light, dark
+    
+    var colorScheme: ColorScheme? {
+        switch self {
+        case .system: return nil
+        case .light: return .light
+        case .dark: return .dark
+        }
+    }
+    
+    var localizedName: LocalizedStringResource {
+        switch self {
+        case .system: "appearance_system"
+        case .light:  "appearance_light"
+        case .dark:   "appearance_dark"
+        }
+    }
+    
+    var iconName: String {
+        switch self {
+        case .system: "swirl.circle.righthalf.filled"
+        case .light:  "sun.max"
+        case .dark:   "moon.stars"
+        }
     }
 }

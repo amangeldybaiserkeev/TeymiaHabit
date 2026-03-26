@@ -13,7 +13,7 @@ struct AboutSection: View {
             } label: {
                 Label(
                     title: { Text("settings_rate").foregroundStyle(Color.primary) },
-                    icon: { Image(systemName: "star.hexagon").iconStyle() }
+                    icon: { Image(systemName: "star").iconStyle() }
                 )
             }
             
@@ -33,7 +33,7 @@ struct AboutSection: View {
             } label: {
                 Label(
                     title: { Text("settings_privacy_policy").foregroundStyle(Color.primary) },
-                    icon: { Image(systemName: "lock.document").iconStyle() }
+                    icon: { Image(systemName: "lock").iconStyle() }
                 )
             }
             
@@ -45,7 +45,7 @@ struct AboutSection: View {
             } label: {
                 Label(
                     title: { Text("settings_tos").foregroundStyle(Color.primary) },
-                    icon: { Image(systemName: "document.on.document").iconStyle() }
+                    icon: { Image(systemName: "text.document").iconStyle() }
                 )
             }
         }

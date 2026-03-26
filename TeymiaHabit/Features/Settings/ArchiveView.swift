@@ -6,7 +6,7 @@ struct ArchiveRowView: View {
         NavigationLink(destination: ArchiveView()) {
             Label(
                 title: { Text("settings_archived_habits") },
-                icon: { Image(systemName: "arrow.up.trash").iconStyle() }
+                icon: { Image(systemName: "archivebox").iconStyle() }
             )
         }
     }
@@ -51,19 +51,12 @@ struct ArchiveView: View {
     private var listContent: some View {
         if archivedHabits.isEmpty {
             Section {
-                HStack {
-                    Spacer()
-                    
-                    Image("ui-box.fill")
-                        .resizable()
-                        .frame(width: 100, height: 100)
-                        .foregroundStyle(.gray.gradient)
-                    
-                    Spacer()
-                }
+                Image(systemName: "archivebox.fill")
+                    .font(.system(size: 100))
+                    .foregroundStyle(Color(.systemGray4))
+                    .frame(maxWidth: .infinity)
             }
             .listRowBackground(Color.clear)
-            .listRowSeparator(.hidden)
         } else {
             Section {
                 ForEach(archivedHabits) { habit in

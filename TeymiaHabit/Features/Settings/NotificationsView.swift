@@ -17,7 +17,7 @@ struct NotificationsRowView: View {
             Label(
                 title: { Text("settings_notifications") },
                 icon: {
-                    Image(systemName: "bell.badge")
+                    Image(systemName: "bell")
                         .iconStyle()
                         .symbolEffect(.wiggle, value: manager.notificationsEnabled)
                 }
@@ -28,7 +28,7 @@ struct NotificationsRowView: View {
             Button("button_settings") { openSettings() }
         } message: {
             Text("alert_notifications_permission_message")
-        }.tint(Color.primary)
+        }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
             Task { await manager.refreshPermissionStatus() }
         }

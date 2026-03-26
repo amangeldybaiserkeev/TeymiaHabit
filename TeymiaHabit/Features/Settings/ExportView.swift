@@ -67,9 +67,7 @@ struct ExportView: View {
                     }
                 }
             }
-            .listRowBackground(Color.rowBackground)
         }
-        .appBackground()
         .navigationTitle("settings_export")
         .onAppear { setupExportService() }
         .alert("export_error_title", isPresented: $showErrorAlert) {

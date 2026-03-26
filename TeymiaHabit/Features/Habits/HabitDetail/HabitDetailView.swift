@@ -5,26 +5,25 @@ import AVFoundation
 struct HabitDetailView: View {
     let habit: Habit
     let date: Date
+    let zoomNamespace: Namespace.ID
     
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @Environment(ProManager.self) private var proManager
     @Environment(TimerService.self) private var timerService
     
     @State private var viewModel: HabitDetailViewModel?
     @State private var statsViewModel: HabitStatsViewModel
-    
+    @State private var showingStats = false
     @State private var selectedDate: Date = Date()
-    @State private var updateCounter = 0
     @State private var isEditPresented = false
-    @State private var showingResetAlert = false
     @State private var alertState = AlertState()
     @State private var barChartTimeRange: ChartTimeRange = .week
     
     // MARK: - Init
-    init(habit: Habit, date: Date) {
+    init(habit: Habit, date: Date, zoomNamespace: Namespace.ID) {
         self.habit = habit
         self.date = date
+        self.zoomNamespace = zoomNamespace
         self._statsViewModel = State(initialValue: HabitStatsViewModel(habit: habit))
     }
     
@@ -32,10 +31,40 @@ struct HabitDetailView: View {
     var body: some View {
         Group {
             if habit.modelContext != nil {
-                ScrollView(.vertical, showsIndicators: false) {
-                    mainStackContent
+                VStack(spacing: 0) {
+                    Spacer()
+                    
+                    if let vm = viewModel {
+                        HabitProgressView(viewModel: vm, habit: habit)
+                    }
+                    
+                    Spacer()
+                    
+                    VStack(spacing: 30) {
+                        if let vm = viewModel {
+                            actionButtonsSection(viewModel: vm)
+                            
+                            completeButtonView(viewModel: vm)
+                                .disabled(vm.isAlreadyCompleted)
+                        }
+                    }
+                    
+                    Spacer()
+                    Spacer()
                 }
-                .preferredColorScheme(.dark)
+                .frame(maxWidth: 700)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .navigationTitle(habit.title)
+                .navigationSubtitle("Goal: \(habit.formattedGoal)")
+                .navigationBarTitleDisplayMode(.large)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button { showingStats = true } label: {
+                            Label("Show Statistics", systemImage: "chart.bar")
+                        }
+                    }
+                    ToolbarItem(placement: .topBarTrailing) { menuButton }
+                }
                 .id(habit.uuid.uuidString)
                 .onChange(of: timerService.updateTrigger) { _, _ in
                     if timerService.isTimerRunning(for: habit.uuid.uuidString) {
@@ -45,7 +74,6 @@ struct HabitDetailView: View {
                 .modifier(HabitDetailLifecycleModifier(
                     viewModel: viewModel,
                     statsViewModel: statsViewModel,
-                    updateCounter: updateCounter,
                     alertState: $alertState,
                     date: date,
                     setupViewModel: setupViewModel
@@ -55,18 +83,13 @@ struct HabitDetailView: View {
                     habit: habit,
                     viewModel: viewModel
                 ))
-                .safeAreaBar(edge: .top) {
-                    dragIndicator
-                }
-                .safeAreaBar(edge: .bottom) {
-                    VStack {
-                        if let vm = viewModel {
-                            actionButtonsSection(viewModel: vm).padding(.bottom, 10)
-                            if !vm.isAlreadyCompleted{
-                                completeButtonView(viewModel: vm).padding(.bottom, 16)
-                            }
-                        }
-                    }
+                .sheet(isPresented: $showingStats) {
+                    HabitStatisticsView(
+                        statsViewModel: statsViewModel,
+                        selectedDate: $selectedDate,
+                        barChartTimeRange: $barChartTimeRange,
+                        habit: habit
+                    )
                 }
                 .deleteSingleHabitAlert(
                     isPresented: deleteAlertBinding,
@@ -78,115 +101,9 @@ struct HabitDetailView: View {
                 Color.clear
             }
         }
+        .navigationTransition(.zoom(sourceID: habit.id, in: zoomNamespace))
     }
-    
-    // MARK: - Sub-Stacks
-    private var mainStackContent: some View {
-        VStack(spacing: 40) {
-            contentView
-            
-            habitTitle
-                .padding(.top, 24)
-            
-            StreaksView(viewModel: statsViewModel)
-            
-            calendarBlock
-                .background(liquidGlassBackground)
-            
-            chartBlock
-                .background(liquidGlassBackground)
-                .padding(.bottom, 50)
-        }
-        .padding(.top, 70)
-        .padding(.horizontal, 20)
-    }
-    
-    private var liquidGlassBackground: some View {
-        RoundedRectangle(cornerRadius: 24, style: .continuous)
-            .fill(.white.opacity(0.15).gradient)
-            .overlay(
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .stroke(
-                        LinearGradient(
-                            colors: [
-                                .white.opacity(0.4),
-                                .white.opacity(0.15),
-                                .white.opacity(0.15),
-                                .white.opacity(0.4)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        lineWidth: 1
-                    )
-            )
-    }
-    
-    private var dragIndicator: some View {
-        Capsule()
-            .fill(.white.opacity(0.6))
-            .frame(width: 55, height: 5)
-            .padding(.top, 8)
-    }
-    
-    private var habitTitle: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(habit.title)
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(Color.primary.gradient)
-                Text("goal \(habit.formattedGoal)")
-                    .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.7).gradient)
-            }
-            
-            Spacer()
-            
-            menuButton
-        }
-    }
-    
-    // MARK: - Content Blocks
-    
-    private var chartBlock: some View {
-        ZStack {
-            VStack(spacing: 30) {
-                TimeRangePicker(selection: $barChartTimeRange)
-                    .padding(.horizontal, 16)
-                
-                barChartContent.frame(height: 240)
-            }
-        }
-    }
-    
-    private var calendarBlock: some View {
-        ZStack {
-            MonthlyCalendarView(
-                habit: habit,
-                selectedDate: $selectedDate,
-                updateCounter: updateCounter,
-                onActionRequested: handleCalendarAction,
-                onCountInput: { val, date in
-                    alertState.date = date
-                    handleCustomCountInput(count: val)
-                },
-                onTimeInput: { h, m, date in
-                    alertState.date = date
-                    handleCustomTimeInput(hours: h, minutes: m)
-                }
-            )
-        }
-    }
-    
-    private var contentView: some View {
-        VStack(spacing: 0) {
-            if let viewModel = viewModel {
-                HabitProgressView(viewModel: viewModel, habit: habit)
-            }
-        }.frame(maxWidth: .infinity)
-    }
-    
+        
     // MARK: - Buttons
     private var menuButton: some View {
         Menu {
@@ -203,13 +120,6 @@ struct HabitDetailView: View {
             .tint(.red)
         } label: {
             Image(systemName: "ellipsis")
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(Color.primary)
-                .frame(width: 28, height: 28)
-                .background(
-                    Circle()
-                        .fill(.white.opacity(0.15))
-                )
         }
         .tint(.primary)
     }
@@ -259,7 +169,32 @@ struct HabitDetailView: View {
         .buttonStyle(.plain)
         .glassEffect(.clear.interactive(), in: .capsule)
         .padding(.horizontal, 24)
-        .padding(.bottom, 10)
+    }
+    
+    private func handleCustomCountInput(count: Int) {
+        let targetDate = alertState.date ?? Date()
+        
+        habit.addToProgress(count, for: targetDate, modelContext: modelContext)
+        saveAndRefreshStats()
+        HapticManager.shared.play(.success)
+        alertState.successFeedbackTrigger = true
+    }
+    
+    private func handleCustomTimeInput(hours: Int, minutes: Int) {
+        let targetDate = alertState.date ?? Date()
+        let totalValue = (hours * 3600) + (minutes * 60)
+        
+        habit.addToProgress(totalValue, for: targetDate, modelContext: modelContext)
+        saveAndRefreshStats()
+        
+        HapticManager.shared.play(.success)
+        alertState.successFeedbackTrigger = true
+    }
+    
+    private func saveAndRefreshStats() {
+        try? modelContext.save()
+        viewModel?.refresh()
+        statsViewModel.refresh()
     }
     
     // MARK: - Helpers
@@ -292,55 +227,12 @@ struct HabitDetailView: View {
             HabitService.shared.delete(habit, context: modelContext)
         }
     }
-    
-    @ViewBuilder
-    private var barChartContent: some View {
-        switch barChartTimeRange {
-        case .week: WeeklyHabitChart(habit: habit, updateCounter: updateCounter)
-        case .month: MonthlyHabitChart(habit: habit, updateCounter: updateCounter)
-        case .year: YearlyHabitChart(habit: habit, updateCounter: updateCounter)
-        }
-    }
-    
-    private func handleCalendarAction(_ action: CalendarAction, date: Date) {
-        switch action {
-        case .complete: habit.complete(for: date, modelContext: modelContext); saveAndRefreshStats()
-        case .resetProgress: habit.resetProgress(for: date, modelContext: modelContext); saveAndRefreshStats()
-        }
-    }
-    
-    private func handleCustomCountInput(count: Int) {
-        let targetDate = alertState.date ?? Date()
-        
-        habit.addToProgress(count, for: targetDate, modelContext: modelContext)
-        saveAndRefreshStats()
-        HapticManager.shared.play(.success)
-        alertState.successFeedbackTrigger = true
-    }
-    
-    private func handleCustomTimeInput(hours: Int, minutes: Int) {
-        let targetDate = alertState.date ?? Date()
-        let totalValue = (hours * 3600) + (minutes * 60)
-        
-        habit.addToProgress(totalValue, for: targetDate, modelContext: modelContext)
-        saveAndRefreshStats()
-        
-        HapticManager.shared.play(.success)
-        alertState.successFeedbackTrigger = true
-    }
-    
-    private func saveAndRefreshStats() {
-        try? modelContext.save()
-        viewModel?.refresh()
-        statsViewModel.refresh()
-    }
 }
 
 // MARK: - Modifiers
 private struct HabitDetailLifecycleModifier: ViewModifier {
     let viewModel: HabitDetailViewModel?
     let statsViewModel: HabitStatsViewModel
-    let updateCounter: Int
     @Binding var alertState: AlertState
     let date: Date
     let setupViewModel: () -> Void

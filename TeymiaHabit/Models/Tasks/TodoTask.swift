@@ -3,29 +3,18 @@ import SwiftData
 
 @Model
 final class TodoTask {
-    var id: UUID
     var title: String
     var notes: String?
-    var isCompleted: Bool
-    var createdAt: Date
     var dueDate: Date?
+    var isCompleted: Bool = false
+    var createdAt: Date = Date()
+    var list: TaskList?
     
-    var statusRawValue: String
-    
-    @Relationship(deleteRule: .cascade, inverse: \Subtask.parentTask)
+    @Relationship(deleteRule: .cascade)
     var subtasks: [Subtask] = []
-    var category: TaskCategory?
 
-    init(title: String, status: TaskStatus = .inbox) {
-        self.id = UUID()
+    init(title: String, dueDate: Date? = nil) {
         self.title = title
-        self.isCompleted = false
-        self.createdAt = Date()
-        self.statusRawValue = status.rawValue
-    }
-    
-    var status: TaskStatus {
-        get { TaskStatus(rawValue: statusRawValue) ?? .inbox }
-        set { statusRawValue = newValue.rawValue }
+        self.dueDate = dueDate
     }
 }

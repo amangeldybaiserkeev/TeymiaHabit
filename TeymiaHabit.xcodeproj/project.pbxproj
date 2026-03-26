@@ -14,8 +14,8 @@
 		07EA6CCE2E31DFB900171765 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 076E631A2E123CA7002272B1 /* SwiftUI.framework */; };
 		07EA6CE22E31E26300171765 /* SwiftData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07EA6CE12E31E26300171765 /* SwiftData.framework */; };
 		07EA6CF12E31EB4A00171765 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 076E63182E123CA6002272B1 /* WidgetKit.framework */; };
-		E73266642F2C90CD00BFD4EB /* liveactivityExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 077FAE6E2E12DE7C007790C5 /* liveactivityExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		E73266682F2C90D000BFD4EB /* TeymiaHabitWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 07EA6CCC2E31DFB800171765 /* TeymiaHabitWidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		E73266642F2C90CD00BFD4EB /* liveactivityExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 077FAE6E2E12DE7C007790C5 /* liveactivityExtension.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		E73266682F2C90D000BFD4EB /* TeymiaHabitWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 07EA6CCC2E31DFB800171765 /* TeymiaHabitWidgetsExtension.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -366,11 +366,13 @@
 /* Begin PBXTargetDependency section */
 		E73266662F2C90CD00BFD4EB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
+			platformFilter = ios;
 			target = 077FAE6D2E12DE7C007790C5 /* liveactivityExtension */;
 			targetProxy = E73266652F2C90CD00BFD4EB /* PBXContainerItemProxy */;
 		};
 		E732666A2F2C90D000BFD4EB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
+			platformFilter = ios;
 			target = 07EA6CCB2E31DFB800171765 /* TeymiaHabitWidgetsExtension */;
 			targetProxy = E73266692F2C90D000BFD4EB /* PBXContainerItemProxy */;
 		};
@@ -581,7 +583,7 @@
 		07A95F092D9849F400044A7A /* Debug configuration for PBXNativeTarget "TeymiaHabit" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "\"AppIconDark, AppIconMinimal, AppIconMinimalDark\"";
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "\"AppIconDark, AppIconMinimal, AppIconMinimalDark, AppIconBlue, AppIconGreen, AppIconMint, AppIconOrchid, AppIconPurple, AppIconRed, AppIconYellow\"";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
@@ -615,7 +617,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -627,7 +629,7 @@
 		07A95F0A2D9849F400044A7A /* Release configuration for PBXNativeTarget "TeymiaHabit" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "\"AppIconDark, AppIconMinimal, AppIconMinimalDark\"";
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "\"AppIconDark, AppIconMinimal, AppIconMinimalDark, AppIconBlue, AppIconGreen, AppIconMint, AppIconOrchid, AppIconPurple, AppIconRed, AppIconYellow\"";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
@@ -661,7 +663,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;

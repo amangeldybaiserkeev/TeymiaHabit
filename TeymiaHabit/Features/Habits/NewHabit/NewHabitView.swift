@@ -75,14 +75,14 @@ struct NewHabitView: View {
                         TextField("habit_name", text: $title)
                             .fontWeight(.medium)
                             .submitLabel(.done)
-                    } icon: { Image(systemName: "pencil.line").iconStyle(reversed: true) }
+                    } icon: { Image(systemName: "pencil.line").iconStyle() }
                     
                     NavigationLink {
                         IconPickerView(selectedIcon: $selectedIcon)
                     } label: {
                         HStack {
                             Label { Text("icon") }
-                            icon: { Image(systemName: "app.background.dotted").iconStyle(reversed: true) }
+                            icon: { Image(systemName: "app.background.dotted").iconStyle() }
                             
                             Spacer()
                             
@@ -98,7 +98,7 @@ struct NewHabitView: View {
                     } label: {
                         HStack {
                             Label { Text("color") }
-                            icon: { Image(systemName: "paintbrush.pointed").iconStyle(reversed: true) }
+                            icon: { Image(systemName: "paintbrush.pointed").iconStyle() }
                             
                             Spacer()
                             
@@ -111,7 +111,6 @@ struct NewHabitView: View {
                         }
                     }
                 }
-                .listRowBackground(Color.rowBackground)
                 
                 Section {
                     GoalSection(
@@ -121,7 +120,6 @@ struct NewHabitView: View {
                         minutes: $minutes
                     )
                 }
-                .listRowBackground(Color.rowBackground)
                 
                 Section {
                     RepeatDaysView(activeDays: $activeDays)
@@ -134,9 +132,7 @@ struct NewHabitView: View {
                         }
                     )
                 }
-                .listRowBackground(Color.rowBackground)
             }
-            .appBackground(.grouped)
             .navigationTitle(habit == nil ? "create_habit" : "edit_habit")
             .navigationBarTitleDisplayMode(.inline)
             .scrollDismissesKeyboard(.immediately)

@@ -31,7 +31,6 @@ struct CloudView: View {
             Section("icloud_sync_status") {
                 StatusRow(status: cloudManager.status)
             }
-            .listRowBackground(Color.rowBackground)
 
             if case .available = cloudManager.status {
                 Section("icloud_manual_sync") {
@@ -46,7 +45,6 @@ struct CloudView: View {
                         LastSyncRow(date: lastTime)
                     }
                 }
-                .listRowBackground(Color.rowBackground)
             }
             
             Section("icloud_how_sync_works") {
@@ -54,9 +52,7 @@ struct CloudView: View {
                 CloudInfoRow(icon: "macbook.badge.checkmark", title: "icloud_cross_device_sync", desc: "icloud_cross_device_sync_desc")
                 CloudInfoRow(icon: "checkmark.shield", title: "icloud_secure", desc: "icloud_secure_desc")
             }
-            .listRowBackground(Color.rowBackground)
         }
-        .appBackground()
         .navigationTitle("settings_icloud")
         .task { await cloudManager.checkStatus() }
     }

@@ -6,7 +6,7 @@ struct SoundRowView: View {
         NavigationLink(destination: SoundView()) {
             Label(
                 title: { Text("settings_sounds") },
-                icon: { Image(systemName: "speaker.wave.2").iconStyle(reversed: true) }
+                icon: { Image(systemName: "speaker.wave.2").iconStyle() }
             )
         }
     }
@@ -51,7 +51,6 @@ struct SoundView: View {
                 notificationSection
             }
         }
-        .appBackground()
         .navigationTitle("settings_sounds")
         .fullScreenCover(isPresented: $showProPaywall) { PaywallView() }
     }
@@ -71,7 +70,6 @@ struct SoundView: View {
                 ))
                 .tint(.mainApp)
             }
-            .listRowBackground(Color.rowBackground)
             
             if soundManager.isSoundEnabled {
                 Section {
@@ -85,7 +83,6 @@ struct SoundView: View {
                         }
                     }
                 }
-                .listRowBackground(Color.rowBackground)
                 .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
@@ -103,7 +100,6 @@ struct SoundView: View {
                 }
             }
         }
-        .listRowBackground(Color.rowBackground)
         .transition(.opacity.combined(with: .move(edge: .top)))
     }
     

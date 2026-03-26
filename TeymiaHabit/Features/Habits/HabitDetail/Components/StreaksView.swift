@@ -15,10 +15,6 @@ struct StreaksView: View {
     @ViewBuilder
     private func statCard(value: String, label: LocalizedStringResource, icon: String) -> some View {
         StatColumn(value: value, label: label, icon: icon)
-            .padding(.vertical, 12)
-            .glassEffect(.clear.interactive(false), in: RoundedRectangle(
-                cornerRadius: 24, style: .continuous
-            ))
     }
 }
 
@@ -38,12 +34,12 @@ struct StatColumn: View {
             HStack(spacing: 4) {
                 Image(systemName: icon)
                     .font(.system(size: 12, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.7).gradient)
+                    .foregroundStyle(Color.primary.opacity(0.7).gradient)
                 
                 Text(label)
                     .font(.footnote)
                     .fontWeight(.medium)
-                    .foregroundStyle(.white.opacity(0.7).gradient)
+                    .foregroundStyle(Color.primary.opacity(0.7).gradient)
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
                     .fixedSize(horizontal: false, vertical: true)

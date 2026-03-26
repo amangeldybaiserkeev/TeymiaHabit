@@ -42,9 +42,7 @@ struct AppIconView: View {
                     }
                 }
             }
-            .listRowBackground(Color.rowBackground)
         }
-        .appBackground()
         .navigationTitle("settings_app_icon")
         .onAppear {
             currentIcon = iconManager.currentIcon

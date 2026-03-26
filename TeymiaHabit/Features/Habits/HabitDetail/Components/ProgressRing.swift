@@ -71,7 +71,6 @@ struct ProgressRing: View {
             }
         }
         .frame(width: size, height: size)
-        .overlay { ringGlassBorders }
     }
     
     @ViewBuilder
@@ -118,24 +117,6 @@ struct ProgressRing: View {
                 .font(.system(size: size * 0.2, weight: .bold))
                 .transition(.scale.combined(with: .opacity))
         }
-    }
-
-    private var ringGlassBorders: some View {
-        ZStack {
-            Circle()
-                .stroke(whiteGradient, lineWidth: 0.8)
-                .padding(-adaptiveLineWidth / 2)
-            Circle()
-                .stroke(whiteGradient, lineWidth: 0.5)
-                .padding(adaptiveLineWidth / 2)
-        }
-    }
-    
-    private var whiteGradient: LinearGradient {
-        LinearGradient(
-            colors: [.white.opacity(0.4), .white.opacity(0.1), .white.opacity(0.1), .white.opacity(0.4)],
-            startPoint: .topLeading, endPoint: .bottomTrailing
-        )
     }
 
     private func getProgressText() -> String {

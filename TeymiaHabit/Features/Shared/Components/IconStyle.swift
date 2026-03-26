@@ -1,13 +1,16 @@
 import SwiftUI
 
 extension Image {
-    func iconStyle(reversed: Bool = false) -> some View {
-        let primary = reversed ? Color.blackGray.gradient : Color.orangeWhite.gradient
-        let secondary = reversed ? Color.orangeWhite.gradient : Color.blackGray.gradient
+    func iconStyle() -> some View {
         
         return self
             .font(.system(size: 16, weight: .medium, design: .rounded))
-            .symbolRenderingMode(.palette)
-            .foregroundStyle(primary, secondary)
+            .foregroundStyle(.white.gradient)
+            .frame(width: 24, height: 24)
+            .background(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(.orange.gradient)
+            )
+            .frame(width: 32, height: 32)
     }
 }

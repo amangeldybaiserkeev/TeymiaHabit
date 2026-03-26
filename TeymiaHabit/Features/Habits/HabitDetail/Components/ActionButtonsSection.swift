@@ -47,7 +47,7 @@ struct ActionButtonsSection: View {
                 .padding(Constants.buttonPadding)
         }
         .buttonStyle(.plain)
-        .glassEffect(.clear.interactive(), in: .circle)
+        .glassEffect(.regular.interactive(), in: .circle)
     }
     
     @ViewBuilder
@@ -63,7 +63,7 @@ struct ActionButtonsSection: View {
                 .padding(Constants.playButtonPadding)
         }
         .buttonStyle(.plain)
-        .glassEffect(.clear.interactive(), in: .circle)
+        .glassEffect(.regular.interactive(), in: .circle)
     }
     
     @ViewBuilder
@@ -91,6 +91,6 @@ struct ActionButtonsSection: View {
             }
         }
         .buttonStyle(.plain)
-        .glassEffect(.clear.interactive(), in: .circle)
+        .glassEffect(.regular.interactive(), in: .circle)
     }
 }

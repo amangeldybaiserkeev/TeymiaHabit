@@ -58,9 +58,7 @@ struct WeekStartView: View {
                     }
                 }
             }
-            .listRowBackground(Color.rowBackground)
         }
-        .appBackground()
         .navigationTitle("settings_week_start")
     }
 }

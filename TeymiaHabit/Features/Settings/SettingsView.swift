@@ -20,7 +20,6 @@ struct SettingsView: View {
                 WeekStartRowView()
                 LanguageRowView()
             }
-            .listRowBackground(Color.rowBackground)
                   
             Section {
                 SoundRowView()
@@ -28,18 +27,15 @@ struct SettingsView: View {
                 HapticsRowView()
                 
             }
-            .listRowBackground(Color.rowBackground)
             
             Section {
                 CloudRowView()
                 ArchiveRowView()
                 ExportRowView()
             }
-            .listRowBackground(Color.rowBackground)
             
             AboutSection()
         }
-        .appBackground()
         .navigationTitle("settings")
     }
 }

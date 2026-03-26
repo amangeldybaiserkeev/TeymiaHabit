@@ -31,7 +31,6 @@ struct ArchiveView: View {
         List {
             listContent
         }
-        .appBackground()
         .navigationTitle("settings_archived_habits")
         .deleteSingleHabitAlert(
             isPresented: $isDeleteSingleAlertPresented,
@@ -71,7 +70,6 @@ struct ArchiveView: View {
                     archivedHabitRow(habit)
                 }
             }
-            .listRowBackground(Color.rowBackground)
         }
     }
     

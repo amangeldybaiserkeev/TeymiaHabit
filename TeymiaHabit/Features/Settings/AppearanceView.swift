@@ -8,7 +8,7 @@ struct AppearanceRowView: View {
             HStack {
                 Label(
                     title: { Text("settings_appearance") },
-                    icon: { Image(systemName: "moon.stars").iconStyle(reversed: true) }
+                    icon: { Image(systemName: "moon.stars").iconStyle() }
                 )
                 Spacer()
                 Text(themeMode.localizedName).foregroundStyle(Color.secondary)
@@ -45,56 +45,7 @@ struct AppearanceView: View {
                 }
             }
             .animation(.snappy, value: themeMode)
-            .listRowBackground(Color.rowBackground)
-            
-            // Theme
-            Section {
-                ForEach(AppTheme.allCases, id: \.self) { theme in
-                    Button {
-                        withAnimation(.snappy) {
-                            themeManager.currentTheme = theme
-                        }
-                        HapticManager.shared.playSelection()
-                    } label: {
-                        HStack {
-                            Text(theme.localizedName).foregroundStyle(Color.primary)
-                            
-                            Spacer()
-                            
-                            if themeManager.currentTheme == theme { SelectionCheckmark() }
-                        }
-                    }
-                }
-            } header: {
-                Text("appearance_theme")
-            }
-            .listRowBackground(Color.rowBackground)
         }
-        .appBackground()
         .navigationTitle("settings_appearance")
     }
 }
-
-// MARK: - UI Helpers
-struct AppBackground: ViewModifier {
-    let type: ThemeBackgroundType
-    func body(content: Content) -> some View {
-        content
-            .scrollContentBackground(.hidden)
-            .background(type == .main ? Color.mainBackground : Color.groupedBackground)
-    }
-}
-
-extension View {
-    func appBackground(_ type: ThemeBackgroundType = .grouped) -> some View {
-        self.modifier(AppBackground(type: type))
-    }
-}
-
-extension Color {
-    static var mainBackground: Color { Color(ThemeManager.shared.colorName(for: "Background")) }
-    static var rowBackground: Color { Color(ThemeManager.shared.colorName(for: "RowBackground")) }
-    static var groupedBackground: Color { Color(ThemeManager.shared.colorName(for: "GroupedBackground")) }
-}
-
-enum ThemeBackgroundType { case main, grouped }

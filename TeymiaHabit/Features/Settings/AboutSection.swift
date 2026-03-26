@@ -49,7 +49,6 @@ struct AboutSection: View {
                 )
             }
         }
-        .listRowBackground(Color.rowBackground)
         
         // About App
         Section {

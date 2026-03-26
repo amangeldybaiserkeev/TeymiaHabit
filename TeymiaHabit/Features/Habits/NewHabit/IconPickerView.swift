@@ -201,7 +201,6 @@ struct IconPickerView: View {
                 .padding(.vertical, 16)
             }
             .animation(.snappy, value: searchText)
-            .appBackground(.main)
             .navigationTitle("icon")
             .navigationBarTitleDisplayMode(.inline)
             .searchable(text: $searchText)

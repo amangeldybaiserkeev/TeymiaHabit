@@ -105,17 +105,16 @@ struct HomeView: View {
                                 onToggleCompletion: { toggleHabitCompletion(habit) },
                                 zoomNamespace: zoomNamespace
                             )
+                            .matchedTransitionSource(id: habit.id, in: zoomNamespace)
                             .buttonStyle(.plain)
-                            .glassEffect(.regular.tint(Color.rowBackground).interactive(false), in: .capsule)
                             .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
-                            .listRowSeparator(.hidden)
                             .listRowBackground(Color.clear)
-                            .compositingGroup()
+                            .listRowSeparatorTint(Color.secondary.opacity(0.1))
                             .opacity(habit.isSkipped(on: selectedDate) ? 0.4 : 1.0)
                             .onTapGesture {
-                                    selectedHabit = habit
-                                    HapticManager.shared.playSelection()
-                                }
+                                HapticManager.shared.playSelection()
+                                selectedHabit = habit
+                            }
                             .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                                 let isCompleted = habit.progressForDate(selectedDate) >= habit.goal
                                 Button {
@@ -138,11 +137,12 @@ struct HomeView: View {
                     }
                     .listStyle(.plain)
                     .scrollIndicators(.hidden)
+                    .frame(maxWidth: 700)
+                    .frame(maxWidth: .infinity, alignment: .center)
                     .environment(\.editMode, $isEditMode)
                 }
             }
         }
-        .appBackground(.main)
         .navigationTitle(navigationTitle)
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
@@ -224,7 +224,7 @@ struct HomeView: View {
         if habit.isSkipped(on: selectedDate) {
             habit.unskipDate(selectedDate, modelContext: modelContext)
         }
-
+        
         if isCompleted {
             habit.updateProgress(to: 0, for: selectedDate, modelContext: modelContext)
         } else {
@@ -352,10 +352,8 @@ struct HabitCard: View {
                     date: date,
                     viewModel: nil
                 )
-                .padding(14)
+                .padding(6)
             }
-            .contentShape(.dragPreview, Capsule())
-            .contentShape(.contextMenuPreview, Capsule())
             .contextMenu {
                 skipButton
                 editButton

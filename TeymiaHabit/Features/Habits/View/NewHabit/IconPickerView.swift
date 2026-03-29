@@ -251,6 +251,8 @@ struct IconPickerView: View {
         }
         .safeAreaBar(edge: .bottom) {
             ColorSelectionView(selectedColor: $selectedColor)
+                .padding(.horizontal, 16)
+                .padding(.bottom, 6)
         }
         .animation(.snappy, value: searchText)
         .navigationTitle("icon")

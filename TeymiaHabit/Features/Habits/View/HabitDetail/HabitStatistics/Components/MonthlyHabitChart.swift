@@ -3,7 +3,6 @@ import Charts
 
 struct MonthlyHabitChart: View {
     let habit: Habit
-    let updateCounter: Int
 
     @State private var months: [Date] = []
     @State private var currentMonthIndex: Int = 0
@@ -39,7 +38,6 @@ struct MonthlyHabitChart: View {
         }
         .onChange(of: habit.goal) { _, _ in generateChartData() }
         .onChange(of: habit.activeDays) { _, _ in generateChartData() }
-        .onChange(of: updateCounter) { _, _ in generateChartData() }
         .onChange(of: selectedDate, playHapticOnChange)
     }
 
@@ -78,14 +76,14 @@ struct MonthlyHabitChart: View {
         .chartXAxis {
             AxisMarks(values: xAxisValues) { value in
                 AxisGridLine(stroke: StrokeStyle(lineWidth: 0.6, dash: [2]))
-                    .foregroundStyle(.white.opacity(0.2).gradient)
+                    .foregroundStyle(.appPrimary.opacity(0.2).gradient)
                 AxisValueLabel {
                     if let date = value.as(Date.self) {
                         Text("\(calendar.component(.day, from: date))")
                             .font(.caption)
                             .fontWeight(.medium)
                             .fontDesign(.rounded)
-                            .foregroundStyle(.white.opacity(0.2).gradient)
+                            .foregroundStyle(.appPrimary.opacity(0.5).gradient)
                     }
                 }
             }

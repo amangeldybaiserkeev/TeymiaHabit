@@ -1,18 +1,9 @@
 import SwiftUI
 import SwiftData
 
-enum CalendarAction {
-    case complete, resetProgress
-}
-
 struct MonthlyCalendarView: View {
     // MARK: - Properties
     let habit: Habit
-    
-    var updateCounter: Int = 0
-    var onActionRequested: (CalendarAction, Date) -> Void = { _, _ in }
-    var onCountInput: ((Int, Date) -> Void)?
-    var onTimeInput: ((Int, Int, Date) -> Void)?
     
     @Binding var selectedDate: Date
     
@@ -23,35 +14,15 @@ struct MonthlyCalendarView: View {
     @State private var months: [Date] = []
     @State private var currentMonthIndex: Int = 0
     @State private var monthCalendarCache: [Int: [[Date?]]] = [:]
-    @State private var progressData: [Date: Double] = [:]
+    @State private var tappedDate: Date? = nil
+    @State private var popoverDate: Date? = nil
     
-    @Query private var completions: [HabitCompletion]
-    
-    private var calendar: Calendar {
-        Calendar.userPreferred
-    }
+    private var calendar: Calendar { Calendar.userPreferred }
     
     // MARK: - Initialization
-    init(
-        habit: Habit,
-        selectedDate: Binding<Date>,
-        updateCounter: Int = 0,
-        onActionRequested: @escaping (CalendarAction, Date) -> Void = { _, _ in },
-        onCountInput: ((Int, Date) -> Void)? = nil,
-        onTimeInput: ((Int, Int, Date) -> Void)? = nil
-    ) {
+    init(habit: Habit, selectedDate: Binding<Date>) {
         self.habit = habit
         self._selectedDate = selectedDate
-        self.updateCounter = updateCounter
-        self.onActionRequested = onActionRequested
-        self.onCountInput = onCountInput
-        self.onTimeInput = onTimeInput
-        
-        let habitId = habit.id
-        let habitPredicate = #Predicate<HabitCompletion> { completion in
-            completion.habit?.id == habitId
-        }
-        self._completions = Query(filter: habitPredicate)
     }
     
     // MARK: - Body
@@ -68,12 +39,6 @@ struct MonthlyCalendarView: View {
         .onAppear(perform: setupCalendar)
         .onChange(of: selectedDate) { _, newDate in
             updateMonthIfNeeded(for: newDate)
-        }
-        .onChange(of: updateCounter) { _, _ in
-            regenerateAllCalendarDays()
-        }
-        .onChange(of: weekdayPrefs.firstDayOfWeek) { _, _ in
-            regenerateAllCalendarDays()
         }
     }
     
@@ -141,19 +106,11 @@ struct MonthlyCalendarView: View {
         .frame(height: 280)
         .onAppear {
             generateCalendarDaysIfNeeded(for: currentMonthIndex)
-            loadProgressData()
         }
-        .onChange(of: currentMonthIndex) { oldValue, newValue in
+        .onChange(of: currentMonthIndex) { _, newValue in
             generateCalendarDaysIfNeeded(for: newValue)
-            loadProgressData() // Load progress for new month
-            
-            // Preload adjacent months
-            if newValue > 0 {
-                generateCalendarDaysIfNeeded(for: newValue - 1)
-            }
-            if newValue < months.count - 1 {
-                generateCalendarDaysIfNeeded(for: newValue + 1)
-            }
+            if newValue > 0 { generateCalendarDaysIfNeeded(for: newValue - 1) }
+            if newValue < months.count - 1 { generateCalendarDaysIfNeeded(for: newValue + 1) }
         }
     }
     
@@ -167,51 +124,31 @@ struct MonthlyCalendarView: View {
                     let isAfterStart = date >= habit.startDate
                     let isActive = habit.isActiveOnDate(date)
                     let isFullActive = isBeforeToday && isAfterStart && isActive
-                    let progress = progressData[date] ?? 0
                     
-                    CustomMenuView(action: { selectedDate = date }) {
-                        DayProgressItem(
-                            date: date,
-                            isSelected: calendar.isDate(selectedDate, inSameDayAs: date),
-                            progress: progress,
-                            showProgressRing: isFullActive,
-                            habit: habit
-                        )
-                        .frame(width: 40, height: 40)
-                        .contentShape(Rectangle())
-                    } content: {
-                        popoverContent(for: date)
+                    DayProgressItem(
+                        date: date,
+                        isSelected: calendar.isDate(selectedDate, inSameDayAs: date),
+                        progress: habit.completionPercentageForDate(date),
+                        showProgressRing: isFullActive,
+                        habit: habit
+                    )
+                    .frame(width: 40, height: 40)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        guard isFullActive else { return }
+                        selectedDate = date
+                        popoverDate = date
                     }
-                    .disabled(!isFullActive)
+                    .popover(item: $popoverDate) { date in
+                        DayProgressPopover(habit: habit, date: date)
+                            .presentationCompactAdaptation(.sheet)
+                    }
                 } else {
                     Color.clear.frame(width: 40, height: 40)
                 }
             }
         }
         .padding(.horizontal, 8)
-    }
-    
-    @ViewBuilder
-    private func popoverContent(for date: Date) -> some View {
-        if habit.type == .count {
-            CountInputPopover(
-                habit: habit,
-                date: date,
-                showQuickActions: true,
-                onConfirm: { val in onCountInput?(val, date) },
-                onComplete: { onActionRequested(.complete, date) },
-                onReset: { onActionRequested(.resetProgress, date) }
-            )
-        } else {
-            TimeInputPopover(
-                habit: habit,
-                date: date,
-                showQuickActions: true,
-                onConfirm: { h, m in onTimeInput?(h, m, date) },
-                onComplete: { onActionRequested(.complete, date) },
-                onReset: { onActionRequested(.resetProgress, date) }
-            )
-        }
     }
     
     // MARK: - Computed Properties
@@ -319,45 +256,7 @@ struct MonthlyCalendarView: View {
         monthCalendarCache[index] = days
     }
     
-    // Regenerate all cached months
-    private func regenerateAllCalendarDays() {
-        monthCalendarCache.removeAll()
-        progressData.removeAll()
-        
-        generateCalendarDaysIfNeeded(for: currentMonthIndex)
-        loadProgressData()
-        
-        if currentMonthIndex > 0 {
-            generateCalendarDaysIfNeeded(for: currentMonthIndex - 1)
-        }
-        if currentMonthIndex < months.count - 1 {
-            generateCalendarDaysIfNeeded(for: currentMonthIndex + 1)
-        }
-    }
-    
     // MARK: - Progress Loading
-    
-    private func loadProgressData() {
-        guard !months.isEmpty, currentMonthIndex < months.count else { return }
-        
-        let days = getCalendarDays(for: currentMonthIndex)
-        var newProgressData: [Date: Double] = [:]
-        
-        // Load progress for all dates in current month
-        for row in days {
-            for date in row.compactMap({ $0 }) {
-                let isActive = date <= Date() && date >= habit.startDate && habit.isActiveOnDate(date)
-                if isActive {
-                    newProgressData[date] = habit.completionPercentageForDate(date)
-                }
-            }
-        }
-        
-        // Update progressData (triggers view update with animation from DayProgressItem)
-        for (date, progress) in newProgressData {
-            progressData[date] = progress
-        }
-    }
     
     private func generateCalendarDays(for month: Date) -> [[Date?]] {
         guard let range = calendar.range(of: .day, in: .month, for: month) else {
@@ -453,4 +352,8 @@ struct MonthlyCalendarView: View {
         formatter.dateStyle = .medium
         return formatter
     }()
+}
+
+extension Date: @retroactive Identifiable {
+    public var id: TimeInterval { timeIntervalSince1970 }
 }

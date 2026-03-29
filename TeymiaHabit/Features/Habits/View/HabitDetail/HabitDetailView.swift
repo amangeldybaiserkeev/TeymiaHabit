@@ -8,7 +8,6 @@ struct HabitDetailView: View {
     
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @Environment(TimerService.self) private var timerService
     
     @State private var viewModel: HabitDetailViewModel?
     @State private var statsViewModel: HabitStatsViewModel
@@ -64,11 +63,6 @@ struct HabitDetailView: View {
                     ToolbarItem(placement: .topBarTrailing) { menuButton }
                 }
                 .id(habit.uuid.uuidString)
-                .onChange(of: timerService.updateTrigger) { _, _ in
-                    if timerService.isTimerRunning(for: habit.uuid.uuidString) {
-                        viewModel?.refresh()
-                    }
-                }
                 .modifier(HabitDetailLifecycleModifier(
                     viewModel: viewModel,
                     statsViewModel: statsViewModel,
@@ -192,7 +186,6 @@ struct HabitDetailView: View {
     
     private func saveAndRefreshStats() {
         try? modelContext.save()
-        viewModel?.refresh()
         statsViewModel.refresh()
     }
     
@@ -213,16 +206,15 @@ struct HabitDetailView: View {
     }
     
     private func archiveHabit() {
-        habit.isArchived = true
-        try? modelContext.save()
-        HapticManager.shared.play(.success)
+        HabitService.shared.archive(habit, context: modelContext)
         dismiss()
     }
     private func deleteHabit() {
         viewModel?.prepareForDeletion()
         dismiss()
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+        Task {
+            try? await Task.sleep(for: .milliseconds(300))
             HabitService.shared.delete(habit, context: modelContext)
         }
     }

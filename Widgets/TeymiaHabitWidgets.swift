@@ -38,7 +38,14 @@ struct HabitWidgetTimelineProvider: TimelineProvider {
     
     private func fetchActiveHabits(for date: Date) -> [Habit] {
         let appGroupId = "group.com.amanbayserkeev.teymiahabit"
-        let schema = Schema([Habit.self, HabitCompletion.self])
+        let schema = Schema([
+            Habit.self,
+            HabitCompletion.self,
+            TodoTask.self,
+            Subtask.self,
+            TaskList.self,
+            TaskGroup.self
+        ])
         let modelConfiguration = ModelConfiguration(
             schema: schema,
             groupContainer: .identifier(appGroupId),

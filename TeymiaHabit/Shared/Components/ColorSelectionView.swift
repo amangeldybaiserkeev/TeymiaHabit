@@ -16,10 +16,9 @@ struct ColorSelectionView: View {
             .padding(24)
         }
         .frame(height: buttonSize + 36)
-        .glassEffect(.clear.interactive(false), in: .capsule)
-        .shadow(color: .black.opacity(0.15), radius: 10, x: 0, y: 4)
+        .glassEffect(.regular.interactive(false), in: .capsule)
+        .shadow(color: .black.opacity(0.15), radius: 6, x: 0, y: 4)
         .clipShape(.capsule)
-        .padding()
     }
     
     private func colorButton(for color: HabitIconColor) -> some View {
@@ -49,6 +48,7 @@ struct ColorSelectionView: View {
             }
         }
         .buttonStyle(.plain)
+        .contentShape(.circle)
     }
     
 }

@@ -8,12 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		072DD4152DE8243500157BF8 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 072DD4142DE8243500157BF8 /* RevenueCat */; };
-		077FAE6F2E12DE7C007790C5 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 076E63182E123CA6002272B1 /* WidgetKit.framework */; };
-		077FAE702E12DE7C007790C5 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 076E631A2E123CA7002272B1 /* SwiftUI.framework */; };
-		07EA6CCD2E31DFB900171765 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 076E63182E123CA6002272B1 /* WidgetKit.framework */; };
-		07EA6CCE2E31DFB900171765 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 076E631A2E123CA7002272B1 /* SwiftUI.framework */; };
-		07EA6CE22E31E26300171765 /* SwiftData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07EA6CE12E31E26300171765 /* SwiftData.framework */; };
-		07EA6CF12E31EB4A00171765 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 076E63182E123CA6002272B1 /* WidgetKit.framework */; };
 		E73266642F2C90CD00BFD4EB /* liveactivityExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 077FAE6E2E12DE7C007790C5 /* liveactivityExtension.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		E73266682F2C90D000BFD4EB /* TeymiaHabitWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 07EA6CCC2E31DFB800171765 /* TeymiaHabitWidgetsExtension.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
@@ -49,12 +43,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		076E63182E123CA6002272B1 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
-		076E631A2E123CA7002272B1 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		077FAE6E2E12DE7C007790C5 /* liveactivityExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = liveactivityExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		07A95EFA2D9849F300044A7A /* TeymiaHabit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TeymiaHabit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		07EA6CCC2E31DFB800171765 /* TeymiaHabitWidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TeymiaHabitWidgetsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		07EA6CE12E31E26300171765 /* SwiftData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftData.framework; path = System/Library/Frameworks/SwiftData.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -78,10 +69,10 @@
 				"Extensions/Color+Hex.swift",
 				Extensions/NotificationName.swift,
 				Extensions/TimeFormatting.swift,
-				Features/Shared/Components/HabitIconView.swift,
-				Features/Shared/Logic/LiveActivityTypes.swift,
-				Models/Habits/HabitIconColor.swift,
+				Features/Habits/Models/HabitIconColor.swift,
 				Resources/Assets.xcassets,
+				Shared/Components/HabitIconView.swift,
+				Shared/Logic/LiveActivityTypes.swift,
 			);
 			target = 077FAE6D2E12DE7C007790C5 /* liveactivityExtension */;
 		};
@@ -95,18 +86,23 @@
 		07EA6CE42E31E31A00171765 /* Exceptions for "TeymiaHabit" folder in "TeymiaHabitWidgetsExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Core/Managers/WeekdayPreferences.swift,
 				"Extensions/Calendar+Extensions.swift",
 				"Extensions/Color+Hex.swift",
 				Extensions/NotificationName.swift,
 				Extensions/TimeFormatting.swift,
-				Features/Shared/Components/HabitIconView.swift,
-				Managers/WeekdayPreferences.swift,
-				Models/Habits/Habit.swift,
-				Models/Habits/HabitCompletion.swift,
-				Models/Habits/HabitIconColor.swift,
-				Models/Habits/HabitType.swift,
-				Models/Habits/Weekday.swift,
+				Features/Habits/Models/Habit.swift,
+				Features/Habits/Models/HabitCompletion.swift,
+				Features/Habits/Models/HabitIconColor.swift,
+				Features/Habits/Models/HabitType.swift,
+				Features/Habits/Models/Weekday.swift,
+				Features/Tasks/Models/Subtask.swift,
+				Features/Tasks/Models/TaskGroup.swift,
+				Features/Tasks/Models/TaskList.swift,
+				Features/Tasks/Models/TaskScope.swift,
+				Features/Tasks/Models/TodoTask.swift,
 				Resources/Assets.xcassets,
+				Shared/Components/HabitIconView.swift,
 			);
 			target = 07EA6CCB2E31DFB800171765 /* TeymiaHabitWidgetsExtension */;
 		};
@@ -145,45 +141,28 @@
 		077FAE6B2E12DE7C007790C5 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
-				077FAE702E12DE7C007790C5 /* SwiftUI.framework in Frameworks */,
-				077FAE6F2E12DE7C007790C5 /* WidgetKit.framework in Frameworks */,
 			);
 		};
 		07A95EF72D9849F300044A7A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
 				072DD4152DE8243500157BF8 /* RevenueCat in Frameworks */,
-				07EA6CF12E31EB4A00171765 /* WidgetKit.framework in Frameworks */,
 			);
 		};
 		07EA6CC92E31DFB800171765 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
-				07EA6CCE2E31DFB900171765 /* SwiftUI.framework in Frameworks */,
-				07EA6CCD2E31DFB900171765 /* WidgetKit.framework in Frameworks */,
-				07EA6CE22E31E26300171765 /* SwiftData.framework in Frameworks */,
 			);
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		076E63172E123CA6002272B1 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				07EA6CE12E31E26300171765 /* SwiftData.framework */,
-				076E63182E123CA6002272B1 /* WidgetKit.framework */,
-				076E631A2E123CA7002272B1 /* SwiftUI.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		07A95EF12D9849F300044A7A = {
 			isa = PBXGroup;
 			children = (
 				07A95EFC2D9849F300044A7A /* TeymiaHabit */,
 				077FAE712E12DE7C007790C5 /* LiveActivity */,
 				07EA6CCF2E31DFB900171765 /* Widgets */,
-				076E63172E123CA6002272B1 /* Frameworks */,
 				07A95EFB2D9849F300044A7A /* Products */,
 			);
 			sourceTree = "<group>";

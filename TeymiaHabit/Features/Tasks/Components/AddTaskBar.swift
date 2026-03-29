@@ -32,6 +32,7 @@ struct AddTaskBar: View {
             }
             .padding(12)
         }
+        .frame(width: .infinity)
         .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 24))
         .shadow(color: .black.opacity(0.15), radius: 6, x: 0, y: 4)
     }

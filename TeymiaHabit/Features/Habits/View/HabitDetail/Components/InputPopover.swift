@@ -240,3 +240,101 @@ struct PopOverHelper<Content: View>: View {
             .ignoresSafeArea(.keyboard, edges: .bottom)
     }
 }
+
+struct DayProgressPopover: View {
+    let habit: Habit
+    let date: Date
+    
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
+    
+    @State private var inputText: String = ""
+    @State private var selectedTime: Date = Calendar.current.date(
+        bySettingHour: 0, minute: 0, second: 0, of: Date()
+    ) ?? Date()
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            // Заголовок
+            VStack(spacing: 4) {
+                Text(date.formatted(date: .abbreviated, time: .omitted))
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                
+                HStack(spacing: 6) {
+                    Text(habit.formattedProgress(for: date))
+                    Text("|")
+                    Text(habit.formattedGoal)
+                }
+                .font(.headline)
+            }
+            
+            Divider()
+            
+            // Ввод
+            if habit.type == .count {
+                TextField("0", text: $inputText)
+                    .font(.title.bold())
+                    .multilineTextAlignment(.center)
+                    .keyboardType(.numberPad)
+                    .padding(.horizontal)
+            } else {
+                DatePicker("", selection: $selectedTime, displayedComponents: .hourAndMinute)
+                    .datePickerStyle(.wheel)
+                    .labelsHidden()
+                    .frame(maxHeight: 120)
+            }
+            
+            Divider()
+            
+            // Кнопки
+            VStack(spacing: 0) {
+                button("button_add") { addProgress() }
+                Divider()
+                button("complete") { complete() }
+                Divider()
+                button("button_reset", role: .destructive) { reset() }
+            }
+        }
+        .frame(width: 260)
+        .padding(.vertical, 12)
+    }
+    
+    private func button(
+        _ label: LocalizedStringResource,
+        role: ButtonRole? = nil,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(role: role) {
+            action()
+            dismiss()
+        } label: {
+            Text(label)
+                .frame(maxWidth: .infinity, minHeight: 44)
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(role == .destructive ? .red : .primary)
+        .padding(.horizontal, 16)
+    }
+    
+    private func addProgress() {
+        if habit.type == .count, let val = Int(inputText), val > 0 {
+            habit.addToProgress(val, for: date, modelContext: modelContext)
+        } else {
+            let comps = Calendar.current.dateComponents([.hour, .minute], from: selectedTime)
+            let total = (comps.hour ?? 0) * 3600 + (comps.minute ?? 0) * 60
+            habit.addToProgress(total, for: date, modelContext: modelContext)
+        }
+        HapticManager.shared.play(.success)
+    }
+    
+    private func complete() {
+        habit.complete(for: date, modelContext: modelContext)
+        HapticManager.shared.play(.success)
+    }
+    
+    private func reset() {
+        habit.resetProgress(for: date, modelContext: modelContext)
+        HapticManager.shared.play(.error)
+    }
+}

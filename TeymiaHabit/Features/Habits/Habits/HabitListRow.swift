@@ -124,7 +124,6 @@ struct HabitListRow: View {
         
         hasPlayedCompletionSound = true
         SoundManager.shared.playCompletionSound()
-        HapticManager.shared.play(.success)
     }
     
     // MARK: - Habit Interaction
@@ -135,12 +134,10 @@ struct HabitListRow: View {
             // For count habits: add +1 directly to habit
             let oldProgress = cardProgress
             habit.addToProgress(1, for: date, modelContext: modelContext)
-            HapticManager.shared.playImpact(.light)
             
             // Play sound if just completed (check AFTER update)
             if oldProgress < habit.goal && oldProgress + 1 >= habit.goal {
                 SoundManager.shared.playCompletionSound()
-                HapticManager.shared.play(.success)
             }
             
         case .time:
@@ -153,20 +150,12 @@ struct HabitListRow: View {
                     // Save final progress directly to habit
                     habit.updateProgress(to: finalProgress, for: date, modelContext: modelContext)
                 }
-                HapticManager.shared.playImpact(.medium)
             } else {
                 // Start timer with current progress as base
                 let success = TimerService.shared.startTimer(
                     for: habitId,
                     baseProgress: cardProgress
                 )
-                
-                if success {
-                    HapticManager.shared.playImpact(.medium)
-                } else {
-                    // Failed to start (probably hit max timers limit)
-                    HapticManager.shared.playImpact(.rigid)
-                }
             }
         }
         

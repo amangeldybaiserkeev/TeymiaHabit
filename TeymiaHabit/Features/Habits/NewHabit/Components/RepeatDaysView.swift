@@ -2,20 +2,15 @@ import SwiftUI
 
 struct RepeatDaysView: View {
     @Binding var activeDays: [Bool]
-    @Environment(WeekdayPreferences.self) private var weekdayPrefs
-    
-    private var calendar: Calendar {
-        Calendar.userPreferred
-    }
     
     private var orderedWeekdays: [Weekday] {
-        calendar.weekdays
+        Weekday.orderedByUserPreference
     }
     
     var body: some View {
         HStack(spacing: 8) {
             ForEach(orderedWeekdays, id: \.self) { weekday in
-                let index = weekday.rawValue - 1
+                let index = weekday.arrayIndex
                 let isActive = activeDays[index]
                 let dayName = weekday.shortName.capitalized
                 

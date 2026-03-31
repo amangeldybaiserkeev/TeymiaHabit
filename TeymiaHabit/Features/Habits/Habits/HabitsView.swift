@@ -108,7 +108,6 @@ struct HabitsView: View {
                             .listRowSeparatorTint(Color.secondary.opacity(0.1))
                             .opacity(habit.isSkipped(on: selectedDate) ? 0.4 : 1.0)
                             .onTapGesture {
-                                HapticManager.shared.playSelection()
                                 selectedHabit = habit
                             }
                             .swipeActions(edge: .trailing, allowsFullSwipe: true) {
@@ -140,7 +139,6 @@ struct HabitsView: View {
             }
         }
         .navigationTitle(navigationTitle)
-        .navigationBarTitleDisplayMode(.large)
         .toolbar {
             if !allBaseHabits.isEmpty {
                 ToolbarItem(placement: .topBarLeading) {
@@ -148,7 +146,6 @@ struct HabitsView: View {
                         withAnimation {
                             isEditMode = isEditMode == .active ? .inactive : .active
                         }
-                        HapticManager.shared.playSelection()
                     }) {
                         Image(systemName: isEditMode == .active ? "checkmark" : "line.3.horizontal")
                             .foregroundStyle(Color.primary)
@@ -171,7 +168,6 @@ struct HabitsView: View {
             
             ToolbarItem(placement: .topBarTrailing) {
                 Button(action: {
-                    HapticManager.shared.playSelection()
                     if !ProManager.shared.isPro && allBaseHabits.count >= 3 {
                         showingPaywall = true
                     } else {
@@ -230,7 +226,6 @@ struct HabitsView: View {
         
         try? modelContext.save()
         
-        HapticManager.shared.play(.success)
         WidgetUpdateService.shared.reloadWidgets()
     }
     
@@ -263,7 +258,6 @@ struct HabitsView: View {
         } else {
             habit.skipDate(selectedDate, modelContext: modelContext)
         }
-        HapticManager.shared.play(.success)
         WidgetUpdateService.shared.reloadWidgets()
     }
     
@@ -282,7 +276,6 @@ struct HabitsView: View {
     private func archiveHabit(_ habit: Habit) {
         habit.isArchived = true
         try? modelContext.save()
-        HapticManager.shared.play(.success)
         WidgetUpdateService.shared.reloadWidgets()
     }
     
@@ -418,7 +411,6 @@ struct HabitCard: View {
         } else {
             habit.skipDate(date, modelContext: modelContext)
         }
-        HapticManager.shared.play(.success)
         WidgetUpdateService.shared.reloadWidgets()
     }
     

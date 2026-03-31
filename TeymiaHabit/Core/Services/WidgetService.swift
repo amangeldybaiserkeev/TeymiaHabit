@@ -1,12 +1,11 @@
-import Foundation
 import WidgetKit
 
 /// Service for managing Home Screen widget updates
-@MainActor
-final class WidgetUpdateService {
-    static let shared = WidgetUpdateService()
+@Observable @MainActor
+final class WidgetService {
+    private let appGroup = "group.com.amanbayserkeev.teymiahabit"
     
-    private init() {}
+    init() {}
     
     func reloadWidgets() {
         WidgetCenter.shared.reloadAllTimelines()

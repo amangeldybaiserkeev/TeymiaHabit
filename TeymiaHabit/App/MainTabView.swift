@@ -3,56 +3,36 @@ import SwiftData
 
 struct MainTabView: View {
     @AppStorage("themeMode") private var themeMode: ThemeMode = .system
-    @State private var selectedTab: AppTab = .habits
-    @State private var selectedHabit: Habit? = nil
+    @Environment(NavigationManager.self) private var navManager
     @State private var selectedDate: Date = .now
     
     var body: some View {
-        TabView(selection: $selectedTab) {
-            
+        @Bindable var nav = navManager
+        
+        TabView(selection: $nav.selectedTab) {
             // Habits
             NavigationStack {
-                HabitsView(selectedDate: $selectedDate, selectedHabit: $selectedHabit)
+                HabitsView(selectedDate: $selectedDate, selectedHabit: $nav.selectedHabit)
             }
-            .tabItem {
-                Label(AppTab.habits.title, systemImage: AppTab.habits.symbolImage)
-            }
+            .tabItem { Label(AppTab.habits.title, systemImage: AppTab.habits.symbolImage) }
             .tag(AppTab.habits)
             
             // Tasks
-            NavigationStack {
-                TasksView()
-            }
-            .tabItem {
-                Label(AppTab.tasks.title, systemImage: AppTab.tasks.symbolImage)
-            }
+            NavigationStack { TasksView() }
+            .tabItem { Label(AppTab.tasks.title, systemImage: AppTab.tasks.symbolImage) }
             .tag(AppTab.tasks)
             
             // Settings
-            NavigationStack {
-                SettingsView()
-            }
-            .tabItem {
-                Label(AppTab.settings.title, systemImage: AppTab.settings.symbolImage)
-            }
+            NavigationStack { SettingsView() }
+            .tabItem { Label(AppTab.settings.title, systemImage: AppTab.settings.symbolImage) }
             .tag(AppTab.settings)
         }
         .preferredColorScheme(themeMode.colorScheme)
         .tint(.appOrange)
-        .sheet(item: $selectedHabit) { habit in
-            NavigationStack {
-                HabitDetailView(habit: habit, date: selectedDate)
-            }
-            .presentationDetents([.medium])
-            .presentationDragIndicator(.visible)
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .openHabitFromDeeplink)) { notification in
-            guard let habit = notification.object as? Habit else { return }
-            selectedTab = .habits
-            selectedHabit = nil
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                selectedHabit = habit
-            }
+        .sheet(item: $nav.selectedHabit) { habit in
+            NavigationStack { HabitDetailView(habit: habit, date: selectedDate) }
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
         }
     }
 }

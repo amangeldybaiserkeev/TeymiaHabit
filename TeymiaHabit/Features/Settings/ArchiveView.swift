@@ -13,8 +13,11 @@ struct ArchiveRowView: View {
 }
 
 struct ArchiveView: View {
+    // MARK: - Dependencies
     @Environment(\.modelContext) private var modelContext
+    @Environment(AppDependencyContainer.self) private var appContainer
     
+    // MARK: - Data
     @Query(
         filter: #Predicate<Habit> { habit in
             habit.isArchived
@@ -23,6 +26,7 @@ struct ArchiveView: View {
     )
     private var archivedHabits: [Habit]
     
+    // MARK: - State
     @State private var habitToDelete: Habit? = nil
     @State private var isDeleteSingleAlertPresented = false
     
@@ -39,21 +43,26 @@ struct ArchiveView: View {
                     deleteHabit(habit)
                 }
                 habitToDelete = nil
-            },
-            habit: habitToDelete
+            }
         )
     }
     
-    // MARK: - Private Methods
+    // MARK: - View Sections
     
     @ViewBuilder
     private var listContent: some View {
         if archivedHabits.isEmpty {
             Section {
-                Image(systemName: "archivebox.fill")
-                    .font(.system(size: 100))
-                    .foregroundStyle(Color(.systemGray4))
-                    .frame(maxWidth: .infinity)
+                VStack(spacing: 16) {
+                    Spacer()
+                    Image(systemName: "archivebox.fill")
+                        .font(.system(size: 70))
+                        .foregroundStyle(Color.secondary.opacity(0.3))
+                    Text("No archived habits")
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity)
             }
             .listRowBackground(Color.clear)
         } else {
@@ -79,53 +88,51 @@ struct ArchiveView: View {
                     .font(.caption)
                     .foregroundStyle(Color.secondary)
             }
+            
             Spacer()
             
-            deleteButton(for: habit)
             unarchiveButton(for: habit)
-            
+            deleteButton(for: habit)
         }
-    }
-    
-    @ViewBuilder
-    private func deleteButton(for habit: Habit) -> some View {
-        Button {
-            unarchiveHabit(habit)
-        } label: {
-            Image("ui-trash.restore")
-                .resizable()
-                .frame(width: 20, height: 20)
-                .padding(8)
-                .background(
-                    Circle()
-                        .fill(Color.secondary.opacity(0.1))
-                )
-        }
+        .padding(.vertical, 4)
     }
     
     @ViewBuilder
     private func unarchiveButton(for habit: Habit) -> some View {
         Button {
+            unarchiveHabit(habit)
+        } label: {
+            Image(systemName: "arrow.uturn.backward.circle.fill")
+                .resizable()
+                .frame(width: 28, height: 28)
+                .foregroundStyle(.blue.gradient)
+                .padding(4)
+        }
+        .buttonStyle(.plain)
+    }
+    
+    @ViewBuilder
+    private func deleteButton(for habit: Habit) -> some View {
+        Button {
             habitToDelete = habit
             isDeleteSingleAlertPresented = true
         } label: {
-            Image("ui-trash")
+            Image(systemName: "trash.circle.fill")
                 .resizable()
-                .frame(width: 20, height: 20)
+                .frame(width: 28, height: 28)
                 .foregroundStyle(.red.gradient)
-                .padding(8)
-                .background(
-                    Circle()
-                        .fill(Color.secondary.opacity(0.1))
-                )
+                .padding(4)
         }
+        .buttonStyle(.plain)
     }
     
+    // MARK: - Private Methods
+    
     private func unarchiveHabit(_ habit: Habit) {
-        HabitService.shared.unarchive(habit, context: modelContext)
+        appContainer.habitService.unarchive(habit, context: modelContext)
     }
     
     private func deleteHabit(_ habit: Habit) {
-        HabitService.shared.delete(habit, context: modelContext)
+        appContainer.habitService.delete(habit, context: modelContext)
     }
 }

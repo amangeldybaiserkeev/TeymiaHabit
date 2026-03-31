@@ -3,8 +3,6 @@ import SwiftUI
 
 @Observable @MainActor
 final class TimerService {
-    static let shared = TimerService()
-    
     private var activeTimers: [String: TimerData] = [:]
     private var uiTimer: Timer?
     private(set) var updateTrigger: Int = 0
@@ -16,7 +14,7 @@ final class TimerService {
         let baseProgress: Int
     }
     
-    private init() {}
+    init() {}
     
     // MARK: - Timer Management
     

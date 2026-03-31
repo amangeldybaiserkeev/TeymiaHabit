@@ -26,7 +26,6 @@ struct AppearanceView: View {
                 ForEach(ThemeMode.allCases, id: \.self) { mode in
                     Button {
                         themeMode = mode
-                        HapticManager.shared.playSelection()
                     } label: {
                         HStack {
                             Label(

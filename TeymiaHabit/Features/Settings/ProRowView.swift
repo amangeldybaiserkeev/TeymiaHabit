@@ -24,7 +24,7 @@ struct ProRowView: View {
         }
         .listRowInsets(EdgeInsets())
         .listRowBackground(Color.clear)
-        .fullScreenCover(isPresented: $showingPaywall) {
+        .sheet(isPresented: $showingPaywall) {
             PaywallView()
         }
     }

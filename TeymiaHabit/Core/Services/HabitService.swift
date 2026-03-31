@@ -1,52 +1,123 @@
+import Foundation
 import SwiftData
 
-@MainActor
+@Observable @MainActor
 final class HabitService {
-    static let shared = HabitService()
-    private init() {}
+    private let widgetService: WidgetService
     
-    func delete(_ habit: Habit, context: ModelContext) {
-        guard habit.modelContext != nil else { return }
-        let habitId = habit.uuid.uuidString
-        
-        stopExternalServices(for: habitId, context: context)
-        NotificationManager.shared.cancelNotifications(for: habit)
-        
-        context.delete(habit)
-        save(context)
-        HapticManager.shared.play(.error)
+    init(widgetService: WidgetService) {
+        self.widgetService = widgetService
     }
     
-    // MARK: - Archive
+    // MARK: - Progress Management
+    
+    
+    /// Complete
+    @discardableResult
+    func completeHabit(for habit: Habit, date: Date, context: ModelContext) -> Bool {
+        let isCurrentlyCompleted = habit.progressForDate(date) >= habit.goal
+        
+        if habit.isSkipped(on: date) {
+            unskipDate(date, for: habit, context: context)
+        }
+        
+        if isCurrentlyCompleted {
+            updateProgress(to: 0, for: habit, date: date, context: context)
+            return false
+        } else {
+            updateProgress(to: habit.goal, for: habit, date: date, context: context)
+            return true
+        }
+    }
+    
+    /// Reset
+    func resetProgress(for habit: Habit, date: Date, context: ModelContext) {
+        updateProgress(to: 0, for: habit, date: date, context: context)
+    }
+    
+    /// Update
+    @discardableResult
+    func updateProgress(to newValue: Int, for habit: Habit, date: Date, context: ModelContext) -> Bool {
+        let calendar = Calendar.current
+        let targetDate = calendar.startOfDay(for: date)
+        let wasCompleted = habit.progressForDate(targetDate) >= habit.goal
+        let existingCompletions = habit.completions?.filter {
+            calendar.isDate($0.date, inSameDayAs: targetDate)
+        } ?? []
+        
+        for completion in existingCompletions {
+            context.delete(completion)
+        }
+        
+        if newValue > 0 {
+            let newCompletion = HabitCompletion(date: targetDate, value: newValue, habit: habit)
+            context.insert(newCompletion)
+        }
+        
+        saveAndRefresh(context: context)
+        
+        let isCompletedNow = newValue >= habit.goal
+        
+        return !wasCompleted && isCompletedNow
+    }
+    
+    /// Add
+    @discardableResult
+    func addProgress(_ delta: Int, to habit: Habit, date: Date, context: ModelContext) -> Bool {
+        let before = habit.progressForDate(date)
+        let after = max(0, before + delta)
+        updateProgress(to: after, for: habit, date: date, context: context)
+        
+        return before < habit.goal && after >= habit.goal
+    }
+    
+    // MARK: - Skip Managemenent
+    
+    func skipDate(_ date: Date, for habit: Habit, context: ModelContext) {
+        let targetDate = Calendar.current.startOfDay(for: date)
+        var currentSkips = habit.skippedDates
+        
+        if !currentSkips.contains(where: { Calendar.current.isDate($0, inSameDayAs: targetDate) }) {
+            currentSkips.append(targetDate)
+            habit.skippedDates = currentSkips
+            saveAndRefresh(context: context)
+        }
+    }
+    
+    func unskipDate(_ date: Date, for habit: Habit, context: ModelContext) {
+        let targetDate = Calendar.current.startOfDay(for: date)
+        var currentSkips = habit.skippedDates
+        
+        currentSkips.removeAll { Calendar.current.isDate($0, inSameDayAs: targetDate) }
+        habit.skippedDates = currentSkips
+        saveAndRefresh(context: context)
+    }
+
+    // MARK: - Lifecycle Management
+    
     func archive(_ habit: Habit, context: ModelContext) {
-        guard habit.modelContext != nil else { return }
-        
         habit.isArchived = true
-        stopExternalServices(for: habit.uuid.uuidString, context: context)
-        
-        save(context)
-        HapticManager.shared.play(.warning)
+        saveAndRefresh(context: context)
     }
     
-    // MARK: - Unarchive
     func unarchive(_ habit: Habit, context: ModelContext) {
         habit.isArchived = false
-        save(context)
-        HapticManager.shared.play(.success)
+        saveAndRefresh(context: context)
+    }
+    
+    func delete(_ habit: Habit, context: ModelContext) {
+        context.delete(habit)
+        saveAndRefresh(context: context)
     }
     
     // MARK: - Private Helpers
-    private func stopExternalServices(for habitId: String, context: ModelContext) {
-        TimerService.shared.stopTimer(for: habitId)
-        
-        Task {
-            await HabitLiveActivityManager.shared.endActivity(for: habitId)
-        }
-        
-        WidgetUpdateService.shared.reloadWidgets()
-    }
     
-    private func save(_ context: ModelContext) {
-        try? context.save()
+    private func saveAndRefresh(context: ModelContext) {
+        do {
+            try context.save()
+            widgetService.reloadWidgetsAfterDataChange()
+        } catch {
+            print("HabitService: Failed to save context: \(error)")
+        }
     }
 }

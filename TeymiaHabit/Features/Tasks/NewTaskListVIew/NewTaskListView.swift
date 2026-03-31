@@ -57,7 +57,6 @@ struct NewTaskListView: View {
                         ForEach(quickIcons, id: \.self) { icon in
                             Button {
                                 selectedIcon = icon
-                                HapticManager.shared.playSelection()
                             } label: {
                                 ZStack {
                                     Circle()
@@ -82,7 +81,6 @@ struct NewTaskListView: View {
                 }
             }
             .navigationTitle("New List")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 CloseToolbarButton()
                 ConfirmationToolbarButton(

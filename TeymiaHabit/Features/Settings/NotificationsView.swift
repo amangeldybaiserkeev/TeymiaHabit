@@ -3,8 +3,8 @@ import SwiftData
 
 struct NotificationsRowView: View {
     @Environment(\.modelContext) private var modelContext
-    private let manager = NotificationManager.shared
-    
+    @Environment(\.scenePhase) private var scenePhase
+    @Environment(NotificationManager.self) private var manager
     @State private var isPermissionAlertPresented = false
 
     var body: some View {
@@ -28,8 +28,10 @@ struct NotificationsRowView: View {
         } message: {
             Text("alert_notifications_permission_message")
         }
-        .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
-            Task { await manager.refreshPermissionStatus() }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                Task { await manager.refreshPermissionStatus() }
+            }
         }
     }
 
@@ -47,12 +49,17 @@ struct NotificationsRowView: View {
             manager.notificationsEnabled = false
             await manager.updateAllNotifications(modelContext: modelContext)
         }
-        HapticManager.shared.playSelection()
     }
 
     private func openSettings() {
+        #if os(iOS)
         if let url = URL(string: UIApplication.openSettingsURLString) {
             UIApplication.shared.open(url)
         }
+        #elseif os(macOS)
+        if let url = URL(string: "x-apple.systempreferences:com.apple.preference.notifications") {
+            NSWorkspace.shared.open(url)
+        }
+        #endif
     }
 }

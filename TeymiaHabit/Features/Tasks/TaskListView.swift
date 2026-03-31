@@ -62,9 +62,8 @@ struct TaskListView: View {
             .animation(.spring(response: 0.35), value: isAddingTask)
         }
         .navigationTitle(taskList.title)
-        .navigationBarTitleDisplayMode(.large)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: .primaryAction) {
                 Menu {
                     Button {
                         withAnimation { showCompletedTasks.toggle() }
@@ -189,7 +188,6 @@ struct TaskListView: View {
             isAddingTask = false
             isTextFieldFocused = false
         }
-         HapticManager.shared.play(.success)
     }
     
     private func toggleTask(_ task: TodoTask) {

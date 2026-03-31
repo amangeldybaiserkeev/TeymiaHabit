@@ -5,8 +5,7 @@ import Foundation
 
 @Observable
 final class SoundManager {
-    static let shared = SoundManager()
-    
+    private let proManager: ProManager
     private var audioPlayer: AVAudioPlayer?
     private let userDefaults = UserDefaults.standard
     
@@ -22,7 +21,9 @@ final class SoundManager {
         }
     }
     
-    private init() {
+    init(proManager: ProManager) {
+        self.proManager = proManager
+        
         let rawValue = userDefaults.string(forKey: UserDefaults.SoundKeys.selectedCompletionSound) ?? CompletionSound.default.rawValue
         self.selectedSound = CompletionSound(rawValue: rawValue) ?? .default
         
@@ -34,6 +35,7 @@ final class SoundManager {
         
         setupAudioSession()
         startObservingProStatus()
+        Task { @MainActor in validateSelectedSoundForProStatus() }
     }
     
     deinit {
@@ -52,7 +54,7 @@ final class SoundManager {
     
     @MainActor
     func validateSelectedSoundForProStatus() {
-        if selectedSound.requiresPro && !ProManager.shared.isPro {
+        if selectedSound.requiresPro && !proManager.isPro {
             selectedSound = .default
         }
     }

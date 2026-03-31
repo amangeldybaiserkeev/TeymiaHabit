@@ -3,7 +3,6 @@ import RevenueCat
 
 @Observable @MainActor
 class ProManager {
-    static let shared = ProManager()
     
     private(set) var isPro: Bool = false
     private(set) var offerings: Offerings?
@@ -11,7 +10,7 @@ class ProManager {
     private(set) var hasLifetimePurchase: Bool = false
     private(set) var hasActiveSubscription: Bool = false
     
-    private init() {
+    init() {
         #if DEBUG
         isPro = true
         hasLifetimePurchase = true

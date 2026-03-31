@@ -1,8 +1,12 @@
-//
-//  NavigationManager.swift
-//  TeymiaHabit
-//
-//  Created by Aman Bayserkeev on 30/3/26.
-//
+import SwiftUI
 
-import Foundation
+@Observable
+final class NavigationManager {
+    var selectedTab: AppTab = .habits
+    var selectedHabit: Habit? = nil
+    
+    @MainActor
+    func openHabit(_ habit: Habit) {
+        selectedTab = .habits
+    }
+}

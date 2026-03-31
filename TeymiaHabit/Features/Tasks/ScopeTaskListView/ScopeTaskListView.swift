@@ -224,19 +224,16 @@ struct ScopeTaskListView: View {
             isAddingTask = false
             isTextFieldFocused = false
         }
-        HapticManager.shared.play(.success)
     }
 
     private func toggleTask(_ task: TodoTask) {
         withAnimation(.spring(response: 0.3)) {
             task.isCompleted.toggle()
         }
-        HapticManager.shared.playSelection()
     }
 
     private func deleteTask(_ task: TodoTask) {
         modelContext.delete(task)
-        HapticManager.shared.play(.error)
     }
 }
 

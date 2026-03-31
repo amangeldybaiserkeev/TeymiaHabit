@@ -5,7 +5,6 @@ import SwiftData
 
 @Observable @MainActor
 final class NotificationManager {
-    static let shared = NotificationManager()
     
     var permissionStatus: Bool = false
     
@@ -21,7 +20,7 @@ final class NotificationManager {
         }
     }
     
-    private init() {
+    init() {
         let soundRaw = UserDefaults.standard.string(forKey: "selectedNotificationSound") ?? NotificationSound.system.rawValue
         self.selectedNotificationSound = NotificationSound(rawValue: soundRaw) ?? .system
         self.notificationsEnabled = UserDefaults.standard.bool(forKey: "notificationsEnabled")
@@ -90,26 +89,26 @@ final class NotificationManager {
         cancelNotifications(for: habit)
         
         for (timeIndex, reminderTime) in reminderTimes.enumerated() {
-            let calendar = Calendar.userPreferred
+            let calendar = Calendar.current
             let components = calendar.dateComponents([.hour, .minute], from: reminderTime)
             
-            for (dayIndex, isActive) in habit.activeDays.enumerated() where isActive {
-                let weekday = calendar.systemWeekdayFromOrdered(index: dayIndex)
+            for weekday in Weekday.allCases {
+                guard habit.isActive(on: weekday) else { continue }
                 
                 var dateComponents = DateComponents()
                 dateComponents.hour = components.hour
                 dateComponents.minute = components.minute
-                dateComponents.weekday = weekday
+                dateComponents.weekday = weekday.rawValue
                 
                 let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
                 
                 let content = UNMutableNotificationContent()
                 content.title = habit.title
-                content.body = ""
+                content.body = "" // specially empty
                 content.sound = selectedNotificationSound.notificationSound
                 
                 let request = UNNotificationRequest(
-                    identifier: "\(habit.uuid.uuidString)-\(weekday)-\(timeIndex)",
+                    identifier: "\(habit.uuid.uuidString)-\(weekday.rawValue)-\(timeIndex)",
                     content: content,
                     trigger: trigger
                 )

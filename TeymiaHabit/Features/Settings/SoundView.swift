@@ -15,9 +15,8 @@ struct SoundRowView: View {
 struct SoundView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(ProManager.self) private var proManager
-    
-    @State private var soundManager = SoundManager.shared
-    @State private var notificationManager = NotificationManager.shared
+    @Environment(SoundManager.self) private var soundManager
+    @Environment(NotificationManager.self) private var notificationManager
     
     @State private var selectedTab: SoundTab = .completion
     @State private var showProPaywall = false
@@ -111,26 +110,17 @@ struct SoundView: View {
             showProPaywall = true
         } else {
             soundManager.setSelectedSound(sound)
-            HapticManager.shared.playSelection()
         }
     }
     
     private func handleNotificationSelect(_ sound: NotificationSound) {
         soundManager.playNotificationPreview(sound)
         
-        if sound != .system {
-            HapticManager.shared.playSystemNotificationVibration()
-        }
-        
         if sound.requiresPro && !proManager.isPro {
             showProPaywall = true
         } else {
             Task {
                 await notificationManager.setSelectedNotificationSound(sound, modelContext: modelContext)
-            }
-            
-            if sound == .system {
-                HapticManager.shared.playSelection()
             }
         }
     }

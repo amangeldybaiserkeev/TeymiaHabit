@@ -1,5 +1,13 @@
 import SwiftUI
 
+#if canImport(UIKit)
+import UIKit
+typealias PlatformColor = UIColor
+#elseif canImport(AppKit)
+import AppKit
+typealias PlatformColor = NSColor
+#endif
+
 extension Color {
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
@@ -26,23 +34,25 @@ extension Color {
     }
     
     func toHex() -> String {
-        let uic = UIColor(self)
-        guard let components = uic.cgColor.components, components.count >= 3 else {
-            return "#000000"
-        }
+        // Используем PlatformColor (это либо UIColor, либо NSColor)
+        let components = PlatformColor(self).cgColor.components ?? [0, 0, 0, 1]
+        
         let r = Float(components[0])
         let g = Float(components[1])
         let b = Float(components[2])
-        var a = Float(1.0)
+        let a = components.count >= 4 ? Float(components[3]) : Float(1.0)
         
-        if components.count >= 4 {
-            a = Float(components[3])
-        }
-        
-        if a != Float(1.0) {
-            return String(format: "#%02lX%02lX%02lX%02lX", lroundf(r * 255), lroundf(g * 255), lroundf(b * 255), lroundf(a * 255))
+        if a < 1.0 {
+            return String(format: "#%02X%02X%02X%02X",
+                        Int(round(r * 255)),
+                        Int(round(g * 255)),
+                        Int(round(b * 255)),
+                        Int(round(a * 255)))
         } else {
-            return String(format: "#%02lX%02lX%02lX", lroundf(r * 255), lroundf(g * 255), lroundf(b * 255))
+            return String(format: "#%02X%02X%02X",
+                        Int(round(r * 255)),
+                        Int(round(g * 255)),
+                        Int(round(b * 255)))
         }
     }
-} 
+}

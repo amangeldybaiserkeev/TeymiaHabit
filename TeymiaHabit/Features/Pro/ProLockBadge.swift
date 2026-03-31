@@ -32,7 +32,7 @@ struct ProIconLock: View {
         }
         .overlay {
             Circle()
-                .stroke(Color(.systemBackground), lineWidth: 2)
+                .stroke(.primaryInverse, lineWidth: 2)
                 .frame(width: 20, height: 20)
         }
     }

@@ -2,42 +2,33 @@ import Foundation
 import SwiftData
 import SwiftUI
 
-/// Service for handling progress updates from Live Activities to main app database
 @Observable @MainActor
 final class HabitWidgetService {
-    static let shared = HabitWidgetService()
-    
+    private let modelContext: ModelContext
+    private let habitService: HabitService
     private let appGroupsID = "group.com.amanbayserkeev.teymiahabit"
     
-    private init() {}
+    init(modelContext: ModelContext, habitService: HabitService) {
+        self.modelContext = modelContext
+        self.habitService = habitService
+    }
     
     func saveProgressToDatabase(habitId: String, progress: Int) async {
-        guard let habitUUID = UUID(uuidString: habitId),
-              let mainContext = AppModelContext.shared.modelContext else {
-            return
-        }
+        guard let habitUUID = UUID(uuidString: habitId) else { return }
         
         let descriptor = FetchDescriptor<Habit>(
-            predicate: #Predicate<Habit> { habit in
-                habit.uuid == habitUUID
-            }
+            predicate: #Predicate<Habit> { $0.uuid == habitUUID }
         )
         
-        guard let habits = try? mainContext.fetch(descriptor),
-              let habit = habits.first else {
-            return
-        }
+        guard let habit = try? modelContext.fetch(descriptor).first else { return }
         
         let today = Date()
-        habit.updateProgress(to: progress, for: today, modelContext: mainContext)
         
-        try? mainContext.save()
-        
-        NotificationCenter.default.post(
-            name: .NSManagedObjectContextDidSave,
-            object: mainContext
+        habitService.updateProgress(
+            to: progress,
+            for: habit,
+            date: today,
+            context: modelContext
         )
-        
-        WidgetUpdateService.shared.reloadWidgetsAfterDataChange()
     }
 }

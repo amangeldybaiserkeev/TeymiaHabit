@@ -13,9 +13,9 @@ struct AppIconRowView: View {
 
 struct AppIconView: View {
     @Environment(ProManager.self) private var proManager
+    @Environment(AppIconManager.self) private var appIconManager
     @State private var showingPaywall = false
     @State private var currentIcon: AppIcon = .main
-    private let iconManager = AppIconManager.shared
     
     var body: some View {
         List {
@@ -45,7 +45,7 @@ struct AppIconView: View {
         }
         .navigationTitle("settings_app_icon")
         .onAppear {
-            currentIcon = iconManager.currentIcon
+            currentIcon = appIconManager.currentIcon
         }
         .fullScreenCover(isPresented: $showingPaywall) {
             PaywallView()
@@ -56,7 +56,7 @@ struct AppIconView: View {
         if !proManager.isPro && icon.requiresPro {
             showingPaywall = true
         } else {
-            iconManager.setAppIcon(icon)
+            appIconManager.setAppIcon(icon)
             withAnimation(.spring()) {
                 currentIcon = icon
             }

@@ -104,7 +104,7 @@ struct TasksView: View {
             ScopeTaskListView(scope: scope)
         }
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: .primaryAction) {
                 Button {
                     isAddingList = true
                 } label: {
@@ -178,7 +178,6 @@ struct TasksView: View {
             isAddingTask = false
             isTextFieldFocused = false
         }
-        HapticManager.shared.play(.success)
     }
     
     private func deleteLists(at indices: IndexSet, from lists: [TaskList]) {
@@ -210,7 +209,7 @@ struct TaskListNavigationRow: View {
                     .font(.caption)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 2)
-                    .background(Color(.systemGray5))
+                    .background(.appSecondary)
                     .clipShape(Capsule())
             }
         }

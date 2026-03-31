@@ -17,7 +17,6 @@ struct PaywallBottomOverlay: View {
                         isSelected: selectedPackage?.identifier == package.identifier
                     ) {
                         selectedPackage = package
-                        HapticManager.shared.playSelection()
                     }
                 }
             }

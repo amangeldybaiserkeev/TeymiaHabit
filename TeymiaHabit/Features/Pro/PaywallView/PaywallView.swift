@@ -105,7 +105,6 @@ struct PaywallView: View {
     private func purchaseSelected() {
         guard let package = selectedPackage, !isPurchasing else { return }
         isPurchasing = true
-        HapticManager.shared.playImpact(.medium)
         
         Task {
             let success = await proManager.purchase(package: package)
@@ -114,11 +113,9 @@ struct PaywallView: View {
                 isPurchasing = false
                 if success {
                     purchaseResult = .success("paywall_purchase_success_message")
-                    HapticManager.shared.play(.success)
                     dismiss()
                 } else {
                     purchaseResult = .error("paywall_purchase_failed_message")
-                    HapticManager.shared.play(.error)
                     showingAlert = true
                 }
             }
@@ -135,10 +132,8 @@ struct PaywallView: View {
                 isPurchasing = false
                 if success {
                     purchaseResult = .success("paywall_restore_success_message")
-                    HapticManager.shared.play(.success)
                 } else {
                     purchaseResult = .error("paywall_no_purchases_to_restore_message")
-                    HapticManager.shared.play(.error)
                 }
                 showingAlert = true
             }

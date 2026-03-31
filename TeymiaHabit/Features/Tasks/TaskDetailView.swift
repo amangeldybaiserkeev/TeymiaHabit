@@ -83,7 +83,6 @@ struct TaskDetailView: View {
                 }
             }
             .navigationTitle("Task")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button("Done") { dismiss() }

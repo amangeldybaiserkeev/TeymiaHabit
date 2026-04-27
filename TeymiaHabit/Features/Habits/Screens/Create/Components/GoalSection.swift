@@ -9,8 +9,6 @@ struct GoalSection: View {
     @State private var countText: String = ""
     @State private var timeDate: Date = Calendar.current.date(bySettingHour: 1, minute: 0, second: 0, of: Date()) ?? Date()
     
-    private let iconSize: CGFloat = 18
-    
     var body: some View {
         Section {
             Label {
@@ -77,8 +75,9 @@ struct GoalSection: View {
                     }
                 } icon: {
                     Image(systemName: "clock.arrow.trianglehead.clockwise.rotate.90.path.dotted")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundStyle(Color.secondary)
+                        .font(.footnote)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.secondary)
                 }
             }
         }

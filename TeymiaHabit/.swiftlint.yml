@@ -3,10 +3,15 @@ excluded:
   - DerivedData
 
 disabled_rules:
-  - trailing_whitespace              
-  - implicit_optional_initialization  # for CloudKit
+  - trailing_whitespace
+  - implicit_optional_initialization # for CloudKit
   - identifier_name
   - multiple_closures_with_trailing_closure
+
+type_name:
+  min_length: 2
+  excluded:
+    - DS
 
 # SwiftData
 function_parameter_count:

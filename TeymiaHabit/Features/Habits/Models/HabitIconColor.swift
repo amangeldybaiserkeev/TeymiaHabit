@@ -8,7 +8,7 @@ enum HabitIconColor: String, CaseIterable, Codable {
     
     var baseColor: Color {
         switch self {
-        case .primary: .appPrimary
+        case .primary: .blackWhite
         case .red: .red
         case .orange: .orange
         case .yellow: .yellow

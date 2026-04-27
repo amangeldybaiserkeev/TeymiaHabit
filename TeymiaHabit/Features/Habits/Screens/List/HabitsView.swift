@@ -34,16 +34,23 @@ struct HabitsView: View {
                 vm.allBaseHabits = newValue
             }
         }
-        .navigationTitle(vm.navigationTitle(for: selectedDate))
-        .toolbar { toolbarContent }
         .sheet(isPresented: $showingNewHabit) {
-            NewHabitView()
+            NavigationStack {
+                NewHabitView()
+                    .environment(appContainer)
+            }
         }
         .sheet(item: $habitToEdit) { habit in
-            NewHabitView(habit: habit)
+            NavigationStack {
+                NewHabitView(habit: habit)
+                    .environment(appContainer)
+            }
         }
         .fullScreenCover(item: $selectedHabit) { habit in
-            HabitDetailView(habit: habit, date: selectedDate)
+            NavigationStack {
+                HabitDetailView(habit: habit, date: selectedDate, appContainer: appContainer)
+                    .environment(appContainer)
+            }
             .navigationTransition(.zoom(sourceID: habit.id, in: habitNamespace))
         }
         .onChange(of: navManager.habitToOpen) { _, habit in
@@ -93,10 +100,14 @@ struct HabitsView: View {
         List {
             habitListContent
         }
+        .primaryBackground()
         .listStyle(.plain)
         .scrollIndicators(.hidden)
         .environment(\.editMode, $isEditMode)
         .environment(vm)
+        .navigationTitle(vm.navigationTitle(for: selectedDate))
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar { toolbarContent }
     }
     
     @ViewBuilder
@@ -115,8 +126,13 @@ struct HabitsView: View {
             .matchedTransitionSource(id: habit.id, in: habitNamespace)
             .opacity(habit.isSkipped(on: selectedDate) ? 0.4 : 1.0)
             .listRowBackground(Color.clear)
-            .listRowSpacing(0)
             .listRowSeparator(.hidden)
+            .listRowInsets(EdgeInsets(
+                top: DS.Spacing.s6,
+                leading: DS.Spacing.s16,
+                bottom: DS.Spacing.s6,
+                trailing: DS.Spacing.s16
+            ))
             .onTapGesture {
                 guard isEditMode != .active else { return }
                 selectedHabit = habit
@@ -155,8 +171,8 @@ struct HabitsView: View {
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundStyle(Color(.systemBackground))
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 12)
+                    .padding(.horizontal, DS.Spacing.s24)
+                    .padding(.vertical, DS.Spacing.s12)
                 }
                 .buttonStyle(.plain)
                 .glassEffect(.regular.tint(.primary).interactive(), in: .capsule)

@@ -28,7 +28,7 @@ struct WeeklyCalendarView: View {
     var body: some View {
         VStack(spacing: 6) {
             HStack(spacing: 16) {
-                ForEach(dayHeaders, id: \.self) { day in
+                ForEach(Array(dayHeaders.enumerated()), id: \.offset) { _, day in
                     Text(day)
                         .font(.system(size: 12, weight: .medium))
                         .foregroundStyle(Color.primary.gradient)

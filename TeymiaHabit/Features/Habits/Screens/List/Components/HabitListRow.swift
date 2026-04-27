@@ -71,7 +71,8 @@ struct HabitListRow: View {
             }
             .buttonStyle(.plain)
         }
-        .padding(Spacing.md)
+        .padding(.horizontal, DS.Spacing.s16)
+        .padding(.vertical, DS.Spacing.s12)
         .onChange(of: timerService.updateTrigger) { _, _ in
             if isTimerActive {
                 vm.checkCompletionForActiveTimer(habit, date: date)
@@ -91,15 +92,16 @@ struct HabitListRow: View {
         
         @State private var showDeleteAlert = false
         
+        private let cardShape = RoundedRectangle(cornerRadius: DS.Radius.s24, style: .continuous)
         private var isSkipped: Bool { habit.isSkipped(on: date) }
         
         var body: some View {
             HabitListRow(habit: habit, date: date)
-                .glassEffect(.regular.interactive(), in: .rect(cornerRadius: Radius.xl))
-                .contentShape(.rect(cornerRadius: Radius.xl))
-                .contentShape(.contextMenuPreview, .capsule)
-                .contentShape(.dragPreview, .capsule)
-                .contentShape(.hoverEffect, .capsule)
+                .glassEffect(.regular.interactive().tint(DS.Colors.rowBackground), in: cardShape)
+                .contentShape(cardShape)
+                .contentShape(.dragPreview, cardShape)
+                .contentShape(.contextMenuPreview, cardShape)
+                .contentShape(.hoverEffect, cardShape)
                 .contextMenu {
                     skipButton
                     editButton

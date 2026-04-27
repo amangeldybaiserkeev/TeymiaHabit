@@ -36,13 +36,11 @@ struct NewHabitView: View {
     @ViewBuilder
     private func habitForm(vm: NewHabitViewModel) -> some View {
         @Bindable var vm = vm
-        NavigationStack {
             Form {
                 Section {
                     Label {
                         TextField("habit_name", text: $vm.title)
                             .fontWeight(.medium)
-                            .submitLabel(.done)
                     } icon: { RowIcon(iconName: "pencil") }
                     
                     NavigationLink {
@@ -58,11 +56,12 @@ struct NewHabitView: View {
                             Spacer()
                             Image(vm.selectedIcon)
                                 .resizable()
-                                .frame(width: 24, height: 24)
+                                .frame(size: DS.Icon.s20)
                                 .foregroundStyle(vm.actualColor)
                         }
                     }
                 }
+                .rowBackground()
                 
                 Section {
                     GoalSection(
@@ -72,6 +71,7 @@ struct NewHabitView: View {
                         minutes: $vm.minutes
                     )
                 }
+                .rowBackground()
                 
                 Section {
                     RepeatDaysView(activeDays: $vm.activeDays)
@@ -81,7 +81,9 @@ struct NewHabitView: View {
                         reminderTimes: $vm.reminderTimes
                     )
                 }
+                .rowBackground()
             }
+            .secondaryBackground()
             .navigationTitle(vm.habit == nil ? "create_habit" : "edit_habit")
             .navigationBarTitleDisplayMode(.inline)
             .scrollDismissesKeyboard(.immediately)
@@ -92,6 +94,5 @@ struct NewHabitView: View {
                     isDisabled: !vm.isFormValid
                 )
             }
-        }
     }
 }

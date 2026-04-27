@@ -5,7 +5,7 @@ struct RowIcon: View {
     
     var body: some View {
         Image(systemName: iconName)
-            .font(.callout)
-            .fontWeight(.medium)
+            .font(DS.Typography.rowIcon)
+            .foregroundStyle(DS.Colors.appPrimary)
     }
 }

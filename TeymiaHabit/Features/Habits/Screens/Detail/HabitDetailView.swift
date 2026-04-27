@@ -4,55 +4,52 @@ import SwiftData
 struct HabitDetailView: View {
     let habit: Habit
     let date: Date
+    let appContainer: AppDependencyContainer
     
     @Environment(\.dismiss) private var dismiss
-    @Environment(AppDependencyContainer.self) private var appContainer
-    
-    @State private var viewModel: HabitDetailViewModel?
+    @State private var viewModel: HabitDetailViewModel
     @State private var showingStats = false
     @State private var isEditPresented = false
     
-    init(habit: Habit, date: Date) {
+    init(habit: Habit, date: Date, appContainer: AppDependencyContainer) {
         self.habit = habit
         self.date = date
+        self.appContainer = appContainer
+        _viewModel = State(wrappedValue: appContainer.habitFactory.makeHabitDetailViewModel(
+            habit: habit,
+            initialDate: date
+        ))
     }
     
     var body: some View {
-        Group {
-            if let viewModel {
-                @Bindable var vm = viewModel
-                mainContent(vm: viewModel)
-                    .navigationTitle(habit.title)
-                    .navigationSubtitle("Goal: \(habit.formattedGoal)")
-                    .toolbar { toolbarContent(vm: viewModel) }
-                    .deleteSingleHabitAlert(
-                        isPresented: $vm.alertState.isDeleteAlertPresented,
-                        habitName: habit.title,
-                        onDelete: {
-                            viewModel.deleteHabit()
-                            dismiss()
-                        }
-                    )
-                    .id(habit.uuid.uuidString)
-                    .onDisappear { viewModel.prepareForDeletion() }
-                    .onChange(of: date) { _, newDate in
-                        viewModel.updateDisplayedDate(newDate)
-                    }
-                    .sheet(isPresented: $isEditPresented) {
-                        NewHabitView(habit: habit)
-                    }
-                    .sheet(isPresented: $showingStats) {
-                        HabitStatisticsView(habit: habit)
-                    }
-            }
-        }
-        .task {
-            guard viewModel == nil else { return }
-            viewModel = appContainer.habitFactory.makeHabitDetailViewModel(
-                habit: habit,
-                initialDate: date
+        @Bindable var vm = viewModel
+        mainContent(vm: viewModel)
+            .navigationTitle(habit.title)
+            .navigationSubtitle("Goal: \(habit.formattedGoal)")
+            .toolbar { toolbarContent(vm: viewModel) }
+            .deleteSingleHabitAlert(
+                isPresented: $vm.alertState.isDeleteAlertPresented,
+                habitName: habit.title,
+                onDelete: {
+                    viewModel.deleteHabit()
+                    dismiss()
+                }
             )
-        }
+            .id(habit.uuid.uuidString)
+            .onDisappear { viewModel.prepareForDeletion() }
+            .onChange(of: date) { _, newDate in
+                viewModel.updateDisplayedDate(newDate)
+            }
+            .sheet(isPresented: $isEditPresented) {
+                NewHabitView(habit: habit)
+                    .environment(appContainer)
+            }
+            .sheet(isPresented: $showingStats) {
+                HabitStatisticsView(habit: habit)
+            }
+            .task {
+                viewModel.start()
+            }
     }
     
     // MARK: - Content

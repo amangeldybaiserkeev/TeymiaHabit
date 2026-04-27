@@ -2,12 +2,12 @@
   "colors" : [
     {
       "color" : {
-        "color-space" : "srgb",
+        "color-space" : "display-p3",
         "components" : {
           "alpha" : "1.000",
-          "blue" : "33",
-          "green" : "33",
-          "red" : "33"
+          "blue" : "242",
+          "green" : "242",
+          "red" : "242"
         }
       },
       "idiom" : "universal"
@@ -23,9 +23,9 @@
         "color-space" : "display-p3",
         "components" : {
           "alpha" : "1.000",
-          "blue" : "86",
-          "green" : "74",
-          "red" : "72"
+          "blue" : "36",
+          "green" : "32",
+          "red" : "31"
         }
       },
       "idiom" : "universal"

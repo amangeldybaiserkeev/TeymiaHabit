@@ -37,8 +37,7 @@ struct TeymiaHabitApp: App {
                 .environment(appContainer.iconManager)
                 .environment(appContainer.timerService)
                 .environment(\.habitService, appContainer.habitService)
-                .fontDesign(.rounded)
-                .tint(Color.primary)
+                .tint(DS.Colors.appPrimary)
                 .onAppear {
                     setupLiveActivities()
                 }

@@ -13,10 +13,12 @@ struct SettingsView: View {
                 ArchiveRow()
                 LanguageRow()
             }
+            .rowBackground()
             
             AboutSection()
+                .rowBackground()
         }
-        .groupBackground()
+        .secondaryBackground()
         .navigationTitle("settings")
     }
         

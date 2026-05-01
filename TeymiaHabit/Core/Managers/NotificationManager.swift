@@ -59,7 +59,9 @@ final class NotificationManager {
         
         if settings.authorizationStatus == .notDetermined {
             let options: UNAuthorizationOptions = [.alert, .sound]
-            let granted = (try? await UNUserNotificationCenter.current().requestAuthorization(options: options)) ?? false
+            let granted = (
+                try? await UNUserNotificationCenter.current().requestAuthorization(options: options)
+            ) ?? false
             
             permissionStatus = granted
             return granted
@@ -138,8 +140,12 @@ final class NotificationManager {
                 .map { $0.identifier }
             
             if !identifiersToRemove.isEmpty {
-                UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiersToRemove)
-                UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: identifiersToRemove)
+                UNUserNotificationCenter.current().removePendingNotificationRequests(
+                    withIdentifiers: identifiersToRemove
+                )
+                UNUserNotificationCenter.current().removeDeliveredNotifications(
+                    withIdentifiers: identifiersToRemove
+                )
                 
                 print("Successfully cancelled \(identifiersToRemove.count) notifications for habit: \(habitID)")
             }

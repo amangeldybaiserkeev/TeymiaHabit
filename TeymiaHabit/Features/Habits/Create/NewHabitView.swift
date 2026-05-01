@@ -22,6 +22,7 @@ struct NewHabitView: View {
 struct NewHabitContentView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var viewModel: NewHabitViewModel
+    @FocusState private var isHabitNameFocused: Bool
 
     // MARK: - Init
     init(
@@ -57,7 +58,23 @@ struct NewHabitContentView: View {
                         },
                         isDisabled: !vm.isFormValid
                     )
+                    
+                    ToolbarSpacer(.flexible, placement: .keyboard)
+                    
+                    ToolbarItemGroup(placement: .keyboard) {
+                        Spacer()
+                        Button {
+                            isHabitNameFocused = false
+                        } label: {
+                            Image(systemName: "keyboard.chevron.compact.down")
+                        }
+                    }
                 }
+        }
+        .onAppear {
+            DispatchQueue.main.async {
+                isHabitNameFocused = true
+            }
         }
         .interactiveDismissDisabled()
     }
@@ -66,13 +83,35 @@ struct NewHabitContentView: View {
     @ViewBuilder
     private func habitForm(vm: NewHabitViewModel) -> some View {
         @Bindable var vm = vm
-        List {
+        Form {
             Section {
                 Label {
-                    TextField("habit_name", text: $vm.title)
-                        .fontWeight(.medium)
+                    HStack {
+                        TextField("habit_name", text: $vm.title)
+                            .fontWeight(.medium)
+                            .focused($isHabitNameFocused)
+                            .onSubmit {
+                                isHabitNameFocused = false
+                            }
+                        
+                        Button(action: {
+                                withAnimation(DS.Animations.spring) {
+                                    vm.title = ""
+                                }
+                            }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(Color.secondary.opacity(0.5))
+                                    .font(.system(size: DS.IconSize.sm))
+                            }
+                            .buttonStyle(.plain)
+                            .opacity(vm.title.isEmpty ? 0 : 1)
+                            .scaleEffect(vm.title.isEmpty ? 0.001 : 1)
+                            .animation(DS.Animations.spring, value: vm.title.isEmpty)
+                            .disabled(vm.title.isEmpty)
+                    }
+                    .contentShape(.rect)
                 } icon: {
-                    RowIcon(iconName: "pencil", color: .gray)
+                    RowIcon(iconName: "applepencil.and.scribble", color: .gray)
                 }
                 
                 NavigationLink {
@@ -83,9 +122,17 @@ struct NewHabitContentView: View {
                     )
                 } label: {
                     HStack {
-                        Label { Text("icon") }
-                        icon: { RowIcon(iconName: "app.specular", color: .gray) }
+                        Label {
+                            Text("icon")
+                        } icon: {
+                            RowIcon(
+                                iconName: "app.specular",
+                                gradientColors: [.blue, .purple, .pink]
+                            )
+                        }
+                        
                         Spacer()
+                        
                         Image(vm.selectedIcon)
                             .resizable()
                             .frame(size: DS.IconSize.sm)
@@ -113,4 +160,9 @@ struct NewHabitContentView: View {
             }
         }
     }
+}
+
+enum NewHabitField {
+    case title
+    case count
 }

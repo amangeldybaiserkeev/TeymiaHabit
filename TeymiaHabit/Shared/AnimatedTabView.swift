@@ -43,7 +43,8 @@ private struct ExtractImageViewsFromTabView<Value: AnimatedTabSelectionProtocol>
         DispatchQueue.main.async {
             if let compostingGroup = view.superview?.superview {
                 guard let tabHostingController = compostingGroup.subviews.last else { return }
-                guard let tabController = tabHostingController.subviews.first?.next as? UITabBarController else { return }
+                guard let tabController =
+                    tabHostingController.subviews.first?.next as? UITabBarController else { return }
                 
                 extractImageViews(tabController.tabBar)
             }

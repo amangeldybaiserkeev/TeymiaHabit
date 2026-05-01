@@ -21,7 +21,9 @@ final class SoundManager {
     }
     
     init() {
-        let rawValue = userDefaults.string(forKey: UserDefaults.SoundKeys.selectedCompletionSound) ?? CompletionSound.default.rawValue
+        let rawValue = userDefaults.string(
+            forKey: UserDefaults.SoundKeys.selectedCompletionSound
+        ) ?? CompletionSound.default.rawValue
         self.selectedSound = CompletionSound(rawValue: rawValue) ?? .default
         
         if userDefaults.object(forKey: UserDefaults.SoundKeys.completionSoundEnabled) == nil {

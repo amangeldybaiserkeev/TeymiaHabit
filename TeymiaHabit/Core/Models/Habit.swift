@@ -146,7 +146,7 @@ extension Habit {
     }
     
     func progressForDate(_ date: Date) -> Int {
-        guard let completions = completions else { return 0 }
+        guard let completions else { return 0 }
         let calendar = Calendar.current
         return completions
             .filter { calendar.isDate($0.date, inSameDayAs: date) }

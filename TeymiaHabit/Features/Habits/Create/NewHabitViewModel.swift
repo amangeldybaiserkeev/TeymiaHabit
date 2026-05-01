@@ -39,7 +39,7 @@ final class NewHabitViewModel {
         self.widgetService = widgetService
         self.habit = habit
         
-        if let habit = habit { setupInitialValues(from: habit) }
+        if let habit { setupInitialValues(from: habit) }
     }
     
     private func setupInitialValues(from habit: Habit) {

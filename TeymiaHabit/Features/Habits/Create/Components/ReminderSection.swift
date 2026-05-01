@@ -32,7 +32,7 @@ struct ReminderSection: View {
                 Label(
                     title: { Text("reminders") },
                     icon: {
-                        RowIcon(iconName: "bell.badge", color: .red)
+                        RowIcon(iconName: "bell.badge.fill", color: .red)
                             .symbolEffect(.wiggle, value: isReminderEnabled)
                     }
                 )

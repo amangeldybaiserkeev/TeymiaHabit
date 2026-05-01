@@ -27,7 +27,7 @@ struct GoalSection: View {
                     .labelsHidden()
                     .frame(maxWidth: 200)
                 }
-            } icon: { RowIcon(iconName: "trophy", color: .gray) }
+            } icon: { RowIcon(iconName: "trophy.fill", color: .yellowOrange) }
             
             if selectedType == .count {
                 Label {

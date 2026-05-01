@@ -1,6 +1,4 @@
 import SwiftUI
-#if canImport(UIKit)
-import UIKit
 
 enum AppFont {
     static func configureAppearance() {
@@ -61,4 +59,3 @@ extension UIFont {
         return systemFont
     }
 }
-#endif

@@ -36,7 +36,7 @@ struct ColorSelectionView: View {
                 .labelsHidden()
                 .overlay(
                     Circle()
-                        .strokeBorder(Color.blackWhite, lineWidth: 2)
+                        .strokeBorder(DS.Colors.onPrimary, lineWidth: 2)
                         .frame(width: buttonSize * 0.9, height: buttonSize * 0.9)
                         .opacity(hexColor != nil ? 1 : 0)
                 )
@@ -48,7 +48,7 @@ struct ColorSelectionView: View {
                 .padding(.horizontal, 16)
         }
         .frame(height: buttonSize + 36)
-        .glassEffect(.regular.interactive(false), in: .capsule)
+        .glassEffect(.clear.interactive(false), in: .capsule)
         .sensoryFeedback(.selection, trigger: selectedColor)
         .shadow(color: .black.opacity(0.15), radius: 6, x: 0, y: 4)
         .clipShape(.capsule)
@@ -68,7 +68,7 @@ struct ColorSelectionView: View {
                 .frame(width: buttonSize, height: buttonSize)
                 .overlay(
                     Circle()
-                        .strokeBorder(Color.blackWhite, lineWidth: 2)
+                        .strokeBorder(DS.Colors.onPrimary, lineWidth: 2)
                         .frame(width: buttonSize * 0.9, height: buttonSize * 0.9)
                         .opacity(isSelected ? 1 : 0)
                 )

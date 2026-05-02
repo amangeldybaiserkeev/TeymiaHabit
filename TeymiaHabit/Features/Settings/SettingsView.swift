@@ -5,6 +5,7 @@ struct SettingsView: View {
         List {
             Section {
                 AppearanceRow()
+                AppTintRow()
                 AppIconRow()
                 ArchiveRow()
                 SoundsRow()

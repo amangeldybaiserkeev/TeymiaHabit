@@ -3,9 +3,10 @@ import SwiftData
 
 struct MainTabView: View {
     @AppStorage("themeMode") private var themeMode: ThemeMode = .system
+    @AppStorage("appTintColor") private var appTintColor: Int = AppTintColor.primary.rawValue
     @Environment(AppDependencyContainer.self) private var appContainer
     @Environment(\.modelContext) private var modelContext
-
+    
     @State private var selectedDate: Date = .now
 
     var body: some View {
@@ -20,6 +21,8 @@ struct MainTabView: View {
             case .settings: [.rotate]
             }
         }
+        .fontDesign(.rounded)
+        .tint(AppTintColor(rawValue: appTintColor)?.color ?? DS.Colors.appPrimary)
         .preferredColorScheme(themeMode.colorScheme)
         .tabBarMinimizeBehavior(.onScrollDown)
     }

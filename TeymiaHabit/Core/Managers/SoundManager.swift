@@ -2,7 +2,6 @@ import AVFoundation
 import Foundation
 
 // MARK: - SoundManager
-
 @Observable
 final class SoundManager {
     private var audioPlayer: AVAudioPlayer?
@@ -40,7 +39,6 @@ final class SoundManager {
     }
     
     // MARK: - Public Methods
-    
     func setSelectedSound(_ sound: CompletionSound) {
         selectedSound = sound
     }
@@ -50,7 +48,6 @@ final class SoundManager {
     }
     
     // MARK: - Audio Playback
-    
     func playCompletionSound() {
         guard isSoundEnabled else { return }
         playSound(selectedSound)
@@ -89,7 +86,6 @@ final class SoundManager {
     }
     
     // MARK: - Private Methods
-    
     private func setupAudioSession() {
         do {
             try AVAudioSession.sharedInstance().setCategory(
@@ -105,7 +101,6 @@ final class SoundManager {
 }
 
 // MARK: - UserDefaults Keys
-
 extension UserDefaults {
     enum SoundKeys {
         static let selectedCompletionSound = "selectedCompletionSound"

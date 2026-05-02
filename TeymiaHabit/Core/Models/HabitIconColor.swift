@@ -10,7 +10,7 @@ enum HabitIconColor: String, CaseIterable, Codable {
         switch self {
         case .primary: .blackWhite
         case .red: .red
-        case .orange: .appRed
+        case .orange: .orange
         case .yellow: .yellow
         case .mint: .mint
         case .green: .green

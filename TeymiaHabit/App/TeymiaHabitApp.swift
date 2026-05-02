@@ -24,8 +24,6 @@ struct TeymiaHabitApp: App {
         do {
             let container = try ModelContainer(for: schema, configurations: [config])
             self.modelContainer = container
-            // AppDependencyContainer owns the creation order of all services.
-            // App struct is responsible only for ModelContainer setup.
             _appContainer = State(initialValue: AppDependencyContainer(modelContext: container.mainContext))
         } catch {
             fatalError("Failed to create ModelContainer: \(error.localizedDescription)")
@@ -35,9 +33,6 @@ struct TeymiaHabitApp: App {
     var body: some Scene {
         WindowGroup {
             MainTabView()
-                .fontDesign(.rounded)
-                .tint(DS.Colors.appPrimary)
-                // Single injection point — all features read what they need from appContainer
                 .environment(appContainer)
                 .onAppear {
                     setupLiveActivities()

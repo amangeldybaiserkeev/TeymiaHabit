@@ -1,6 +1,5 @@
 import WidgetKit
 
-// MARK: - Implementation
 @Observable @MainActor
 final class WidgetService {
     private let appGroup = "group.com.amanbayserkeev.teymiahabit"

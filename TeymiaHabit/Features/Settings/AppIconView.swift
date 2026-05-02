@@ -3,18 +3,19 @@ import SwiftUI
 #if !targetEnvironment(macCatalyst)
 struct AppIconRow: View {
     var body: some View {
-        NavigationLink(destination: AppIconView()) {
-            Label(
-                title: { Text("settings_app_icon") },
-                icon: {
-                    RowIcon(
-                        iconName: "checkmark",
-                        weight: .semibold,
-                        color: Color.primary,
-                        isWhiteBG: true
-                    )
-                }
-            )
+        NavigationLink {
+            AppIconView()
+        } label: {
+            Label {
+                Text("settings_app_icon")
+            } icon: {
+                RowIcon(
+                    iconName: "checkmark",
+                    weight: .semibold,
+                    color: Color.primary,
+                    isWhiteBG: true
+                )
+            }
         }
     }
 }

@@ -3,8 +3,8 @@ import UIKit
 
 extension Color {
     private enum Constants {
-        static let lightAmount: CGFloat = 0.8
-        static let darkAmount: CGFloat = 0.2
+        static let lightAmount: CGFloat = 0.7
+        static let darkAmount: CGFloat = 0.07
     }
 
     func lightened(by amount: CGFloat) -> Color {

@@ -10,34 +10,34 @@ struct HabitNameRow: View {
     @FocusState.Binding var focus: NewHabitField?
     
     var body: some View {
-            Label {
-                HStack {
-                    TextField("habit_name", text: $title)
-                        .fontWeight(.medium)
-                        .focused($focus, equals: .title)
-                        .submitLabel(.next)
-                        .onSubmit {
-                            focus = .count
-                        }
-                    
-                    Button(action: {
-                            withAnimation(DS.Animations.spring) {
-                                title = ""
-                            }
-                        }) {
-                            Image(systemName: "xmark.circle.fill")
-                                .foregroundStyle(Color.secondary.opacity(0.5))
-                                .font(.system(size: DS.IconSize.sm))
-                        }
-                        .buttonStyle(.plain)
-                        .opacity(title.isEmpty ? 0 : 1)
-                        .scaleEffect(title.isEmpty ? 0.001 : 1)
-                        .animation(DS.Animations.spring, value: title.isEmpty)
-                        .disabled(title.isEmpty)
+        Label {
+            HStack {
+                TextField("habit_name", text: $title)
+                    .fontWeight(.medium)
+                    .focused($focus, equals: .title)
+                    .submitLabel(.next)
+                    .onSubmit {
+                        focus = .count
+                    }
+                
+                Button(action: {
+                    withAnimation(DS.Animations.spring) {
+                        title = ""
+                    }
+                }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(Color.secondary.opacity(0.5))
+                        .font(.system(size: DS.IconSize.sm))
                 }
-                .contentShape(.rect)
-            } icon: {
-                RowIcon(iconName: "applepencil", color: .gray)
+                .buttonStyle(.plain)
+                .opacity(title.isEmpty ? 0 : 1)
+                .scaleEffect(title.isEmpty ? 0.001 : 1)
+                .animation(DS.Animations.spring, value: title.isEmpty)
+                .disabled(title.isEmpty)
             }
+            .contentShape(.rect)
+        } icon: {
+            RowIcon(iconName: "applepencil", color: .gray)
+        }
     }
 }

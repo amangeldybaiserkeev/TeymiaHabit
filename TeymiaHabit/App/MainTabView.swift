@@ -3,7 +3,7 @@ import SwiftData
 
 struct MainTabView: View {
     @AppStorage("themeMode") private var themeMode: ThemeMode = .system
-    @AppStorage("appTintColor") private var appTintColor: Int = AppTintColor.primary.rawValue
+    @AppStorage("appTintColor") private var appTintColor: String = AppTintColor.primary.rawValue
     @Environment(AppDependencyContainer.self) private var appContainer
     @Environment(\.modelContext) private var modelContext
     
@@ -22,7 +22,7 @@ struct MainTabView: View {
             }
         }
         .fontDesign(.rounded)
-        .tint(AppTintColor(rawValue: appTintColor)?.color ?? DS.Colors.appPrimary)
+        .tint(AppTintColor(rawValue: appTintColor)?.color ?? .primary)
         .preferredColorScheme(themeMode.colorScheme)
         .tabBarMinimizeBehavior(.onScrollDown)
     }

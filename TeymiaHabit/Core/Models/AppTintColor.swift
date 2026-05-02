@@ -1,47 +1,43 @@
 import SwiftUI
 
-enum AppTintColor: Int, CaseIterable {
+enum AppTintColor: String, CaseIterable, Identifiable {
     case primary
     case blue
-    case purple
-    case pink
-    case red
-    case orange
-    case yellow
+    case brown
+    case cyan
+    case gray
     case green
-    case mint
-    case teal
     case indigo
+    case mint
+    case orange
+    case pink
+    case purple
+    case red
+    case teal
+    case yellow
+
+    var id: String { rawValue }
 
     var color: Color {
         switch self {
         case .primary: Color.primary
-        case .blue:   .blue
-        case .purple: .purple
-        case .pink:   .pink
-        case .red:    .red
-        case .orange: .orange
-        case .yellow: .yellow
-        case .green:  .green
-        case .mint:   .mint
-        case .teal:   .teal
-        case .indigo: .indigo
+        case .blue:    .blue
+        case .brown:   .brown
+        case .cyan:    .cyan
+        case .gray:    .gray
+        case .green:   .green
+        case .indigo:  .indigo
+        case .mint:    .mint
+        case .orange:  .orange
+        case .pink:    .pink
+        case .purple:  .purple
+        case .red:     .red
+        case .teal:    .teal
+        case .yellow:  .yellow
         }
     }
 
     var localizedName: LocalizedStringResource {
-        switch self {
-        case .primary: "tint_primary"
-        case .blue:   "tint_blue"
-        case .purple: "tint_purple"
-        case .pink:   "tint_pink"
-        case .red:    "tint_red"
-        case .orange: "tint_orange"
-        case .yellow: "tint_yellow"
-        case .green:  "tint_green"
-        case .mint:   "tint_mint"
-        case .teal:   "tint_teal"
-        case .indigo: "tint_indigo"
-        }
+        LocalizedStringResource(stringLiteral: "tint_\(rawValue)")
     }
 }

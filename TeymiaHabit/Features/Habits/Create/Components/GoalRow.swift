@@ -10,8 +10,6 @@ struct GoalRow: View {
         static let inactiveBlur: CGFloat = 5
         static let inactiveOffset: CGFloat = 10
         static let pickerWidth: CGFloat  = 200
-        // A fixed reference date keeps the DatePicker stable across midnight.
-        // Using distantPast avoids the static-let-at-launch timing issue.
         static let refDate = Calendar.current.startOfDay(for: .distantPast)
     }
 
@@ -129,7 +127,7 @@ struct GoalRow: View {
                 ) ?? Constants.refDate
             },
             set: { newValue in
-                config.hours   = Calendar.current.component(.hour,   from: newValue)
+                config.hours   = Calendar.current.component(.hour, from: newValue)
                 config.minutes = Calendar.current.component(.minute, from: newValue)
             }
         )

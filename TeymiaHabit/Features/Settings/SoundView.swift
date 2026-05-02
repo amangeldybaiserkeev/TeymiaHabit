@@ -3,11 +3,14 @@ import SwiftData
 
 struct SoundsRow: View {
     var body: some View {
-        NavigationLink(destination: SoundsView()) {
-            Label(
-                title: { Text("settings_sounds") },
-                icon: { RowIcon(iconName: "speaker.wave.3.fill", color: .pink, size: 20) }
-            )
+        NavigationLink {
+            SoundsView()
+        } label: {
+            Label {
+                Text("settings_sounds")
+            } icon: {
+                RowIcon(iconName: "speaker.wave.3.fill", color: .pink, size: 20)
+            }
         }
     }
 }
@@ -63,7 +66,6 @@ struct SoundsView: View {
                         withAnimation(.snappy) { soundManager.setSoundEnabled(newValue) }
                     }
                 ))
-                .tint(DS.Colors.appTertiary)
             }
 
             if soundManager.isSoundEnabled {

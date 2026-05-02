@@ -1,66 +1,55 @@
 import SwiftUI
 
 struct AppTintRow: View {
-    @AppStorage("appTintColor") private var appTintColor: Int = AppTintColor.blue.rawValue
-
-    private var selectedTint: AppTintColor {
-        AppTintColor(rawValue: appTintColor) ?? .blue
+    @AppStorage("appTintColor") private var appTintColor: String = AppTintColor.blue.rawValue
+    
+    private var currentColor: Color {
+        AppTintColor(rawValue: appTintColor)?.color ?? .primary
     }
-
+    
     var body: some View {
-        NavigationLink(destination: AppTintView()) {
+        NavigationLink {
+            AppTintView()
+        } label: {
             Label {
-                HStack {
-                    Text("settings_app_tint")
-                    Spacer()
-                    Circle()
-                        .fill(selectedTint.color)
-                        .frame(width: 20, height: 20)
-                }
+                Text("settings_app_tint")
             } icon: {
-                RowIcon(iconName: "paintpalette.fill", color: selectedTint.color)
+                RowIcon(iconName: "paintbrush.pointed.fill", color: currentColor)
             }
         }
     }
 }
 
-// MARK: - Tint Picker View
-
 struct AppTintView: View {
-    @AppStorage("appTintColor") private var appTintColor: Int = AppTintColor.blue.rawValue
-
-    private var selectedTint: AppTintColor {
-        AppTintColor(rawValue: appTintColor) ?? .blue
-    }
-
+    @AppStorage("appTintColor") private var appTintColor: String = AppTintColor.blue.rawValue
+    
     var body: some View {
         Form {
-            Section {
-                ForEach(AppTintColor.allCases, id: \.rawValue) { tint in
-                    Button {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
-                            appTintColor = tint.rawValue
-                        }
-                    } label: {
-                        HStack(spacing: 16) {
-                            Circle()
-                                .fill(tint.color)
-                                .frame(width: 28, height: 28)
-
+            ForEach(AppTintColor.allCases) { tint in
+                Button {
+                    withAnimation(DS.Animations.easeInOut) {
+                        appTintColor = tint.rawValue
+                    }
+                } label: {
+                    HStack {
+                        Label {
                             Text(tint.localizedName)
                                 .foregroundStyle(Color.primary)
+                        } icon: {
+                            Circle()
+                                .fill(tint.color)
+                                .frame(size: DS.IconSize.md)
+                        }
 
-                            Spacer()
-
-                            if selectedTint == tint {
-                                SelectionCheckmark()
-                            }
+                        Spacer()
+                        
+                        if tint.rawValue == appTintColor {
+                            SelectionCheckmark()
                         }
                     }
                 }
             }
         }
-        .formStyle(.grouped)
         .navigationTitle("settings_app_tint")
         .sensoryFeedback(.selection, trigger: appTintColor)
     }

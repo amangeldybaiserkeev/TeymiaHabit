@@ -51,9 +51,9 @@ struct ProgressIconButton: View {
         Button(action: action) {
             Image(systemName: systemName)
                 .font(.system(size: DS.IconSize.reg, weight: .medium))
-                .foregroundStyle(DS.Colors.appPrimary)
+                .foregroundStyle(DS.Colors.primary)
                 .frame(width: DS.TouchTarget.comfortable, height: DS.TouchTarget.comfortable)
-                .background(DS.Colors.appSecondary.opacity(0.1), in: .circle)
+                .background(DS.Colors.secondary.opacity(0.1), in: .circle)
         }
         .buttonStyle(.plain)
         .contentShape(.circle)

@@ -77,7 +77,7 @@ struct GoalRow: View {
                 .font(.system(size: DS.IconSize.xs, weight: .medium))
                 .foregroundStyle(.secondary.opacity(0.5))
         }
-        .font(DS.Typography.bodyMedium)
+        .font(DS.AppFont.bodyMedium)
         .opacity(isActive ? 1 : 0)
         .blur(radius: isActive ? 0 : Constants.inactiveBlur)
         .offset(x: isActive ? 0 : (type == .count ? -Constants.inactiveOffset : Constants.inactiveOffset))

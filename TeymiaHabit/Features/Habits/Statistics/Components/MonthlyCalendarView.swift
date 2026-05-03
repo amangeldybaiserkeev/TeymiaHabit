@@ -67,8 +67,8 @@ struct MonthlyCalendarView: View {
                     .font(.system(size: 20))
                     .foregroundStyle(
                         canNavigateToPreviousMonth
-                                     ? DS.Colors.appPrimary.gradient
-                                     : DS.Colors.appPrimary.opacity(0.5).gradient
+                                     ? DS.Colors.primary.gradient
+                                     : DS.Colors.primary.opacity(0.5).gradient
                     )
                     .contentShape(.rect)
             }
@@ -89,8 +89,8 @@ struct MonthlyCalendarView: View {
                     .font(.system(size: 20))
                     .foregroundStyle(
                         canNavigateToNextMonth
-                        ? DS.Colors.appPrimary.gradient
-                        : DS.Colors.appPrimary.opacity(0.5).gradient)
+                        ? DS.Colors.primary.gradient
+                        : DS.Colors.primary.opacity(0.5).gradient)
                     .contentShape(.rect)
             }
             .disabled(!canNavigateToNextMonth)
@@ -107,7 +107,7 @@ struct MonthlyCalendarView: View {
                 Text(String(weekday.shortName.prefix(1)).capitalized)
                     .font(.subheadline)
                     .fontWeight(.semibold)
-                    .foregroundStyle(DS.Colors.appPrimary.opacity(0.5).gradient)
+                    .foregroundStyle(DS.Colors.primary.opacity(0.5).gradient)
                     .frame(maxWidth: .infinity)
             }
         }

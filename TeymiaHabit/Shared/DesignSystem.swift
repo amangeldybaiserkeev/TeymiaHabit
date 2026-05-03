@@ -3,9 +3,11 @@ import SwiftUI
 enum DS {
     // MARK: - Colors
     enum Colors {
-        static let appPrimary = Color.primary
-        static let appSecondary = Color.secondary
+        static let primary = Color.primary
         static let onPrimary = Color.onPrimary
+        static let secondary = Color.secondary
+        static let premiumBlue = Color.appPremiumBlue
+        static let premiumPink = Color.appPremiumPink
     }
     
     // MARK: - IconSize
@@ -21,7 +23,6 @@ enum DS {
     }
     
     // MARK: - Touch Target
-    
     enum TouchTarget {
         static let minimum: CGFloat = 44
         static let comfortable: CGFloat = 48
@@ -62,9 +63,9 @@ enum DS {
     }
     
     // MARK: - Typography
-    enum Typography {
+    enum AppFont {
         private static func appFont(_ style: Font.TextStyle, weight: Font.Weight = .regular) -> Font {
-            .system(style, design: .rounded).weight(weight)
+            .system(style, design: .default).weight(weight)
         }
         
         static let largeTitle = appFont(.largeTitle, weight: .bold)

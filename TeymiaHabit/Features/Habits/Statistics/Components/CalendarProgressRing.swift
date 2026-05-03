@@ -16,7 +16,7 @@ struct CalendarProgressRing: View {
     var body: some View {
         ZStack {
             Circle()
-                .stroke(DS.Colors.appSecondary.opacity(0.1), lineWidth: lineWidth)
+                .stroke(DS.Colors.secondary.opacity(0.1), lineWidth: lineWidth)
 
             Circle()
                 .trim(from: 0, to: clampedProgress)

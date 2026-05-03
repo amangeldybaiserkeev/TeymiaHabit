@@ -64,14 +64,14 @@ struct WeeklyHabitChart: View {
         .chartXAxis {
             AxisMarks(values: chartData.map { $0.date }) { value in
                 AxisGridLine(stroke: StrokeStyle(lineWidth: 0.6, dash: [2]))
-                    .foregroundStyle(DS.Colors.appPrimary.opacity(0.2).gradient)
+                    .foregroundStyle(DS.Colors.primary.opacity(0.2).gradient)
                 AxisValueLabel {
                     if let date = value.as(Date.self) {
                         let index = calendar.component(.weekday, from: date) - 1
                         Text(calendar.shortWeekdaySymbols[index])
                             .font(.caption)
                             .fontWeight(.medium)
-                            .foregroundStyle(DS.Colors.appPrimary.opacity(0.5).gradient)
+                            .foregroundStyle(DS.Colors.primary.opacity(0.5).gradient)
                     }
                 }
             }

@@ -115,12 +115,12 @@ struct HabitDetailContentView: View {
     private var headerView: some View {
         VStack(spacing: DS.Spacing.xs) {
             Text(habit.title)
-                .font(DS.Typography.largeTitle)
+                .font(DS.AppFont.largeTitle)
                 .multilineTextAlignment(.center)
                 .minimumScaleFactor(0.8)
                 .lineLimit(2)
             Text("Goal: \(habit.formattedGoal)")
-                .font(DS.Typography.subheadline)
+                .font(DS.AppFont.subheadline)
                 .foregroundStyle(.secondary)
         }
         .padding(.horizontal, DS.Spacing.xl)
@@ -196,7 +196,7 @@ struct HabitDetailContentView: View {
             vm.completeHabit()
         } label: {
             Text(viewModel.isAlreadyCompleted ? "completed" : "complete")
-                .font(DS.Typography.headline)
+                .font(DS.AppFont.headline)
                 .foregroundStyle(DS.Colors.onPrimary)
                 .frame(maxWidth: .infinity, minHeight: DS.TouchTarget.large)
                 .contentShape(.capsule)

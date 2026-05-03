@@ -107,8 +107,8 @@ struct IconPickerView: View {
     
     private func sectionHeader(_ title: String) -> some View {
         Text(title)
-            .font(DS.Typography.title2)
-            .foregroundStyle(DS.Colors.appPrimary)
+            .font(DS.AppFont.title2)
+            .foregroundStyle(DS.Colors.primary)
             .padding(.horizontal, DS.Spacing.reg)
             .padding(.vertical, DS.Spacing.xs)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -124,12 +124,12 @@ struct IconPickerView: View {
         } label: {
             ZStack {
                 Circle()
-                    .fill(isSelected ? activeColor : DS.Colors.appSecondary.opacity(0.1))
+                    .fill(isSelected ? activeColor : DS.Colors.secondary.opacity(0.1))
                 
                 Image(icon)
                     .resizable()
                     .frame(size: DS.IconSize.reg)
-                    .foregroundStyle(isSelected ? DS.Colors.onPrimary : DS.Colors.appPrimary)
+                    .foregroundStyle(isSelected ? DS.Colors.onPrimary : DS.Colors.primary)
             }
             .frame(width: Layout.circleSize, height: Layout.circleSize)
             .contentShape(.circle)

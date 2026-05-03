@@ -55,7 +55,7 @@ private struct AboutLabel: View {
     var body: some View {
         Label {
             Text(title)
-                .foregroundStyle(DS.Colors.appPrimary)
+                .foregroundStyle(DS.Colors.primary)
         } icon: {
             RowIcon(iconName: icon, color: color, size: size)
         }

@@ -9,13 +9,13 @@ struct LanguageRow: View {
             HStack {
                 Label {
                     Text("settings_language")
-                        .foregroundStyle(DS.Colors.appPrimary)
+                        .foregroundStyle(DS.Colors.primary)
                 } icon: {
                     RowIcon(iconName: "globe", color: .blue)
                 }
                 Spacer()
                 Text(currentLanguage)
-                    .foregroundStyle(DS.Colors.appSecondary)
+                    .foregroundStyle(DS.Colors.secondary)
 
             }
         }

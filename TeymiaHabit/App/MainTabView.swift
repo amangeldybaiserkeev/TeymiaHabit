@@ -17,7 +17,7 @@ struct MainTabView: View {
         } effects: { tab in
             switch tab {
             case .habits: [.bounce]
-            case .tasks: [.bounce]
+            case .statistics: [.bounce]
             case .settings: [.rotate]
             }
         }
@@ -38,9 +38,9 @@ struct MainTabView: View {
             }
         }
 
-        Tab(AppTab.tasks.title, systemImage: AppTab.tasks.symbolImage, value: .tasks) {
+        Tab(AppTab.statistics.title, systemImage: AppTab.statistics.symbolImage, value: .statistics) {
             NavigationStack {
-                Text("tasks")
+                Text("statistics")
             }
         }
 
@@ -56,13 +56,13 @@ struct MainTabView: View {
 
 enum AppTab: AnimatedTabSelectionProtocol {
     case habits
-    case tasks
+    case statistics
     case settings
 
     var symbolImage: String {
         switch self {
         case .habits: "checkmark.circle.dotted"
-        case .tasks: "checklist"
+        case .statistics: "chart.bar"
         case .settings: "gearshape"
         }
     }
@@ -70,7 +70,7 @@ enum AppTab: AnimatedTabSelectionProtocol {
     var title: LocalizedStringResource {
         switch self {
         case .habits: "tabview_habits"
-        case .tasks: "tabview_tasks"
+        case .statistics: "tabview_statistics"
         case .settings: "tabview_settings"
         }
     }

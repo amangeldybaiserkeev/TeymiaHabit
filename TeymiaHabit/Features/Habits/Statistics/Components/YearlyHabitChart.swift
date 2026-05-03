@@ -64,13 +64,13 @@ struct YearlyHabitChart: View {
         .chartXAxis {
             AxisMarks(values: chartData.map { $0.date }) { value in
                 AxisGridLine(stroke: StrokeStyle(lineWidth: 0.6, dash: [2]))
-                    .foregroundStyle(DS.Colors.appPrimary.opacity(0.2).gradient)
+                    .foregroundStyle(DS.Colors.primary.opacity(0.2).gradient)
                 AxisValueLabel {
                     if let date = value.as(Date.self) {
                         Text(firstLetterOfMonth(from: date))
                             .font(.caption)
                             .fontWeight(.medium)
-                            .foregroundStyle(DS.Colors.appPrimary.opacity(0.5).gradient)
+                            .foregroundStyle(DS.Colors.primary.opacity(0.5).gradient)
                     }
                 }
             }

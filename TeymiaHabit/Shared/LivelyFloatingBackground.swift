@@ -1,14 +1,13 @@
 import SwiftUI
 
-// MARK: - Lively Floating Blobs Background
-
+// MARK: - Background
 struct LivelyFloatingBlobsBackground: View {
     @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         GeometryReader { geo in
             ZStack {
-                Color.black
+                DS.Colors.onPrimary
                     .ignoresSafeArea()
                 
                 LivelyBlob(
@@ -68,7 +67,6 @@ struct LivelyFloatingBlobsBackground: View {
 }
 
 // MARK: - Single Lively Blob
-
 struct LivelyBlob: View {
     let index: Int
     let color: Color

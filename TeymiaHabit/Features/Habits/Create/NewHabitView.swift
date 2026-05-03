@@ -32,7 +32,7 @@ struct NewHabitView: View {
 
 // MARK: - Content View
 
-struct NewHabitContentView: View {
+private struct NewHabitContentView: View {
     @Bindable var viewModel: NewHabitViewModel
     let onSave: () -> Void
 

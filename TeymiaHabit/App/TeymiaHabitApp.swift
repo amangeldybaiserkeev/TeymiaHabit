@@ -32,6 +32,9 @@ struct TeymiaHabitApp: App {
         WindowGroup {
             MainTabView()
                 .environment(appContainer)
+                .task {
+                    await appContainer.storeKitService.loadProducts()
+                }
                 .onAppear {
                     setupLiveActivities()
                 }

@@ -20,12 +20,12 @@ struct RepeatDaysRow: View {
                     Text(dayName)
                         .font(.system(size: 12, weight: .semibold))
                         .minimumScaleFactor(0.5)
-                        .foregroundStyle(isActive ? DS.Colors.onPrimary.gradient : DS.Colors.appSecondary.gradient)
+                        .foregroundStyle(isActive ? DS.Colors.onPrimary.gradient : DS.Colors.secondary.gradient)
                         .frame(width: 40, height: 40)
                         .background {
                             if isActive {
                                 Circle()
-                                    .fill(DS.Colors.appPrimary.gradient)
+                                    .fill(DS.Colors.primary.gradient)
                             }
                         }
                 }

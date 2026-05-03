@@ -71,7 +71,7 @@ struct ProgressRing: View {
     var body: some View {
         ZStack {
             Circle()
-                .stroke(DS.Colors.appSecondary.opacity(0.1), lineWidth: adaptiveLineWidth)
+                .stroke(DS.Colors.secondary.opacity(0.1), lineWidth: adaptiveLineWidth)
             
             mainProgressRing
             
@@ -83,9 +83,6 @@ struct ProgressRing: View {
             }
         }
         .frame(width: size, height: size)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(habit.title), progress \(Int(progress * 100)) percent")
-        .accessibilityValue(isCompleted ? "Completed" : "\(Int(progress * 100))%")
     }
 }
 

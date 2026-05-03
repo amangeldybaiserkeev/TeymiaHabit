@@ -34,7 +34,7 @@ struct ActionButtonsSection: View {
         Button(action: onReset) {
             Image(systemName: "arrow.uturn.backward")
                 .font(.system(size: DS.IconSize.reg, weight: .medium))
-                .foregroundStyle(DS.Colors.appPrimary)
+                .foregroundStyle(DS.Colors.primary)
                 .frame(width: DS.TouchTarget.comfortable, height: DS.TouchTarget.comfortable)
         }
         .buttonStyle(.plain)
@@ -46,7 +46,7 @@ struct ActionButtonsSection: View {
             Image(systemName: isTimerRunning ? "pause.fill" : "play.fill")
                 .font(.system(size: DS.IconSize.xl))
                 .contentTransition(.symbolEffect(.replace, options: .speed(1.3)))
-                .foregroundStyle(DS.Colors.appPrimary)
+                .foregroundStyle(DS.Colors.primary)
                 .frame(width: DS.TouchTarget.comfortable, height: DS.TouchTarget.comfortable)
         }
         .buttonStyle(.plain)
@@ -57,7 +57,7 @@ struct ActionButtonsSection: View {
         Button { isShowingPopover = true } label: {
             Image(systemName: "plus.arrow.trianglehead.clockwise")
                 .font(.system(size: DS.IconSize.reg, weight: .medium))
-                .foregroundStyle(DS.Colors.appPrimary)
+                .foregroundStyle(DS.Colors.primary)
                 .frame(width: DS.TouchTarget.comfortable, height: DS.TouchTarget.comfortable)
         }
         .buttonStyle(.plain)

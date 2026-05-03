@@ -27,7 +27,7 @@ struct DayProgressPopover: View {
         VStack(spacing: DS.Spacing.reg) {
             VStack(spacing: DS.Spacing.xxs) {
                 Text(date.formatted(date: .abbreviated, time: .omitted))
-                    .font(DS.Typography.subheadline)
+                    .font(DS.AppFont.subheadline)
                     .foregroundStyle(.secondary)
                 
                 HStack(spacing: DS.Spacing.xxs) {
@@ -35,7 +35,7 @@ struct DayProgressPopover: View {
                     Text("|")
                     Text(habit.formattedGoal)
                 }
-                .font(DS.Typography.headline)
+                .font(DS.AppFont.headline)
             }
             .padding(.top, DS.Spacing.sm)
             
@@ -77,7 +77,7 @@ struct DayProgressPopover: View {
             dismiss()
         } label: {
             Text(label)
-                .font(DS.Typography.bodyMedium)
+                .font(DS.AppFont.bodyMedium)
                 .foregroundStyle(DS.Colors.onPrimary)
                 .frame(maxWidth: .infinity, minHeight: DS.TouchTarget.minimum)
                 .contentShape(.capsule)

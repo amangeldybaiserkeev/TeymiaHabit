@@ -156,3 +156,4 @@ struct WeeklyHabitChart: View {
         }
     }
 }
+

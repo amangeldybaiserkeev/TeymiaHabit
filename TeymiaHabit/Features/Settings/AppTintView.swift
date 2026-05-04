@@ -2,11 +2,11 @@ import SwiftUI
 
 struct AppTintRow: View {
     @AppStorage("appTintColor") private var appTintColor: String = AppTintColor.blue.rawValue
-    
+
     private var currentColor: Color {
         AppTintColor(rawValue: appTintColor)?.color ?? .primary
     }
-    
+
     var body: some View {
         NavigationLink {
             AppTintView()
@@ -22,7 +22,7 @@ struct AppTintRow: View {
 
 struct AppTintView: View {
     @AppStorage("appTintColor") private var appTintColor: String = AppTintColor.blue.rawValue
-    
+
     var body: some View {
         Form {
             ForEach(AppTintColor.allCases) { tint in
@@ -42,7 +42,7 @@ struct AppTintView: View {
                         }
 
                         Spacer()
-                        
+
                         if tint.rawValue == appTintColor {
                             SelectionCheckmark()
                         }
@@ -54,3 +54,4 @@ struct AppTintView: View {
         .sensoryFeedback(.selection, trigger: appTintColor)
     }
 }
+

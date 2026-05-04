@@ -8,30 +8,30 @@ struct ChartDataPoint: Identifiable, Equatable {
     let value: Int
     let goal: Int
     let habit: Habit
-    
+
     // MARK: - Equatable
-    
+
     static func == (lhs: Self, rhs: Self) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id
     }
-    
+
     // MARK: - Progress Calculation
-    
+
     var completionPercentage: Double {
         guard goal > 0 else { return 0 }
         return Double(value) / Double(goal)
     }
-    
+
     var isCompleted: Bool {
         value >= goal
     }
-    
+
     var isOverAchieved: Bool {
         value > goal
     }
-    
+
     // MARK: - Formatting
-    
+
     var formattedValue: String {
         switch habit.type {
         case .count:
@@ -40,7 +40,7 @@ struct ChartDataPoint: Identifiable, Equatable {
             return value.formattedAsTime()
         }
     }
-    
+
     var formattedGoal: String {
         switch habit.type {
         case .count:
@@ -49,7 +49,7 @@ struct ChartDataPoint: Identifiable, Equatable {
             return goal.formattedAsTime()
         }
     }
-    
+
     /// Returns formatted time without seconds for cleaner chart display
     var formattedValueWithoutSeconds: String {
         switch habit.type {
@@ -58,7 +58,7 @@ struct ChartDataPoint: Identifiable, Equatable {
         case .time:
             let hours = value / 3600
             let minutes = (value % 3600) / 60
-            
+
             if hours > 0 {
                 return String(format: "%d:%02d", hours, minutes)
             } else if minutes > 0 {
@@ -69,3 +69,4 @@ struct ChartDataPoint: Identifiable, Equatable {
         }
     }
 }
+

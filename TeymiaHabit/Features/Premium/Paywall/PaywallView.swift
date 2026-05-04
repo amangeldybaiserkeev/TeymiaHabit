@@ -23,7 +23,7 @@ private struct PaywallContentView: View {
     @Environment(\.openURL) private var openURL
     @Environment(\.dismiss) private var dismiss
     @Bindable var vm: PaywallViewModel
-    
+
     var body: some View {
         NavigationStack {
             ScrollView(.vertical, showsIndicators: false) {
@@ -46,13 +46,13 @@ private struct PaywallContentView: View {
         }
         .tint(DS.Colors.primary)
     }
-    
+
     private var header: some View {
         VStack(alignment: .trailing, spacing: 0) {
             Text("Teymia Habit")
                 .font(DS.AppFont.largeTitle).fontDesign(.rounded)
                 .foregroundStyle(UIStyle.headerGradient)
-                
+
             Text("Premium")
                 .font(DS.AppFont.footnoteMedium).fontDesign(.serif)
                 .foregroundStyle(DS.Colors.onPrimary.gradient)
@@ -62,7 +62,7 @@ private struct PaywallContentView: View {
                 .offset(x: DS.Spacing.xs)
         }
     }
-    
+
     private var features: some View {
         VStack(spacing: DS.Spacing.lg) {
             ForEach(PaywallFeature.allFeatures) { feature in
@@ -81,12 +81,12 @@ private struct PaywallContentView: View {
                     .fontWeight(.semibold)
                     .foregroundStyle(DS.Colors.primary)
             }
-            
+
             legalLinks
         }
         .padding(.top, DS.Spacing.xxl)
     }
-    
+
     private var legalLinks: some View {
         VStack(spacing: DS.Spacing.reg) {
             Button {
@@ -103,7 +103,7 @@ private struct PaywallContentView: View {
                         .foregroundStyle(.indigo.gradient, .blue.gradient, .mint.gradient)
                 }
             }
-            
+
             HStack(spacing: DS.Spacing.xxl) {
                 Button("paywall_terms_of_service") {
                     if let url = URL(
@@ -112,7 +112,7 @@ private struct PaywallContentView: View {
                         openURL(url, prefersInApp: true)
                     }
                 }
-                
+
                 Button("paywall_privacy_policy") {
                     if let url = URL(string: "https://www.notion.so/Privacy-Policy-1ffd5178e65a80d4b255fd5491fba4a8") {
                         openURL(url, prefersInApp: true)
@@ -123,14 +123,14 @@ private struct PaywallContentView: View {
             .foregroundStyle(DS.Colors.secondary)
         }
     }
-    
+
     private var bottomBar: some View {
         VStack(spacing: DS.Spacing.reg) {
             ProductsRow(
                 products: vm.products,
                 selectedProduct: $vm.selectedProduct
             )
-            
+
             PurchaseButton(
                 selectedProduct: vm.selectedProduct,
                 isPurchasing: vm.isPurchasing,
@@ -154,12 +154,12 @@ private struct FeatureRow: View {
                 .font(.system(size: DS.IconSize.sm, weight: .medium))
                 .frame(width: DS.IconSize.xxl, height: DS.IconSize.xxl)
                 .background(DS.Colors.secondary.opacity(0.1), in: .circle)
-            
+
             VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                 Text(feature.title)
                     .font(DS.AppFont.headline)
                     .foregroundStyle(DS.Colors.primary)
-                
+
                 if let desc = feature.description {
                     Text(desc)
                         .font(DS.AppFont.subheadline)
@@ -200,7 +200,7 @@ private struct PricingCardView: View {
     @Environment(\.colorScheme) private var colorScheme
     let state: State
     var action: (() -> Void)? = nil
-    
+
     private var isDark: Bool { colorScheme == .dark }
 
     var body: some View {
@@ -253,18 +253,18 @@ private struct PricingCardView: View {
                 .foregroundStyle(DS.Colors.primary)
         }
     }
-    
+
     // State
     enum State {
         case skeleton
         case data(Product, isSelected: Bool)
-        
+
         var check: Bool {
             if case .skeleton = self { return true }
             return false
         }
     }
-    
+
     private var isSkeleton: Bool { state.check }
     private var isSelected: Bool {
         if case let.data(_, selected) = state { return selected }
@@ -285,7 +285,7 @@ private struct PurchaseButton: View {
                 if isPurchasing {
                     ProgressView()
                 }
-                
+
                 if isLoading {
                     Capsule()
                         .fill(DS.Colors.secondary.opacity(0.2))
@@ -354,8 +354,9 @@ extension Product {
     let container = PreviewContainer.container
     let appContainer = AppDependencyContainer(modelContext: container.mainContext)
     let vm = PaywallViewModel(storeKitService: appContainer.storeKitService)
-    
+
     PaywallContentView(vm: vm)
         .environment(appContainer)
         .modelContainer(container)
 }
+

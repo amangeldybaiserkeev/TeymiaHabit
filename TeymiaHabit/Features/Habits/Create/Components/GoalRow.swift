@@ -6,10 +6,10 @@ struct GoalRow: View {
     @FocusState.Binding var focus: NewHabitField?
 
     private enum Constants {
-        static let rowHeight: CGFloat    = 40
+        static let rowHeight: CGFloat = 40
         static let inactiveBlur: CGFloat = 5
         static let inactiveOffset: CGFloat = 10
-        static let pickerWidth: CGFloat  = 200
+        static let pickerWidth: CGFloat = 200
         static let refDate = Calendar.current.startOfDay(for: .distantPast)
     }
 
@@ -51,31 +51,9 @@ struct GoalRow: View {
         let isActive = selectedType == type
 
         Label {
-            HStack {
-                if type == .count {
-                    countField
-                } else {
-                    Text("goalsection_choose_time")
-                        .foregroundStyle(.secondary.opacity(0.8))
-                }
-
-                Spacer()
-
-                if type == .count {
-                    countStepper
-                } else {
-                    DatePicker("", selection: timeBinding, displayedComponents: .hourAndMinute)
-                        .datePickerStyle(.compact)
-                        .labelsHidden()
-                }
-            }
-            .frame(height: Constants.rowHeight)
+            goalRowContent(for: type)
         } icon: {
-            Image(systemName: type == .count
-                  ? "number"
-                  : "clock.arrow.trianglehead.clockwise.rotate.90.path.dotted")
-                .font(.system(size: DS.IconSize.xs, weight: .medium))
-                .foregroundStyle(.secondary.opacity(0.5))
+            goalRowIcon(for: type)
         }
         .font(DS.AppFont.bodyMedium)
         .opacity(isActive ? 1 : 0)
@@ -84,11 +62,41 @@ struct GoalRow: View {
         .allowsHitTesting(isActive)
     }
 
+    @ViewBuilder
+    private func goalRowContent(for type: HabitType) -> some View {
+        HStack {
+            if type == .count {
+                countField
+            } else {
+                Text("goalsection_choose_time")
+                    .foregroundStyle(.secondary.opacity(0.8))
+            }
+
+            Spacer()
+
+            if type == .count {
+                countStepper
+            } else {
+                DatePicker("", selection: timeBinding, displayedComponents: .hourAndMinute)
+                    .datePickerStyle(.compact)
+                    .labelsHidden()
+            }
+        }
+        .frame(height: Constants.rowHeight)
+    }
+
+    private func goalRowIcon(for type: HabitType) -> some View {
+        Image(systemName: type == .count
+              ? "number"
+              : "clock.arrow.trianglehead.clockwise.rotate.90.path.dotted")
+        .font(.system(size: DS.IconSize.xs, weight: .medium))
+        .foregroundStyle(DS.Colors.secondary.opacity(0.5))
+    }
+
     // MARK: - Count Controls
-    //
-    // TextField and Stepper are kept in sync through a single source of truth: countText.
-    // Stepper derives its displayed value from parsedCount and writes back via countText,
-    // so there is no separate countGoal integer to keep in sync.
+
+    // Rationale: countText is the Single Source of Truth to avoid String-to-Int sync issues.
+    // Stepper and TextField both read/write directly to config.countText.
 
     private var countField: some View {
         TextField("goalsection_enter_count", text: $config.countText)

@@ -4,7 +4,6 @@ extension View {
     @ViewBuilder
     func borderBeam(
         border: Color,
-        hideFadeBorder: Bool = true,
         beam: [Color],
         beamBlur: CGFloat,
         cornerRadius: CGFloat,
@@ -14,7 +13,6 @@ extension View {
             .modifier(
                 BorderBeamEffect(
                     border: border,
-                    hideFadeBorder: hideFadeBorder,
                     beam: beam,
                     beamBlur: beamBlur,
                     cornerRadius: cornerRadius,
@@ -26,11 +24,11 @@ extension View {
 
 struct BorderBeamEffect: ViewModifier {
     var border: Color
-    var hideFadeBorder: Bool
     var beam: [Color]
     var beamBlur: CGFloat
     var cornerRadius: CGFloat
     var isEnabled: Bool
+
     func body(content: Content) -> some View {
         content
             .background {
@@ -39,31 +37,27 @@ struct BorderBeamEffect: ViewModifier {
                 }
             }
     }
-    
+
     @ViewBuilder
     private func BorderBeamView() -> some View {
         ZStack {
-            if !hideFadeBorder {
-                RoundedRectangle(cornerRadius: cornerRadius)
-                    .stroke(border.tertiary, lineWidth: 0.6)
-            }
-            
+
             KeyframeAnimator(initialValue: 0.0, repeating: true) { value in
                 let rotation = value * 360
-                
+
                 let borderGradient = AngularGradient(
                     colors: [border.opacity(0.2), border, border.opacity(0.2)],
                     center: .center,
                     startAngle: .degrees(140 + rotation),
                     endAngle: .degrees(270 + rotation)
                 )
-                
+
                 let beamGradient = LinearGradient(
                     colors: beam,
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
-                
+
                 RoundedRectangle(cornerRadius: cornerRadius)
                     .fill(beamGradient)
                     .mask {
@@ -80,7 +74,7 @@ struct BorderBeamEffect: ViewModifier {
                             .blur(radius: beamBlur / 1.5)
                             .padding(-beamBlur * 2)
                     }
-                
+
                 RoundedRectangle(cornerRadius: cornerRadius)
                     .stroke(borderGradient, lineWidth: 0.5)
             } keyframes: { _ in

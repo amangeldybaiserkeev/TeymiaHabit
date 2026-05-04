@@ -10,9 +10,9 @@ enum AppIcon: String, CaseIterable, Identifiable {
     case yellow = "AppIconYellow"
     case indigo = "AppIconIndigo"
     case cyan = "AppIconCyan"
-    
+
     var id: String { rawValue }
-    
+
     var title: LocalizedStringResource {
         switch self {
         case .main: return "appicon_main"
@@ -26,14 +26,15 @@ enum AppIcon: String, CaseIterable, Identifiable {
         case .cyan: return "appicon_cyan"
         }
     }
-    
+
     // Name for UIApplication.setAlternateIconName
     var name: String? {
         self == .main ? nil : rawValue
     }
-    
+
     // Preview image name for settings
     var previewImageName: String {
         "Preview-\(rawValue)"
     }
 }
+

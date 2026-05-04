@@ -3,19 +3,19 @@ import SwiftUI
 // MARK: - Background
 struct LivelyFloatingBlobsBackground: View {
     @Environment(\.colorScheme) private var colorScheme
-    
+
     var body: some View {
         GeometryReader { geo in
             ZStack {
                 DS.Colors.onPrimary
                     .ignoresSafeArea()
-                
+
                 LivelyBlob(
                     index: 0,
                     color: colorScheme == .dark
                     ?  Color(#colorLiteral(red: 0.7803921569, green: 0.3803921569, blue: 0.7568627451, alpha: 1)).opacity(0.35)
                     :  Color(#colorLiteral(red: 0.7803921569, green: 0.3803921569, blue: 0.7568627451, alpha: 1)).opacity(0.3),
-                        
+
                     size: 210,
                     positions: [
                         CGPoint(x: geo.size.width * 0.15, y: geo.size.height * 0.2),
@@ -27,7 +27,7 @@ struct LivelyFloatingBlobsBackground: View {
                     duration: 4,
                     blur: 60
                 )
-                
+
                 LivelyBlob(
                     index: 1,
                     color: colorScheme == .dark
@@ -44,7 +44,7 @@ struct LivelyFloatingBlobsBackground: View {
                     duration: 5,
                     blur: 60
                 )
-                
+
                 LivelyBlob(
                     index: 2,
                     color: colorScheme == .dark
@@ -74,13 +74,13 @@ struct LivelyBlob: View {
     let positions: [CGPoint]
     let duration: Double
     let blur: CGFloat
-    
+
     @State private var currentIndex = 0
-    
+
     private var currentPosition: CGPoint {
         positions[currentIndex % positions.count]
     }
-    
+
     var body: some View {
         Circle()
             .fill(
@@ -105,14 +105,14 @@ struct LivelyBlob: View {
                 }
             }
     }
-    
+
     private func startMoving() {
         withAnimation(
             .easeInOut(duration: duration)
         ) {
             currentIndex += 1
         }
-        
+
         DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
             startMoving()
         }
@@ -130,3 +130,4 @@ struct LivelyBlob: View {
     LivelyFloatingBlobsBackground()
         .preferredColorScheme(.light)
 }
+

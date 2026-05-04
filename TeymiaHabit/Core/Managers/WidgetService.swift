@@ -3,13 +3,13 @@ import WidgetKit
 @Observable @MainActor
 final class WidgetService {
     private let appGroup = "group.com.amanbayserkeev.teymiahabit"
-    
+
     init() {}
-    
+
     func reloadWidgets() {
         WidgetCenter.shared.reloadAllTimelines()
     }
-    
+
     func reloadWidgetsAfterDataChange() {
         Task {
             try? await Task.sleep(nanoseconds: 200_000_000)
@@ -17,3 +17,4 @@ final class WidgetService {
         }
     }
 }
+

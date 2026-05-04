@@ -4,9 +4,9 @@ import UserNotifications
 enum NotificationSound: String, CaseIterable, Identifiable {
     case `system`
     case bellsEcho, clear, guitar, happy, magicMarimba, nimbus, pulse, quickChime, retroGame
-    
+
     var id: String { rawValue }
-    
+
     var displayName: LocalizedStringResource {
         switch self {
         case .system: return "sound_system"
@@ -21,7 +21,7 @@ enum NotificationSound: String, CaseIterable, Identifiable {
         case .retroGame: return "Retro Game"
         }
     }
-    
+
     var fileExtension: String { "wav" }
 }
 
@@ -40,3 +40,4 @@ protocol HabitSoundProtocol: Identifiable {
     var displayName: LocalizedStringResource { get }
     var rawValue: String { get }
 }
+

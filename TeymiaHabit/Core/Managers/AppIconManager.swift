@@ -4,7 +4,7 @@ import SwiftUI
 @Observable
 final class AppIconManager {
     var currentIcon: AppIcon
-    
+
     init() {
         let iconName = UIApplication.shared.alternateIconName
         if let iconName, let icon = AppIcon(rawValue: iconName) {
@@ -13,12 +13,12 @@ final class AppIconManager {
             self.currentIcon = .main
         }
     }
-    
+
     func setAppIcon(_ icon: AppIcon) {
         let iconName: String? = (icon == .main) ? nil : icon.rawValue
-        
+
         guard UIApplication.shared.alternateIconName != iconName else { return }
-        
+
         UIApplication.shared.setAlternateIconName(iconName) { error in
             if error == nil {
                 Task { @MainActor in
@@ -28,3 +28,4 @@ final class AppIconManager {
         }
     }
 }
+

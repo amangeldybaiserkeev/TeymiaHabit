@@ -36,7 +36,7 @@ struct WeeklyCalendarView: View {
                 }
             }
             .padding(.horizontal, 16)
-            
+
             TabView(selection: $currentWeekIndex) {
                 ForEach(Array(weeks.enumerated()), id: \.element.first) { index, week in
                     weekRow(week: week)
@@ -73,7 +73,7 @@ struct WeeklyCalendarView: View {
                 let isAvailable = isDateInAvailableRange(date)
                 let isSelected = calendar.isDate(selectedDate, inSameDayAs: date)
                 let progress = hasHabits ? (progressData[date] ?? 0) : 0
-                
+
                 DayProgressItem(
                     date: date,
                     isSelected: isSelected,
@@ -264,13 +264,14 @@ struct WeeklyCalendarView: View {
             $0.contains { calendar.isDate($0, inSameDayAs: date) }
         }
     }
-    
+
     // MARK: - Day Headers
     private var dayHeaders: [String] {
         let weekdays = calendar.shortStandaloneWeekdaySymbols // ["Sun", "Mon", "Tue"...]
         let firstDayIndex = calendar.firstWeekday - 1
         let shifted = Array(weekdays[firstDayIndex...] + weekdays[..<firstDayIndex])
-        
+
         return shifted.map { String($0.prefix(1)) }
     }
 }
+

@@ -1,27 +1,27 @@
 import SwiftUI
 
 struct DayProgressPopover: View {
-    
+
     private enum Layout {
         static let popoverWidth: CGFloat = 280
         static let inputFontSize: CGFloat = 34
         static let datePickerHeight: CGFloat = 120
     }
-    
+
     // MARK: - Properties
     let habit: Habit
     let date: Date
     let onAddProgress: (Int) -> Void
-    
+
     @Environment(\.dismiss) private var dismiss
-    
+
     @State private var inputText: String = ""
     @State private var selectedTime: Date = Calendar.current.date(
         bySettingHour: 0, minute: 0, second: 0, of: Date()
     ) ?? Date()
-    
+
     @FocusState private var isInputFocused: Bool
-    
+
     // MARK: - Body
     var body: some View {
         VStack(spacing: DS.Spacing.reg) {
@@ -29,7 +29,7 @@ struct DayProgressPopover: View {
                 Text(date.formatted(date: .abbreviated, time: .omitted))
                     .font(DS.AppFont.subheadline)
                     .foregroundStyle(.secondary)
-                
+
                 HStack(spacing: DS.Spacing.xxs) {
                     Text(habit.formattedProgress(for: date))
                     Text("|")
@@ -38,9 +38,9 @@ struct DayProgressPopover: View {
                 .font(DS.AppFont.headline)
             }
             .padding(.top, DS.Spacing.sm)
-            
+
             Divider()
-            
+
             Group {
                 if habit.type == .count {
                     TextField("0", text: $inputText)
@@ -57,7 +57,7 @@ struct DayProgressPopover: View {
                 }
             }
             .padding(.horizontal)
-            
+
             actionButton("button_add") {
                 addProgress()
             }
@@ -69,7 +69,7 @@ struct DayProgressPopover: View {
             }
         }
     }
-    
+
     // MARK: - Components
     private func actionButton(_ label: LocalizedStringResource, action: @escaping () -> Void) -> some View {
         Button {
@@ -87,7 +87,7 @@ struct DayProgressPopover: View {
         .padding(.horizontal, DS.Spacing.xl)
         .padding(.bottom, DS.Spacing.reg)
     }
-    
+
     // MARK: - Logic
     private func addProgress() {
         if habit.type == .count {
@@ -103,3 +103,4 @@ struct DayProgressPopover: View {
         }
     }
 }
+

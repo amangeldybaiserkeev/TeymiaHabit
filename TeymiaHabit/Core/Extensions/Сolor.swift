@@ -5,7 +5,7 @@ extension Color {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
         var int: UInt64 = 0
         Scanner(string: hex).scanHexInt64(&int)
-        
+
         let a, r, g, b: UInt64
         switch hex.count {
         case 3: // RGB (12-bit)
@@ -29,12 +29,12 @@ extension Color {
 
     func toHex() -> String {
         let resolved = self.resolve(in: .init())
-        
+
         let r = Int(resolved.red * 255)
         let g = Int(resolved.green * 255)
         let b = Int(resolved.blue * 255)
         let a = Int(resolved.opacity * 255)
-        
+
         if resolved.opacity < 1.0 {
             return String(format: "#%02X%02X%02X%02X", r, g, b, a)
         } else {
@@ -42,3 +42,4 @@ extension Color {
         }
     }
 }
+

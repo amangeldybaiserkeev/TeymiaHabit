@@ -6,7 +6,7 @@ struct MainTabView: View {
     @AppStorage("appTintColor") private var appTintColor: String = AppTintColor.primary.rawValue
     @Environment(AppDependencyContainer.self) private var appContainer
     @Environment(\.modelContext) private var modelContext
-    
+
     @State private var selectedDate: Date = .now
 
     var body: some View {

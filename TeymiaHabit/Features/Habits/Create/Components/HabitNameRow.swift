@@ -8,7 +8,7 @@ enum NewHabitField {
 struct HabitNameRow: View {
     @Binding var title: String
     @FocusState.Binding var focus: NewHabitField?
-    
+
     var body: some View {
         Label {
             HStack {
@@ -19,7 +19,7 @@ struct HabitNameRow: View {
                     .onSubmit {
                         focus = .count
                     }
-                
+
                 Button(action: {
                     withAnimation(DS.Animations.spring) {
                         title = ""
@@ -41,3 +41,4 @@ struct HabitNameRow: View {
         }
     }
 }
+

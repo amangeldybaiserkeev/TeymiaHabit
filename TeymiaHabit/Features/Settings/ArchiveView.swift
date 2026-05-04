@@ -3,11 +3,14 @@ import SwiftData
 
 struct ArchiveRow: View {
     var body: some View {
-        NavigationLink(destination: ArchiveView()) {
-            Label(
-                title: { Text("settings_archived_habits") },
-                icon: { RowIcon(iconName: "archivebox.fill", color: .gray) }
-            )
+        NavigationLink {
+            ArchiveView()
+        } label: {
+            Label {
+                Text("settings_archived_habits")
+            } icon: {
+                RowIcon(iconName: "archivebox.fill", color: .gray)
+            }
         }
     }
 }
@@ -22,94 +25,64 @@ struct ArchiveView: View {
     private var archivedHabits: [Habit]
 
     @State private var habitToDelete: Habit?
-    @State private var isDeleteSingleAlertPresented = false
 
     var body: some View {
-        Form {
+        List {
             listContent
         }
-        .formStyle(.grouped)
         .navigationTitle("settings_archived_habits")
-        .deleteSingleHabitAlert(
-            isPresented: $isDeleteSingleAlertPresented,
-            habitName: habitToDelete?.title ?? "",
-            onDelete: {
-                if let habit = habitToDelete {
-                    appContainer.habitService.delete(habit)
-                }
-                habitToDelete = nil
-            }
-        )
+        .deleteHabitAlert(habit: $habitToDelete) { habit in
+            appContainer.habitService.delete(habit)
+        }
     }
-
-    // MARK: - Content
 
     @ViewBuilder
     private var listContent: some View {
         if archivedHabits.isEmpty {
-            Section {
-                VStack(spacing: 16) {
-                    Spacer()
-                    Image(systemName: "archivebox.fill")
-                        .font(.system(size: 70))
-                        .foregroundStyle(Color.secondary.opacity(0.3))
-                    Text("No archived habits")
-                        .foregroundStyle(.secondary)
-                    Spacer()
-                }
-                .frame(maxWidth: .infinity)
-            }
+            ContentUnavailableView(
+                "settings_archive_title",
+                systemImage: "archivebox.fill",
+                description: Text("settings_archive_description")
+            )
             .listRowBackground(Color.clear)
         } else {
-            Section {
-                ForEach(archivedHabits) { habit in
-                    archivedHabitRow(habit)
-                }
+            ForEach(archivedHabits) { habit in
+                archivedHabitRow(habit)
             }
         }
     }
 
     @ViewBuilder
     private func archivedHabitRow(_ habit: Habit) -> some View {
-        HStack(spacing: 12) {
+        HStack(spacing: DS.Spacing.sm) {
             HabitIconView(iconName: habit.iconName, color: habit.actualColor)
 
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                 Text(habit.title)
                     .lineLimit(1)
-                    .foregroundStyle(Color.primary)
+                    .foregroundStyle(DS.Colors.primary)
                 Text("goal \(habit.formattedGoal)")
-                    .font(.caption)
-                    .foregroundStyle(Color.secondary)
+                    .font(DS.AppFont.caption)
+                    .foregroundStyle(DS.Colors.secondary)
             }
 
             Spacer()
 
-            // Unarchive
             Button {
                 appContainer.habitService.unarchive(habit)
             } label: {
-                Image(systemName: "arrow.uturn.backward.circle.fill")
-                    .resizable()
-                    .frame(width: 28, height: 28)
-                    .foregroundStyle(.blue.gradient)
-                    .padding(4)
+                Image(systemName: "arrow.uturn.backward")
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.glass)
+            .accessibilityLabel("Unarchive habit")
 
-            // Delete
-            Button {
+            Button(role: .destructive) {
                 habitToDelete = habit
-                isDeleteSingleAlertPresented = true
             } label: {
-                Image(systemName: "trash.circle.fill")
-                    .resizable()
-                    .frame(width: 28, height: 28)
-                    .foregroundStyle(.red.gradient)
-                    .padding(4)
+                Image(systemName: "trash")
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.glass)
+            .tint(.red)
         }
-        .padding(.vertical, 4)
     }
 }

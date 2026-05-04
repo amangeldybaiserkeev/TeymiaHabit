@@ -46,7 +46,7 @@ struct ProgressIconButton: View {
     let systemName: String
     let action: () -> Void
     var isDisabled: Bool = false
-    
+
     var body: some View {
         Button(action: action) {
             Image(systemName: systemName)
@@ -61,3 +61,4 @@ struct ProgressIconButton: View {
         .opacity(isDisabled ? 0.5 : 1.0)
     }
 }
+

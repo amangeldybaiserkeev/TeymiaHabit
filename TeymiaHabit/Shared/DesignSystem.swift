@@ -9,7 +9,7 @@ enum DS {
         static let premiumBlue = Color.appPremiumBlue
         static let premiumPink = Color.appPremiumPink
     }
-    
+
     // MARK: - IconSize
     enum IconSize {
         static let xxs: CGFloat = 12
@@ -21,14 +21,14 @@ enum DS {
         static let xl: CGFloat = 36
         static let xxl: CGFloat = 40
     }
-    
+
     // MARK: - Touch Target
     enum TouchTarget {
         static let minimum: CGFloat = 44
         static let comfortable: CGFloat = 48
         static let large: CGFloat = 56
     }
-    
+
     // MARK: - Radius
     enum Radius {
         static let xxs: CGFloat  = 8
@@ -40,7 +40,7 @@ enum DS {
         static let xl: CGFloat  = 32
         static let xxl: CGFloat = 36
     }
-    
+
     // MARK: - Spacing
     enum Spacing {
         static let xxs: CGFloat = 4
@@ -52,22 +52,22 @@ enum DS {
         static let xl: CGFloat = 28
         static let xxl: CGFloat = 32
     }
-    
+
     // MARK: - Animations
-    
+
     enum Animations {
         static let spring = Animation.spring(response: 0.6, dampingFraction: 0.7)
         static let bouncy = Animation.bouncy(duration: 0.5, extraBounce: 0.1)
         static let snappy = Animation.snappy(duration: 0.3)
         static let easeInOut = Animation.easeInOut(duration: 0.35)
     }
-    
+
     // MARK: - Typography
     enum AppFont {
         private static func appFont(_ style: Font.TextStyle, weight: Font.Weight = .regular) -> Font {
             .system(style, design: .default).weight(weight)
         }
-        
+
         static let largeTitle = appFont(.largeTitle, weight: .bold)
         static let title = appFont(.title, weight: .bold)
         static let title2 = appFont(.title2, weight: .semibold)
@@ -79,7 +79,7 @@ enum DS {
         static let footnoteMedium = appFont(.footnote, weight: .medium)
         static let caption = appFont(.caption, weight: .regular)
     }
-    
+
     // MARK: - Shadows
     enum Shadows {
         struct ShadowConfig {
@@ -88,7 +88,7 @@ enum DS {
             let x: CGFloat
             let y: CGFloat
         }
-        
+
         static let small = ShadowConfig(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
         static let medium = ShadowConfig(color: .black.opacity(0.15), radius: 8, x: 0, y: 4)
         static let large = ShadowConfig(color: .black.opacity(0.2), radius: 12, x: 0, y: 8)
@@ -105,3 +105,4 @@ extension View {
         )
     }
 }
+

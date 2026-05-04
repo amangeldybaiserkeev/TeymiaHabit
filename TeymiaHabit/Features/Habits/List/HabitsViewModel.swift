@@ -9,10 +9,10 @@ final class HabitsViewModel {
     private let timerService: TimerService
     private let widgetService: WidgetService
     private let notificationManager: NotificationManager
-    
+
     var allBaseHabits: [Habit] = []
     var temporaryProgress: [UUID: Int] = [:]
-    
+
     init(
         modelContext: ModelContext,
         habitService: HabitService,
@@ -28,23 +28,23 @@ final class HabitsViewModel {
         self.widgetService = widgetService
         self.timerService = timerService
     }
-    
+
     // MARK: - Computed Properties
-    
+
     func activeHabits(for date: Date) -> [Habit] {
         allBaseHabits.filter { $0.isActiveOnDate(date) && date >= $0.startDate }
     }
-    
+
     func navigationTitle(for date: Date) -> String {
         date.formattedAsNavigationTitle()
     }
-    
+
     // MARK: - Actions
-    
+
     private func handleResult(_ didComplete: Bool) {
         if didComplete { soundManager.playCompletionSound() }
     }
-    
+
     func handleRingTap(on habit: Habit, date: Date) {
         switch habit.type {
         case .count:
@@ -52,7 +52,7 @@ final class HabitsViewModel {
             temporaryProgress[habit.uuid] = current + 1
             let result = habitService.addProgress(1, to: habit, date: date)
             handleResult(result)
-            
+
         case .time:
             let habitId = habit.uuid.uuidString
             if timerService.isTimerRunning(for: habitId) {
@@ -68,11 +68,11 @@ final class HabitsViewModel {
         }
         saveAndReloadWithDebounce(for: habit.uuid)
     }
-    
+
     func completeHabit(_ habit: Habit, date: Date) {
         habitService.completeHabit(for: habit, date: date)
     }
-    
+
     func toggleSkip(for habit: Habit, date: Date) {
         if habit.isSkipped(on: date) {
             habitService.unskipDate(date, for: habit)
@@ -80,23 +80,23 @@ final class HabitsViewModel {
             habitService.skipDate(date, for: habit)
         }
     }
-    
+
     func archiveHabit(_ habit: Habit) {
         habitService.archive(habit)
     }
-    
+
     func deleteHabit(_ habit: Habit) {
         habitService.delete(habit)
     }
-    
+
     // MARK: - Reorder
-    
+
     func moveHabits(from source: IndexSet, to destination: Int, date: Date) {
         let activeHabits = activeHabits(for: date)
         var updatedAllHabits = allBaseHabits.sorted { $0.displayOrder < $1.displayOrder }
-        
+
         let habitsToMove = source.map { activeHabits[$0] }
-        
+
         let targetIndex: Int
         if destination < activeHabits.count {
             let targetHabit = activeHabits[destination]
@@ -109,30 +109,30 @@ final class HabitsViewModel {
                 targetIndex = updatedAllHabits.count
             }
         }
-        
+
         let sourceIndices = IndexSet(habitsToMove.compactMap { updatedAllHabits.firstIndex(of: $0) })
         updatedAllHabits.move(fromOffsets: sourceIndices, toOffset: targetIndex)
-        
+
         for (index, habit) in updatedAllHabits.enumerated() {
             habit.displayOrder = index
         }
-        
+
         // Save reorder through dataSource
         try? modelContext.save()
         widgetService.reloadWidgetsAfterDataChange()
     }
-    
+
     // MARK: - Timer
-    
+
     func checkCompletionForActiveTimer(_ habit: Habit, date: Date) {
         guard let liveProgress = timerService.getLiveProgress(for: habit.uuid.uuidString),
               habit.progressForDate(date) < habit.goal,
               liveProgress >= habit.goal else { return }
         soundManager.playCompletionSound()
     }
-    
+
     // MARK: - Debounce
-    
+
     private func saveAndReloadWithDebounce(for uuid: UUID) {
         try? modelContext.save()
         widgetService.reloadWidgetsAfterDataChange()
@@ -142,3 +142,4 @@ final class HabitsViewModel {
         }
     }
 }
+

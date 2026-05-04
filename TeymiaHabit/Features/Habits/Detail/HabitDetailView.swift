@@ -46,6 +46,7 @@ struct HabitDetailContentView: View {
     @State private var viewModel: HabitDetailViewModel
     @State private var showingStats  = false
     @State private var isEditPresented = false
+    @State private var habitToDelete: Habit?
 
     init(
         habit: Habit,
@@ -64,14 +65,10 @@ struct HabitDetailContentView: View {
         NavigationStack {
             mainContent(vm: viewModel)
                 .toolbar { toolbarContent(vm: viewModel) }
-                .deleteSingleHabitAlert(
-                    isPresented: $vm.alertState.isDeleteAlertPresented,
-                    habitName: habit.title,
-                    onDelete: {
-                        viewModel.deleteHabit()
-                        dismiss()
-                    }
-                )
+                .deleteHabitAlert(habit: $habitToDelete) { _ in
+                    viewModel.deleteHabit()
+                    dismiss()
+                }
                 .id(habit.uuid.uuidString)
                 .onDisappear {
                     viewModel.prepareForDeletion()
@@ -169,14 +166,15 @@ struct HabitDetailContentView: View {
             }
             Divider()
             Button(role: .destructive) {
-                vm.alertState.isDeleteAlertPresented = true
+                habitToDelete = habit
             } label: {
                 Label("button_delete", systemImage: "trash")
             }
+            .tint(.red)
         } label: {
             Image(systemName: "ellipsis")
         }
-        .tint(.primary)
+        .tint(DS.Colors.primary)
     }
 
     private func actionButtonsSection(vm: HabitDetailViewModel) -> some View {

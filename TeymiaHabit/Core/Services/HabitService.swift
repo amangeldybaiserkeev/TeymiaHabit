@@ -7,7 +7,11 @@ final class HabitService {
     private let widgetService: WidgetService
     private let notificationManager: NotificationManager
 
-    init(modelContext: ModelContext, widgetService: WidgetService, notificationManager: NotificationManager) {
+    init(
+        modelContext: ModelContext,
+        widgetService: WidgetService,
+        notificationManager: NotificationManager
+    ) {
         self.modelContext = modelContext
         self.widgetService = widgetService
         self.notificationManager = notificationManager
@@ -17,60 +21,31 @@ final class HabitService {
 
     /// Creates a new habit and schedules notifications if needed.
     /// Notifications are scheduled after save to ensure the habit is persisted first.
-    func createHabit(
-        title: String,
-        type: HabitType,
-        goal: Int,
-        iconName: String,
-        iconColor: HabitIconColor,
-        hexColor: String?,
-        activeDays: [Bool],
-        reminderTimes: [Date]?,
-        startDate: Date
-    ) {
+    func createHabit(with config: Habit.Configuration) {
         let habit = Habit(
-            title: title,
-            type: type,
-            goal: goal,
-            iconName: iconName,
-            iconColor: iconColor,
-            hexColor: hexColor,
+            title: config.title,
+            type: config.type,
+            goal: config.goal,
+            iconName: config.iconName,
+            iconColor: config.iconColor,
+            hexColor: config.hexColor,
             createdAt: Date(),
-            activeDays: activeDays,
-            reminderTimes: reminderTimes,
-            startDate: startDate
+            activeDays: config.activeDays,
+            reminderTimes: config.reminderTimes,
+            startDate: config.startDate
         )
+
         modelContext.insert(habit)
         saveAndRefresh()
-        handleNotifications(for: habit, isReminderEnabled: reminderTimes != nil)
+        handleNotifications(for: habit, isReminderEnabled: config.reminderTimes != nil)
     }
 
     /// Updates an existing habit and reschedules notifications.
-    func updateHabit(
-        _ habit: Habit,
-        title: String,
-        type: HabitType,
-        goal: Int,
-        iconName: String,
-        iconColor: HabitIconColor,
-        hexColor: String?,
-        activeDays: [Bool],
-        reminderTimes: [Date]?,
-        startDate: Date
-    ) {
-        habit.update(
-            title: title,
-            type: type,
-            goal: goal,
-            iconName: iconName,
-            iconColor: iconColor,
-            hexColor: hexColor,
-            activeDays: activeDays,
-            reminderTimes: reminderTimes,
-            startDate: startDate
-        )
+    func updateHabit(_ habit: Habit, with config: Habit.Configuration) {
+        habit.update(with: config)
+
         saveAndRefresh()
-        handleNotifications(for: habit, isReminderEnabled: reminderTimes != nil)
+        handleNotifications(for: habit, isReminderEnabled: config.reminderTimes != nil)
     }
 
     // MARK: - Progress Management

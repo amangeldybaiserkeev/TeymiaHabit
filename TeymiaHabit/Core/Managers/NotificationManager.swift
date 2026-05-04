@@ -1,194 +1,169 @@
-import Foundation
-import UserNotifications
-import SwiftUI
+@preconcurrency import UserNotifications
 import SwiftData
 
 @Observable @MainActor
 final class NotificationManager {
-    
     var permissionStatus: Bool = false
-    
+
     var notificationsEnabled: Bool {
         didSet {
-            UserDefaults.standard.set(notificationsEnabled, forKey: "notificationsEnabled")
+            store("notificationsEnabled", value: notificationsEnabled)
         }
     }
-    
+
     private(set) var selectedNotificationSound: NotificationSound {
         didSet {
-            UserDefaults.standard.set(selectedNotificationSound.rawValue, forKey: "selectedNotificationSound")
+            store("selectedNotificationSound", value: selectedNotificationSound.rawValue)
         }
     }
-    
+
     init() {
-        let soundRaw = UserDefaults.standard.string(
-            forKey: "selectedNotificationSound"
-        ) ?? NotificationSound.system.rawValue
-        
+        let storage = UserDefaults.standard
+        let soundRaw = storage.string(forKey: "selectedNotificationSound")
+            ?? NotificationSound.system.rawValue
+
         self.selectedNotificationSound = NotificationSound(rawValue: soundRaw) ?? .system
-        self.notificationsEnabled = UserDefaults.standard.bool(forKey: "notificationsEnabled")
+        self.notificationsEnabled = storage.bool(forKey: "notificationsEnabled")
+
         Task { await refreshPermissionStatus() }
     }
-    
-    // MARK: - Habit Goal Completed Notification
+
+    // MARK: - Public API
 
     func sendGoalAchievedNotification(for habit: Habit) async {
         guard notificationsEnabled, await ensureAuthorization() else { return }
-        
+
         let content = UNMutableNotificationContent()
-        
         content.title = String(localized: "goal_achieved_title")
         content.body = String(localized: "goal_achieved_body \(habit.title)")
         content.sound = selectedNotificationSound.notificationSound
-        
+
         let request = UNNotificationRequest(
-            identifier: "goal-achieved-\(habit.uuid.uuidString)-\(Date().timeIntervalSince1970)",
+            identifier: "goal-\(habit.uuid.uuidString)-\(Date().timeIntervalSince1970)",
             content: content,
             trigger: nil
         )
-        
+
         try? await UNUserNotificationCenter.current().add(request)
     }
-    
-    // MARK: - Authorization
-    
-    func ensureAuthorization() async -> Bool {
-        let settings = await UNUserNotificationCenter.current().notificationSettings()
-        
-        if settings.authorizationStatus == .authorized {
-            permissionStatus = true
-            return true
-        }
-        
-        if settings.authorizationStatus == .notDetermined {
-            let options: UNAuthorizationOptions = [.alert, .sound]
-            let granted = (
-                try? await UNUserNotificationCenter.current().requestAuthorization(options: options)
-            ) ?? false
-            
-            permissionStatus = granted
-            return granted
-        }
-        
-        return settings.authorizationStatus == .authorized
+
+    func setSelectedNotificationSound(_ sound: NotificationSound, modelContext: ModelContext) async {
+        selectedNotificationSound = sound
+
+        guard notificationsEnabled else { return }
+
+        await updateAllNotifications(modelContext: modelContext)
     }
-    
-    func checkNotificationStatus() async -> Bool {
-        let settings = await UNUserNotificationCenter.current().notificationSettings()
-        return settings.authorizationStatus == .authorized
-    }
-    
-    // MARK: - Notification Scheduling
-    
+
     func scheduleNotifications(for habit: Habit) async -> Bool {
-        guard notificationsEnabled, await ensureAuthorization() else {
-            cancelNotifications(for: habit)
-            return false
-        }
-        
-        guard let reminderTimes = habit.reminderTimes, !reminderTimes.isEmpty else {
-            cancelNotifications(for: habit)
-            return false
-        }
-        
         cancelNotifications(for: habit)
-        
-        for (timeIndex, reminderTime) in reminderTimes.enumerated() {
-            let calendar = Calendar.current
-            let components = calendar.dateComponents([.hour, .minute], from: reminderTime)
-            
-            for weekday in Weekday.allCases {
-                guard habit.isActive(on: weekday) else { continue }
-                
-                var dateComponents = DateComponents()
-                dateComponents.hour = components.hour
-                dateComponents.minute = components.minute
-                dateComponents.weekday = weekday.rawValue
-                
-                let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
-                
-                let content = UNMutableNotificationContent()
-                content.title = habit.title
-                content.body = "" // specially empty
-                content.sound = selectedNotificationSound.notificationSound
-                
-                let request = UNNotificationRequest(
-                    identifier: "\(habit.uuid.uuidString)-\(weekday.rawValue)-\(timeIndex)",
-                    content: content,
-                    trigger: trigger
-                )
-                
-                try? await UNUserNotificationCenter.current().add(request)
-            }
+
+        guard notificationsEnabled,
+              await ensureAuthorization(),
+              let reminderTimes = habit.reminderTimes,
+              !reminderTimes.isEmpty else { return false }
+
+        for (index, time) in reminderTimes.enumerated() {
+            await scheduleDailyNotifications(for: habit, at: time, index: index)
         }
-        
         return true
     }
-    
+
+    // MARK: - Private Logic
+
+    private func scheduleDailyNotifications(for habit: Habit, at time: Date, index: Int) async {
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.hour, .minute], from: time)
+
+        for weekday in Weekday.allCases where habit.isActive(on: weekday) {
+            var dateComp = DateComponents()
+            dateComp.hour = components.hour
+            dateComp.minute = components.minute
+            dateComp.weekday = weekday.rawValue
+
+            let trigger = UNCalendarNotificationTrigger(dateMatching: dateComp, repeats: true)
+            let content = createNotificationContent(for: habit)
+
+            let request = UNNotificationRequest(
+                identifier: "\(habit.uuid.uuidString)-\(weekday.rawValue)-\(index)",
+                content: content,
+                trigger: trigger
+            )
+
+            try? await UNUserNotificationCenter.current().add(request)
+        }
+    }
+
+    private func createNotificationContent(for habit: Habit) -> UNMutableNotificationContent {
+        let content = UNMutableNotificationContent()
+        content.title = habit.title
+        content.body = ""
+        content.sound = selectedNotificationSound.notificationSound
+        return content
+    }
+
+    // MARK: - Authorization & Housekeeping
+
     func refreshPermissionStatus() async {
         let settings = await UNUserNotificationCenter.current().notificationSettings()
         permissionStatus = (settings.authorizationStatus == .authorized)
-        
+
         if !permissionStatus && notificationsEnabled {
             notificationsEnabled = false
         }
     }
-    
+
     func cancelNotifications(for habit: Habit) {
         let habitID = habit.uuid.uuidString
-        
-        UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
-            let identifiersToRemove = requests
+        let center = UNUserNotificationCenter.current()
+
+        center.getPendingNotificationRequests { requests in
+            let ids = requests
                 .filter { $0.identifier.hasPrefix(habitID) }
                 .map { $0.identifier }
-            
-            if !identifiersToRemove.isEmpty {
-                UNUserNotificationCenter.current().removePendingNotificationRequests(
-                    withIdentifiers: identifiersToRemove
-                )
-                UNUserNotificationCenter.current().removeDeliveredNotifications(
-                    withIdentifiers: identifiersToRemove
-                )
-                
-                print("Successfully cancelled \(identifiersToRemove.count) notifications for habit: \(habitID)")
-            }
+
+            guard !ids.isEmpty else { return }
+            center.removePendingNotificationRequests(withIdentifiers: ids)
+            center.removeDeliveredNotifications(withIdentifiers: ids)
         }
     }
-    
+
     func updateAllNotifications(modelContext: ModelContext) async {
-        guard notificationsEnabled else {
-            UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        let center = UNUserNotificationCenter.current()
+
+        guard notificationsEnabled, await ensureAuthorization() else {
+            notificationsEnabled = false
+            center.removeAllPendingNotificationRequests()
             return
         }
-        
-        let isAuthorized = await ensureAuthorization()
-        
-        if !isAuthorized {
-            await MainActor.run {
-                notificationsEnabled = false
-            }
-            UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
-            return
-        }
-        
+
         let descriptor = FetchDescriptor<Habit>()
-        let allHabits = (try? modelContext.fetch(descriptor)) ?? []
-        
-        let habitsWithReminders = allHabits.filter { habit in
-            guard let reminderTimes = habit.reminderTimes else { return false }
-            return !reminderTimes.isEmpty
-        }
-        
-        for habit in habitsWithReminders {
+        let habits = (try? modelContext.fetch(descriptor)) ?? []
+
+        for habit in habits where !(habit.reminderTimes?.isEmpty ?? true) {
             _ = await scheduleNotifications(for: habit)
         }
     }
-    
-    func setSelectedNotificationSound(_ sound: NotificationSound, modelContext: ModelContext) async {
-        selectedNotificationSound = sound
-        
-        if notificationsEnabled {
-            await updateAllNotifications(modelContext: modelContext)
+
+    func ensureAuthorization() async -> Bool {
+        let center = UNUserNotificationCenter.current()
+        let settings = await center.notificationSettings()
+
+        switch settings.authorizationStatus {
+        case .authorized:
+            permissionStatus = true
+            return true
+        case .notDetermined:
+            let granted = (try? await center.requestAuthorization(options: [.alert, .sound])) ?? false
+            permissionStatus = granted
+            return granted
+        default:
+            permissionStatus = false
+            return false
         }
+    }
+
+    private func store(_ key: String, value: Any) {
+        UserDefaults.standard.set(value, forKey: key)
     }
 }

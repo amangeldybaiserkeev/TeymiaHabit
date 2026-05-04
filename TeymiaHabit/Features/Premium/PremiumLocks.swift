@@ -5,7 +5,7 @@ struct PremiumLockCapsule: View {
         HStack(spacing: DS.Spacing.xxs) {
             Image(systemName: "lock.fill")
                 .font(.system(size: DS.IconSize.xxs))
-            
+
             Text("PRO")
                 .font(DS.AppFont.caption)
         }
@@ -23,7 +23,7 @@ struct PremiumLockBadge: View {
             Circle()
                 .fill(PremiumGradientColors.gradient)
                 .frame(size: DS.IconSize.sm)
-            
+
             Image(systemName: "lock.fill")
                 .font(.system(size: DS.IconSize.xxs))
                 .foregroundStyle(.white)
@@ -35,3 +35,4 @@ struct PremiumLockBadge: View {
         }
     }
 }
+

@@ -1,20 +1,18 @@
 import Foundation
 
-// MARK: - Extensions
-
 extension Int {
     func formattedAsTime() -> String {
         let hours = self / 3600
         let minutes = (self % 3600) / 60
         let seconds = self % 60
-        
+
         if hours > 0 {
             return String(format: "%d:%02d:%02d", hours, minutes, seconds)
         } else {
             return String(format: "%d:%02d", minutes, seconds)
         }
     }
-        
+
     func formattedAsLocalizedDuration() -> String {
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.hour, .minute]
@@ -29,7 +27,7 @@ extension DateFormatter {
         formatter.dateFormat = "LLLL yyyy"
         return formatter
     }()
-    
+
     static func capitalizedNominativeMonthYear(from date: Date) -> String {
         let dateString = nominativeMonthYear.string(from: date)
         return dateString.capitalizingFirstLetter()

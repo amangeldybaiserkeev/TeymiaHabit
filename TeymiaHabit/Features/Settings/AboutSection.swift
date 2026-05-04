@@ -51,7 +51,7 @@ private struct AboutLabel: View {
     let icon: String
     let color: Color
     var size: CGFloat = 22
-    
+
     var body: some View {
         Label {
             Text(title)
@@ -78,3 +78,4 @@ extension Bundle {
         infoDictionary?["CFBundleShortVersionString"] as? String ?? "2.1"
     }
 }
+

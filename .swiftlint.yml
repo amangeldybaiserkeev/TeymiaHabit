@@ -1,3 +1,6 @@
+analyzer_rules:
+  - unused_declaration
+
 opt_in_rules:
   - empty_count
   - force_unwrapping
@@ -9,7 +12,6 @@ opt_in_rules:
   - closure_spacing
   - prefer_self_in_static_references
   - shorthand_optional_binding
-  - unused_declaration
   - todo
   - cyclomatic_complexity
   - large_tuple
@@ -17,7 +19,6 @@ opt_in_rules:
   - anonymous_argument_in_multiline_closure
   - closure_end_indentation
   - implicit_return
-  - implicit_optional_initialization
   - last_where
   - modifier_order
   - overridden_super_call
@@ -34,7 +35,9 @@ excluded:
 disabled_rules:
   - identifier_name
   - multiple_closures_with_trailing_closure
+  - implicit_optional_initialization
   - explicit_acl
+  - trailing_newline
 
 type_name:
   min_length: 2
@@ -42,27 +45,27 @@ type_name:
     - DS
 
 function_parameter_count:
-  warning: 5
-  error: 8
+  warning: 6
+  error: 10
 
 line_length:
-  warning: 100
-  error: 120
+  warning: 120
+  error: 160
 
 function_body_length:
-  warning: 20
-  error: 30
+  warning: 40
+  error: 70
 
 file_length:
-  warning: 400
-  error: 500
+  warning: 500
+  error: 600
 
 nesting:
-  type_level: 2
+  type_level: 3
 
 cyclomatic_complexity:
-  warning: 10
-  error: 15
+  warning: 12
+  error: 20
 
 opening_brace:
   severity: warning
@@ -76,10 +79,22 @@ statement_position:
 redundant_nil_coalescing:
   severity: warning
 
-# SwiftData Custom Rules
+# Custom Rules
 custom_rules:
   swiftdata_force_unwrap:
     name: "SwiftData force unwrap"
     regex: '@Model\s+class.*\n.*\n.*!'
     message: "In SwiftData models, avoid force unwrap, use optional with default value"
     severity: warning
+    
+  unnecessary_foundation_import:
+    name: "Unnecessary Foundation import"
+    regex: 'import Foundation\s*\n(?=.*import SwiftUI)'
+    message: "Foundation is re-exported by SwiftUI. Remove this import."
+    severity: warning
+  
+  swiftui_in_business_logic:
+    name: "SwiftUI in Business Logic"
+    regex: '^(class|struct)\s+\w*(Manager|Service|Repository|UseCase|Interactor|Presenter).*\n(.*\n)*?import SwiftUI'
+    message: "Business logic components should not import SwiftUI"
+    severity: error

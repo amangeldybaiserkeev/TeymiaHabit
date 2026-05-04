@@ -105,38 +105,25 @@ final class NewHabitViewModel {
     // MARK: - Actions
 
     /// Persists the habit. View calls this and then dismisses itself.
-    /// No callback needed — separation of concerns: ViewModel saves, View navigates.
     func save() {
         guard isFormValid else { return }
 
-        let reminders = isReminderEnabled ? reminderTimes : nil
-        let startOfDay = Calendar.current.startOfDay(for: startDate)
+        let config = Habit.Configuration(
+            title: title,
+            type: selectedType,
+            goal: effectiveGoal,
+            iconName: selectedIcon,
+            iconColor: selectedIconColor,
+            hexColor: selectedHexColor,
+            activeDays: activeDays,
+            reminderTimes: isReminderEnabled ? reminderTimes : nil,
+            startDate: startDate
+        )
 
         if let existing = habit {
-            habitService.updateHabit(
-                existing,
-                title: title,
-                type: selectedType,
-                goal: effectiveGoal,
-                iconName: selectedIcon,
-                iconColor: selectedIconColor,
-                hexColor: selectedHexColor,
-                activeDays: activeDays,
-                reminderTimes: reminders,
-                startDate: startOfDay
-            )
+            habitService.updateHabit(existing, with: config)
         } else {
-            habitService.createHabit(
-                title: title,
-                type: selectedType,
-                goal: effectiveGoal,
-                iconName: selectedIcon,
-                iconColor: selectedIconColor,
-                hexColor: selectedHexColor,
-                activeDays: activeDays,
-                reminderTimes: reminders,
-                startDate: startOfDay
-            )
+            habitService.createHabit(with: config)
         }
     }
 
@@ -194,3 +181,4 @@ final class NewHabitViewModel {
         )
     }
 }
+

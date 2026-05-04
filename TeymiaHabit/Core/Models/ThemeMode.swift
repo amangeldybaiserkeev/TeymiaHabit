@@ -4,7 +4,7 @@ enum ThemeMode: Int, CaseIterable {
     case system = 0
     case light = 1
     case dark = 2
-    
+
     var colorScheme: ColorScheme? {
         switch self {
         case .system: return nil
@@ -12,7 +12,7 @@ enum ThemeMode: Int, CaseIterable {
         case .dark: return .dark
         }
     }
-    
+
     var localizedName: LocalizedStringResource {
         switch self {
         case .system: "appearance_system"
@@ -20,7 +20,7 @@ enum ThemeMode: Int, CaseIterable {
         case .dark:   "appearance_dark"
         }
     }
-    
+
     var iconName: String {
         switch self {
         case .system: "circle.righthalf.filled"
@@ -28,7 +28,7 @@ enum ThemeMode: Int, CaseIterable {
         case .dark:   "moon.fill"
         }
     }
-    
+
     var iconColor: Color {
         switch self {
         case .system: .cyan
@@ -37,3 +37,4 @@ enum ThemeMode: Int, CaseIterable {
         }
     }
 }
+

@@ -35,3 +35,4 @@ struct CalendarProgressRing: View {
         .frame(width: size, height: size)
     }
 }
+

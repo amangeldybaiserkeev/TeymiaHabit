@@ -7,13 +7,13 @@ struct ProgressRing: View {
     let isExceeded: Bool
     let habit: Habit
     let size: CGFloat
-    
+
     var isTimerRunning: Bool = false
     var lineWidth: CGFloat? = nil
     var hideContent: Bool = false
-    
+
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    
+
     private enum Metrics {
         // Dimensions
         static let ringLineWidthRatio: CGFloat = 0.12
@@ -24,41 +24,41 @@ struct ProgressRing: View {
         static let textFrameHeightRatio: CGFloat = 0.35
         static let minimumScaleFactor: CGFloat = 0.3
         static let lineLimit: Int = 1
-        
+
         // Progress Logic
         static let trimStart: CGFloat = 0
         static let trimEnd: CGFloat = 1.0
         static let overflowThreshold: Double = 1.0
-        
+
         // Angles
         static let startAngle: Double = -90
         static let fullCircle: Double = 360
         static let gradientEndAngle: Double = 270
-        
+
         // Visuals
         static let capShadowColor = Color.black.opacity(0.2)
         static let capShadowRadius: CGFloat = 4
         static let capShadowXOffsetRatio: CGFloat = 2.5
-        
+
         // Behavior
         static let iconReplaceSpeed: Double = 1.5
         static let compactSizeBreakpoint: CGFloat = 80
         static let animation: Animation = DS.Animations.easeInOut
     }
-    
+
     // MARK: - Computed Properties
     private var adaptiveLineWidth: CGFloat {
         lineWidth ?? (size * Metrics.ringLineWidthRatio)
     }
-    
+
     private var clampedProgress: CGFloat {
         CGFloat(min(max(progress, 0), Metrics.overflowThreshold))
     }
-    
+
     private var ringColors: (dark: Color, light: Color) {
         habit.ringColors
     }
-    
+
     private var formattedText: String {
         let value = Int(currentValue) ?? 0
         switch habit.type {
@@ -66,18 +66,18 @@ struct ProgressRing: View {
         case .time: return value.formattedAsTime()
         }
     }
-    
+
     // MARK: - Body
     var body: some View {
         ZStack {
             Circle()
                 .stroke(DS.Colors.secondary.opacity(0.1), lineWidth: adaptiveLineWidth)
-            
+
             mainProgressRing
-            
+
             overflowRingGroup
                 .opacity(progress > Metrics.overflowThreshold ? 1 : 0)
-            
+
             if !hideContent {
                 ringContent
             }
@@ -103,7 +103,7 @@ private extension ProgressRing {
             .rotationEffect(.degrees(Metrics.startAngle))
             .animation(reduceMotion ? nil : Metrics.animation, value: progress)
     }
-    
+
     var overflowRingGroup: some View {
         Group {
             Circle()
@@ -114,7 +114,7 @@ private extension ProgressRing {
                 )
                 .rotationEffect(.degrees(Metrics.startAngle))
                 .rotationEffect(.degrees(Metrics.fullCircle * (progress - Metrics.overflowThreshold)))
-            
+
             Circle()
                 .frame(width: adaptiveLineWidth, height: adaptiveLineWidth)
                 .offset(y: -size / 2)
@@ -129,7 +129,7 @@ private extension ProgressRing {
         }
         .animation(reduceMotion ? nil : Metrics.animation, value: progress)
     }
-    
+
     @ViewBuilder
     var ringContent: some View {
         if size < Metrics.compactSizeBreakpoint {
@@ -138,7 +138,7 @@ private extension ProgressRing {
             detailContent
         }
     }
-    
+
     @ViewBuilder
     var compactContent: some View {
         if isCompleted || isExceeded {
@@ -147,7 +147,7 @@ private extension ProgressRing {
             actionIcon.id("action")
         }
     }
-    
+
     @ViewBuilder
     var detailContent: some View {
         if isCompleted && !isExceeded {
@@ -156,14 +156,14 @@ private extension ProgressRing {
             progressValueText
         }
     }
-    
+
     var checkmarkIcon: some View {
         Image(systemName: "checkmark")
             .font(.system(size: size * Metrics.checkmarkSizeRatio, weight: .bold))
             .foregroundStyle(habit.actualColor.gradient)
             .transition(.symbolEffect(.drawOn))
     }
-    
+
     var actionIcon: some View {
         let iconName = habit.type == .count ? "plus" : (isTimerRunning ? "pause.fill" : "play.fill")
         return Image(systemName: iconName)
@@ -171,7 +171,7 @@ private extension ProgressRing {
             .foregroundStyle(.primary)
             .contentTransition(.symbolEffect(.replace, options: .speed(Metrics.iconReplaceSpeed)))
     }
-    
+
     var progressValueText: some View {
         Text(formattedText)
             .font(.system(size: size * Metrics.textSizeRatio, weight: .bold).monospacedDigit())

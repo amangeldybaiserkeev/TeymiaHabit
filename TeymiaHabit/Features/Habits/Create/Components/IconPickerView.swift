@@ -4,9 +4,9 @@ struct IconRow: View {
     @Binding var selectedIcon: String
     @Binding var selectedColor: HabitIconColor
     @Binding var hexColor: String?
-    
+
     var actualColor: Color
-    
+
     var body: some View {
         NavigationLink {
             IconPickerView(
@@ -24,9 +24,9 @@ struct IconRow: View {
                         gradientColors: [.purple, .pink]
                     )
                 }
-                
+
                 Spacer()
-                
+
                 Image(selectedIcon)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -43,34 +43,34 @@ struct IconPickerView: View {
     @Binding var selectedColor: HabitIconColor
     @Binding var hexColor: String?
     @State private var searchText: String = ""
-    
+
     private enum Layout {
         static let circleSize: CGFloat = 44
         static let gridSpacing: CGFloat = 14
         static let selectedScale: CGFloat = 1.15
     }
-    
+
     private let categories = IconCatalog.categories
-    
+
     private let columns = Array(
         repeating: GridItem(.flexible(), spacing: Layout.gridSpacing), count: 6
     )
-    
+
     private var filteredSections: [CategorySection] {
         let query = searchText.lowercased().trimmingCharacters(in: .whitespaces)
         if query.isEmpty { return categories }
-        
+
         return categories.compactMap { section in
             let matchingIcons = section.icons.filter { $0.lowercased().contains(query) }
             return matchingIcons.isEmpty ? nil : CategorySection(name: section.name, icons: matchingIcons)
         }
     }
-    
+
     private var activeColor: Color {
         if let hex = hexColor { return Color(hex: hex) }
         return selectedColor.baseColor
     }
-    
+
     var body: some View {
         ScrollView {
             if filteredSections.isEmpty {
@@ -102,9 +102,9 @@ struct IconPickerView: View {
         .navigationTitle("icon")
         .searchable(text: $searchText)
     }
-    
+
     // MARK: - Private Views
-    
+
     private func sectionHeader(_ title: String) -> some View {
         Text(title)
             .font(DS.AppFont.title2)
@@ -113,10 +113,10 @@ struct IconPickerView: View {
             .padding(.vertical, DS.Spacing.xs)
             .frame(maxWidth: .infinity, alignment: .leading)
     }
-    
+
     private func iconButton(icon: String) -> some View {
         let isSelected = selectedIcon == icon
-        
+
         return Button {
             withAnimation(DS.Animations.spring) {
                 selectedIcon = icon
@@ -125,7 +125,7 @@ struct IconPickerView: View {
             ZStack {
                 Circle()
                     .fill(isSelected ? activeColor : DS.Colors.secondary.opacity(0.1))
-                
+
                 Image(icon)
                     .resizable()
                     .frame(size: DS.IconSize.reg)
@@ -138,3 +138,4 @@ struct IconPickerView: View {
         .buttonStyle(.plain)
     }
 }
+

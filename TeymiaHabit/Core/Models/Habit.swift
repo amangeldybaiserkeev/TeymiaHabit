@@ -1,4 +1,3 @@
-import Foundation
 import SwiftData
 import SwiftUI
 
@@ -17,10 +16,10 @@ final class Habit: Identifiable {
     var isArchived: Bool = false
     var createdAt: Date = Date()
     var startDate: Date = Date()
-    
+
     @Relationship(deleteRule: .cascade, inverse: \HabitCompletion.habit)
     var completions: [HabitCompletion]?
-    
+
     @Transient
     var actualColor: Color {
         if let hex = hexColor {
@@ -28,12 +27,12 @@ final class Habit: Identifiable {
         }
         return iconColor.baseColor
     }
-    
+
     @Transient
     var ringColors: (dark: Color, light: Color) {
         actualColor.ringGradientPair
     }
-    
+
     // MARK: - Computed Data
     var activeDays: [Bool] {
         get {
@@ -51,10 +50,10 @@ final class Habit: Identifiable {
             }
         }
     }
-    
+
     var skippedDates: [Date] = []
     var reminderTimes: [Date]? = nil
-    
+
     // MARK: - Initializer
     init(
         title: String = "",
@@ -77,7 +76,7 @@ final class Habit: Identifiable {
         self.hexColor = hexColor
         self.createdAt = createdAt
         self.startDate = Calendar.current.startOfDay(for: startDate)
-        
+
         if let days = activeDays {
             self.activeDays = days
         } else {
@@ -85,44 +84,46 @@ final class Habit: Identifiable {
         }
         self.reminderTimes = reminderTimes
     }
-    
-    // MARK: - Update Method
-    func update(
-        title: String,
-        type: HabitType,
-        goal: Int,
-        iconName: String,
-        iconColor: HabitIconColor,
-        hexColor: String?,
-        activeDays: [Bool],
-        reminderTimes: [Date]?,
-        startDate: Date
-    ) {
-        self.title = title
-        self.type = type
-        self.goal = goal
-        self.iconName = iconName
-        self.iconColor = iconColor
-        self.hexColor = hexColor
-        self.activeDays = activeDays
-        self.reminderTimes = reminderTimes
-        self.startDate = Calendar.current.startOfDay(for: startDate)
+
+    // MARK: - Configuration Structure
+    struct Configuration {
+        var title: String = ""
+        var type: HabitType = .count
+        var goal: Int = 1
+        var iconName: String = "book"
+        var iconColor: HabitIconColor = .primary
+        var hexColor: String? = nil
+        var activeDays: [Bool] = Array(repeating: true, count: 7)
+        var reminderTimes: [Date]? = nil
+        var startDate: Date = Date()
+    }
+
+    func update(with config: Configuration) {
+        self.title = config.title
+        self.type = config.type
+        self.goal = config.goal
+        self.iconName = config.iconName
+        self.iconColor = config.iconColor
+        self.hexColor = config.hexColor
+        self.activeDays = config.activeDays
+        self.reminderTimes = config.reminderTimes
+        self.startDate = Calendar.current.startOfDay(for: config.startDate)
     }
 }
 
 // MARK: - Logic & Calculations (ReadOnly)
 extension Habit {
-    
+
     func isActive(on weekday: Weekday) -> Bool {
         (activeDaysBitmask & (1 << weekday.rawValue)) != 0
     }
-    
+
     func isActiveOnDate(_ date: Date) -> Bool {
         let calendar = Calendar.current
         if calendar.startOfDay(for: date) < calendar.startOfDay(for: startDate) { return false }
         return isActive(on: Weekday.from(date: date))
     }
-    
+
     func progressForDate(_ date: Date) -> Int {
         guard let completions else { return 0 }
         let calendar = Calendar.current
@@ -130,19 +131,19 @@ extension Habit {
             .filter { calendar.isDate($0.date, inSameDayAs: date) }
             .reduce(0) { $0 + $1.value }
     }
-    
+
     func isSkipped(on date: Date) -> Bool {
         let calendar = Calendar.current
         let dateStart = calendar.startOfDay(for: date)
         return skippedDates.contains { calendar.isDate($0, inSameDayAs: dateStart) }
     }
-    
+
     func completionPercentageForDate(_ date: Date) -> Double {
         guard goal > 0 else { return progressForDate(date) > 0 ? 1.0 : 0.0 }
         let percentage = Double(progressForDate(date)) / Double(goal)
         return min(percentage, 2.0)
     }
-    
+
     func formatProgress(_ progress: Int) -> String {
         switch type {
         case .count:
@@ -151,17 +152,17 @@ extension Habit {
             return progress.formattedAsTime()
         }
     }
-    
+
     func formattedProgress(for date: Date) -> String {
         let progress = progressForDate(date)
         return formatProgress(progress)
     }
-    
+
     var formattedGoal: String {
         type == .count ? "\(goal)" : goal.formattedAsLocalizedDuration()
     }
-    
+
     func isExceededForDate(_ date: Date) -> Bool {
-            progressForDate(date) > goal
-        }
+        progressForDate(date) > goal
+    }
 }

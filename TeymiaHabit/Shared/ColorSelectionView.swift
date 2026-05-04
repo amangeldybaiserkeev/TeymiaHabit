@@ -4,14 +4,14 @@ struct ColorSelectionView: View {
     @Binding var selectedColor: HabitIconColor
     @Binding var hexColor: String?
     @State private var pickedColor: Color = .red
-    
+
     var buttonSize: CGFloat = 32
     var spacing: CGFloat = 12
-    
+
     private var displayColors: [HabitIconColor] {
         HabitIconColor.allCases.filter { $0 != .colorPicker }
     }
-    
+
     var body: some View {
         HStack(spacing: 0) {
             ScrollView(.horizontal, showsIndicators: false) {
@@ -27,10 +27,10 @@ struct ColorSelectionView: View {
                     }
                 }
             }
-            
+
             Divider()
                 .padding(.vertical, 16)
-            
+
             ColorPicker("", selection: $pickedColor)
                 .scaleEffect(1.2)
                 .labelsHidden()
@@ -53,10 +53,10 @@ struct ColorSelectionView: View {
         .shadow(color: .black.opacity(0.15), radius: 6, x: 0, y: 4)
         .clipShape(.capsule)
     }
-    
+
     private func colorButton(for color: HabitIconColor) -> some View {
         let isSelected = selectedColor == color && hexColor == nil
-        
+
         return Button {
             withAnimation {
                 selectedColor = color
@@ -79,3 +79,4 @@ struct ColorSelectionView: View {
         .contentShape(.circle)
     }
 }
+

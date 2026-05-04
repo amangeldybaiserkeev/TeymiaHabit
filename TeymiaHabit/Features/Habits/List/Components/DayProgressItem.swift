@@ -7,23 +7,23 @@ struct DayProgressItem: View, Equatable {
     var showProgressRing: Bool = true
     var ringColors: (dark: Color, light: Color)? = nil
     var isOverallProgress: Bool = false
-    
+
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    
+
     private var calendar: Calendar { Calendar.userPreferred }
-    
+
     private var dayNumber: String {
         "\(calendar.component(.day, from: date))"
     }
-    
+
     private var isToday: Bool {
         calendar.isDateInToday(date)
     }
-    
+
     private var isFutureDate: Bool {
         date > Date()
     }
-    
+
     private var circleSize: CGFloat {
         switch dynamicTypeSize {
         case .accessibility5: return 40
@@ -34,7 +34,7 @@ struct DayProgressItem: View, Equatable {
         default: return 30
         }
     }
-    
+
     private var lineWidth: CGFloat {
         switch dynamicTypeSize {
         case .accessibility5, .accessibility4, .accessibility3:
@@ -45,7 +45,7 @@ struct DayProgressItem: View, Equatable {
             return 3.5
         }
     }
-    
+
     private var fontSize: CGFloat {
         switch dynamicTypeSize {
         case .accessibility5: return 17
@@ -56,11 +56,11 @@ struct DayProgressItem: View, Equatable {
         default: return 13
         }
     }
-    
+
     private var fontWeight: Font.Weight {
         isSelected ? .bold : .regular
     }
-    
+
     var body: some View {
             VStack(spacing: 6) {
                 ZStack {
@@ -76,31 +76,31 @@ struct DayProgressItem: View, Equatable {
                             overallProgressRing
                         }
                     }
-                    
+
                     Text(dayNumber)
                         .font(.system(size: fontSize, weight: fontWeight))
                         .foregroundStyle(isToday ? Color.appOrange.gradient : Color.primary.gradient)
                 }
                 .frame(width: circleSize, height: circleSize)
-                
+
                 Circle()
                     .fill(isToday ? .appOrange : .primary)
                     .frame(width: 4, height: 4)
                     .opacity(isSelected ? 1 : 0)
             }
     }
-    
+
     @ViewBuilder
     private var overallProgressRing: some View {
         let isCompleted = progress >= 1.0
         let ringColors: [Color] = isCompleted
         ? [Color(#colorLiteral(red: 0.6274385452, green: 0.8037135005, blue: 0.2274374366, alpha: 1)), Color(#colorLiteral(red: 0.1764799058, green: 0.7451224923, blue: 0.3647513092, alpha: 1)), Color(#colorLiteral(red: 0.1764799058, green: 0.7451224923, blue: 0.3647513092, alpha: 1)), Color(#colorLiteral(red: 0.6274385452, green: 0.8037135005, blue: 0.2274374366, alpha: 1))]
         : [Color(#colorLiteral(red: 0.9450980392, green: 0.6392156863, blue: 0.231372549, alpha: 1)), Color(#colorLiteral(red: 1, green: 0.3882352941, blue: 0.003921568627, alpha: 1)), Color(#colorLiteral(red: 1, green: 0.3882352941, blue: 0.003921568627, alpha: 1)), Color(#colorLiteral(red: 0.9450980392, green: 0.6392156863, blue: 0.231372549, alpha: 1))]
-        
+
         ZStack {
             Circle()
                 .stroke(.secondary.opacity(0.1), lineWidth: lineWidth)
-            
+
             Circle()
                 .trim(from: 0, to: progress)
                 .stroke(
@@ -119,13 +119,14 @@ struct DayProgressItem: View, Equatable {
                 .animation(DS.Animations.easeInOut, value: progress)
         }
     }
-    
+
     static func == (lhs: Self, rhs: Self) -> Bool {
           Calendar.current.isDate(lhs.date, inSameDayAs: rhs.date) &&
           lhs.isSelected == rhs.isSelected &&
           abs(lhs.progress - rhs.progress) < 0.01 &&
           lhs.showProgressRing == rhs.showProgressRing &&
           lhs.isOverallProgress == rhs.isOverallProgress
-        
+
       }
 }
+

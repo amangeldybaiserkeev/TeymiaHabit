@@ -215,3 +215,4 @@ struct HabitsContentView: View {
         .tint(.gray)
     }
 }
+

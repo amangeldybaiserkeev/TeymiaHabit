@@ -342,10 +342,12 @@
 			shellPath = /bin/sh;
 			shellScript = (
 				"export PATH=\"$PATH:/opt/homebrew/bin\"",
+				"",
 				"if which swiftlint >/dev/null; then",
-				"  swiftlint",
+				"    swiftlint autofix --quiet",
+				"    swiftlint lint --quiet",
 				"else",
-				"  echo \"warning: SwiftLint not installed, download from https://github.com\"",
+				"    echo \"warning: SwiftLint not installed, run 'brew install swiftlint'\"",
 				"fi",
 				"",
 			);

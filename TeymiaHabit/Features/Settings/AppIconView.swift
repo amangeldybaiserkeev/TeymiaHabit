@@ -26,7 +26,7 @@ struct AppIconRow: View {
 struct AppIconView: View {
     @Environment(AppDependencyContainer.self) private var appContainer
     @State private var currentIcon: AppIcon = .main
-    
+
     var body: some View {
         List {
             Section {
@@ -54,7 +54,7 @@ struct AppIconView: View {
 
 struct AppIconImage: View {
     let icon: AppIcon
-    
+
     var body: some View {
         Image(icon.previewImageName)
             .resizable()
@@ -67,3 +67,4 @@ struct AppIconImage: View {
             )
     }
 }
+

@@ -4,7 +4,7 @@ struct SettingsView: View {
     var body: some View {
         List {
             PremiumRow()
-            
+
             Section {
                 AppearanceRow()
                 AppTintRow()
@@ -14,7 +14,7 @@ struct SettingsView: View {
                 NotificationsRow()
                 LanguageRow()
             }
-            
+
             Section {
                 RateRow()
                 ShareRow()
@@ -27,3 +27,4 @@ struct SettingsView: View {
         .navigationTitle("settings")
     }
 }
+

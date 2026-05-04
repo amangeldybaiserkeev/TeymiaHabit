@@ -96,9 +96,9 @@ struct HabitCard: View {
 
     let habit: Habit
     let date: Date
-    var onEdit: () -> Void
+    var onEdit: (() -> Void)?
 
-    @State private var showDeleteAlert = false
+    @State private var habitToDelete: Habit?
 
     private let cardShape = RoundedRectangle(cornerRadius: DS.Radius.lg, style: .continuous)
 
@@ -106,11 +106,8 @@ struct HabitCard: View {
 
     var body: some View {
         HabitListRow(habit: habit, date: date)
-            .glassEffect(.regular.interactive(false), in: cardShape)
+            .glassEffect(.regular, in: cardShape)
             .contentShape(cardShape)
-            .contentShape(.dragPreview, cardShape)
-            .contentShape(.contextMenuPreview, cardShape)
-            .contentShape(.hoverEffect, cardShape)
             .contextMenu {
                 skipButton
                 editButton
@@ -118,17 +115,17 @@ struct HabitCard: View {
                 Divider()
                 deleteButton
             }
-            .deleteSingleHabitAlert(
-                isPresented: $showDeleteAlert,
-                habitName: habit.title,
-                onDelete: { vm.deleteHabit(habit) }
-            )
+            .deleteHabitAlert(habit: $habitToDelete) { habit in
+                vm.deleteHabit(habit)
+            }
     }
 
     // MARK: - Context Menu
 
     private var skipButton: some View {
-        Button { vm.toggleSkip(for: habit, date: date) } label: {
+        Button {
+            vm.toggleSkip(for: habit, date: date)
+        } label: {
             Label(
                 isSkipped ? "unskip" : "skip",
                 systemImage: isSkipped ? "arrow.left" : "arrow.right"
@@ -138,21 +135,27 @@ struct HabitCard: View {
     }
 
     private var editButton: some View {
-        Button { onEdit() } label: {
+        Button {
+            onEdit?()
+        } label: {
             Label("button_edit", systemImage: "pencil")
         }
         .tint(.primary)
     }
 
     private var archiveButton: some View {
-        Button { vm.archiveHabit(habit) } label: {
+        Button {
+            vm.archiveHabit(habit)
+        } label: {
             Label("archive", systemImage: "archivebox")
         }
         .tint(.primary)
     }
 
     private var deleteButton: some View {
-        Button(role: .destructive) { showDeleteAlert = true } label: {
+        Button(role: .destructive) {
+            habitToDelete = habit
+        } label: {
             Label("button_delete", systemImage: "trash")
         }
         .tint(.red)

@@ -144,17 +144,18 @@ final class StoreKitService {
         case .verified(let value): return value
         }
     }
-    
+
     // MARK: - Debug
 
     #if DEBUG
     func toggleDebugPremium() {
         isPremium.toggle()
     }
-    
+
     // for #Preview
     func setDebugPremium(_ value: Bool) {
         isPremium = value
     }
     #endif
 }
+

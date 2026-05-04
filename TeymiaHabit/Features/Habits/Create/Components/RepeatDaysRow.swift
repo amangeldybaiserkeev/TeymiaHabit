@@ -2,18 +2,18 @@ import SwiftUI
 
 struct RepeatDaysRow: View {
     @Binding var activeDays: [Bool]
-    
+
     private var orderedWeekdays: [Weekday] {
         Weekday.orderedByUserPreference
     }
-    
+
     var body: some View {
         HStack(spacing: 8) {
             ForEach(orderedWeekdays, id: \.self) { weekday in
                 let index = weekday.arrayIndex
                 let isActive = activeDays[index]
                 let dayName = weekday.shortName.capitalized
-                
+
                 Button {
                     toggleDay(index)
                 } label: {
@@ -36,10 +36,11 @@ struct RepeatDaysRow: View {
         .frame(maxWidth: .infinity)
         .sensoryFeedback(.selection, trigger: activeDays)
     }
-    
+
     private func toggleDay(_ index: Int) {
         let activeCount = activeDays.filter { $0 }.count
         if activeCount == 1 && activeDays[index] { return }
         activeDays[index].toggle()
     }
 }
+

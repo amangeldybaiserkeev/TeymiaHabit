@@ -4,7 +4,7 @@ struct CategorySection: Identifiable, Hashable {
     let id: String
     let name: String
     let icons: [String]
-    
+
     init(name: String, icons: [String]) {
         self.id = name
         self.name = name
@@ -50,7 +50,7 @@ enum IconCatalog {
             "medal.star", "medal.star.fill", "trophy",
             "trophy.fill", "badget.check", "badget.check.fill"
         ]),
-        
+
         CategorySection(name: "productivity", icons: [
             "book", "book.fill", "book2",
             "book2.fill", "book.bookmark", "book.bookmark.fill",
@@ -91,7 +91,7 @@ enum IconCatalog {
             "target", "target.fill", "target2",
             "target2.fill", "bolt", "bolt.fill"
         ]),
-        
+
         CategorySection(name: "health", icons: [
             "doctor", "doctor.fill", "doctor.case",
             "doctor.case.fill", "nurse", "nurse.fill",
@@ -122,7 +122,7 @@ enum IconCatalog {
             "hamburger.soda", "hamburger.soda.fill", "pizza",
             "pizza.fill"
         ]),
-        
+
         CategorySection(name: "self-care", icons: [
             "face.smile.tongue", "face.smile.tongue.fill", "face.sunglasses",
             "face.sunglasses.fill", "face.awesome", "face.awesome.fill",
@@ -153,7 +153,7 @@ enum IconCatalog {
             "scissors", "scissors.fill", "facial.massage",
             "facial.massage.fill", "moustache", "moustache.fill"
         ]),
-        
+
         CategorySection(name: "hobbies", icons: [
             "ballet.dance", "ballet.dance.fill", "theater.masks",
             "theater.masks.fill", "clapper.open", "clapper.open.fill",
@@ -182,7 +182,7 @@ enum IconCatalog {
             "play.alt", "play.alt.fill", "play.circle",
             "play.circle.fill", "swing", "swing.fill"
         ]),
-        
+
         CategorySection(name: "lifestyle", icons: [
             "face.smile", "face.smile.fill", "face.smile.beam",
             "face.smile.beam.fill", "face.smile.hearts", "face.smile.hearts.fill",
@@ -223,7 +223,7 @@ enum IconCatalog {
             "life", "life.fill"
         ])
         ,
-        
+
         CategorySection(name: "brands", icons: [
             "apple.logo", "android", "google",
             "meta", "facebook", "instagram",
@@ -239,7 +239,7 @@ enum IconCatalog {
             "mcdonalds", "burger.king", "starbucks",
             "bitcoin", "ethereum"
         ]),
-        
+
         CategorySection(name: "other", icons: [
             "heart", "heart.fill", "anatomical.heart",
             "anatomical.heart.fill", "sparkles", "sparkles.fill",
@@ -260,3 +260,4 @@ enum IconCatalog {
         ])
     ]
 }
+

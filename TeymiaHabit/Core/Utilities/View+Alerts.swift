@@ -4,34 +4,39 @@ struct AlertState: Equatable {
     var isDeleteAlertPresented: Bool = false
 }
 
-private struct DeleteSingleHabitAlertModifier: ViewModifier {
-    @Binding var isPresented: Bool
-    let habitName: String
-    let onDelete: () -> Void
+private struct DeleteHabitAlertModifier: ViewModifier {
+    @Binding var habit: Habit?
+
+    let onDelete: (Habit) -> Void
 
     func body(content: Content) -> some View {
         content
-            .alert("alert_delete_habit", isPresented: $isPresented) {
-                Button("button_cancel", role: .cancel) { }
+            .alert(
+                "alert_delete_habit",
+                isPresented: .constant(habit != nil)
+            ) {
+                Button("button_cancel", role: .cancel) {
+                    habit = nil
+                }
                 Button("button_delete", role: .destructive) {
-                    onDelete()
+                    if let habit = habit {
+                        onDelete(habit)
+                    }
+                    habit = nil
                 }
             } message: {
-                Text("alert_delete_habit_message \(habitName)")
+                if let habit = habit {
+                    Text("alert_delete_habit_message \(habit.title)")
+                }
             }
     }
 }
 
 extension View {
-    func deleteSingleHabitAlert(
-        isPresented: Binding<Bool>,
-        habitName: String,
-        onDelete: @escaping () -> Void
+    func deleteHabitAlert(
+        habit: Binding<Habit?>,
+        onDelete: @escaping (Habit) -> Void
     ) -> some View {
-        self.modifier(DeleteSingleHabitAlertModifier(
-            isPresented: isPresented,
-            habitName: habitName,
-            onDelete: onDelete
-        ))
+        modifier(DeleteHabitAlertModifier(habit: habit, onDelete: onDelete))
     }
 }

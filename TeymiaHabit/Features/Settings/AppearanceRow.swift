@@ -2,7 +2,7 @@ import SwiftUI
 
 struct AppearanceRow: View {
     @AppStorage("themeMode") private var themeMode: ThemeMode = .system
-    
+
     var body: some View {
         Picker(selection: $themeMode) {
             ForEach(ThemeMode.allCases, id: \.self) { mode in
@@ -19,3 +19,4 @@ struct AppearanceRow: View {
         .tint(.secondary)
     }
 }
+

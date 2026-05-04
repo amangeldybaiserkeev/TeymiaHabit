@@ -3,10 +3,10 @@ import SwiftUI
 struct PremiumRow: View {
     @Environment(AppDependencyContainer.self) private var appContainer
     @State private var showingPaywall = false
-    
+
     enum GradientPhase: CaseIterable {
         case first, second, third
-        
+
         var colors: [Color] {
             switch self {
             case .first: return [Color(#colorLiteral(red: 0.4235294118, green: 0.5764705882, blue: 0.9960784314, alpha: 1)), Color(#colorLiteral(red: 0.7803921569, green: 0.3803921569, blue: 0.7568627451, alpha: 1))]
@@ -15,7 +15,7 @@ struct PremiumRow: View {
             }
         }
     }
-    
+
     var body: some View {
         Section {
 #if DEBUG
@@ -24,7 +24,7 @@ struct PremiumRow: View {
             }
             .buttonStyle(.glass)
 #endif
-            
+
             if !appContainer.storeKitService.isPremium {
                 premiumRowView
             }
@@ -33,7 +33,7 @@ struct PremiumRow: View {
         .listRowInsets(EdgeInsets())
         .sheet(isPresented: $showingPaywall) { PaywallView() }
     }
-    
+
     private var premiumRowView: some View {
         Button {
             showingPaywall = true
@@ -43,12 +43,12 @@ struct PremiumRow: View {
                     .font(.system(size: DS.IconSize.reg))
                     .foregroundStyle(.white.gradient)
                     .symbolEffect(.wiggle, options: .repeat(.periodic(delay: 4)))
-                
+
                 VStack(alignment: .leading) {
                     Text("Premium")
                         .font(DS.AppFont.headline)
                         .foregroundStyle(.white.gradient)
-                    
+
                     HStack(spacing: DS.Spacing.xxs) {
                         Text("Try")
                             .foregroundStyle(.white.opacity(0.8))
@@ -82,11 +82,11 @@ struct PremiumRow: View {
                         } animation: { _ in
                                 .easeInOut(duration: 5).delay(3)
                         }
-                    
+
                     ForEach(0..<15, id: \.self) { _ in
                         FloatingStar(baseOffsetX: CGFloat.random(in: 50...150))
                     }
-                    
+
                     Capsule()
                         .fill(
                             LinearGradient(
@@ -135,18 +135,18 @@ private struct FloatingStar: View {
     @State private var offset = CGSize.zero
     @State private var opacity: Double = 0.5
     @State private var isAnimating = false
-    
+
     let baseOffsetX: CGFloat
-    
+
     private let starSize: CGFloat = CGFloat.random(in: 3...6)
     private let offsetRange: CGFloat = CGFloat.random(in: 40...120)
     private let angle = Angle.degrees(Double.random(in: 0...360))
     private let delay: Double = Double.random(in: 0...3)
-    
+
     init(baseOffsetX: CGFloat = 0) {
         self.baseOffsetX = baseOffsetX
     }
-    
+
     var body: some View {
         Image(systemName: "sparkles")
             .font(.system(size: starSize))
@@ -167,7 +167,7 @@ private struct FloatingStar: View {
                         height: sin(angle.radians) * offsetRange
                     )
                 }
-                
+
                 withAnimation(
                     .easeInOut(duration: Double.random(in: 3...5))
                     .repeatForever(autoreverses: true)
@@ -185,7 +185,7 @@ private struct FloatingStar: View {
     appContainer.storeKitService.setDebugPremium(false)
     return List {
         PremiumRow()
-        
+
         Section {
             Text("Appearance")
             Text("App Tint")

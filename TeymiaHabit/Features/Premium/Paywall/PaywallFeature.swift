@@ -5,7 +5,7 @@ struct PaywallFeature: Identifiable {
     let icon: String
     let title: LocalizedStringResource
     var description: LocalizedStringResource? = nil
-    
+
     static let allFeatures: [Self] = [
         Self(
             icon: "infinity",
@@ -38,3 +38,4 @@ struct PaywallFeature: Identifiable {
         )
     ]
 }
+

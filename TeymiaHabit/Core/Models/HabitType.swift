@@ -4,7 +4,7 @@ import Foundation
 enum HabitType: Int, Codable, CaseIterable {
     case count // Count-based habits (e.g., "drink 8 glasses of water")
     case time  // Time-based habits (e.g., "read for 30 minutes")
-    
+
     var name: String {
         switch self {
         case .count:
@@ -13,7 +13,7 @@ enum HabitType: Int, Codable, CaseIterable {
             return "habit.type_time"
         }
     }
-    
+
     var defaultGoal: Int {
         switch self {
         case .count:
@@ -23,3 +23,4 @@ enum HabitType: Int, Codable, CaseIterable {
         }
     }
 }
+

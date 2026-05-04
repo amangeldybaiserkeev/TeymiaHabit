@@ -4,21 +4,21 @@ struct HabitStatisticsView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var statsViewModel: HabitStatsViewModel
     let habit: Habit
-    
+
     init(habit: Habit) {
         self.habit = habit
         _statsViewModel = State(wrappedValue: HabitStatsViewModel(habit: habit))
     }
-    
+
     var body: some View {
         @Bindable var vm = statsViewModel
-        
+
         NavigationStack {
             Form {
                 Section {
                     StreaksView(viewModel: statsViewModel)
                 }
-                
+
                 Section {
                     MonthlyCalendarView(
                         habit: habit,
@@ -26,12 +26,12 @@ struct HabitStatisticsView: View {
                     )
                 }
                 .listRowInsets(EdgeInsets())
-                
+
                 Section {
                     VStack(spacing: 30) {
                         TimeRangePicker(selection: $vm.barChartTimeRange)
                             .padding(.horizontal, 16)
-                        
+
                         barChartContent
                     }
                 }
@@ -45,7 +45,7 @@ struct HabitStatisticsView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private var barChartContent: some View {
         switch statsViewModel.barChartTimeRange {
@@ -55,3 +55,4 @@ struct HabitStatisticsView: View {
         }
     }
 }
+

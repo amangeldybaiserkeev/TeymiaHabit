@@ -1,18 +1,85 @@
-# Исключаем папки, которые не нужно проверять
+opt_in_rules:
+  - empty_count
+  - force_unwrapping
+  - force_cast
+  - vertical_whitespace
+  - first_where
+  - contains_over_filter_is_empty
+  - discouraged_optional_boolean
+  - closure_spacing
+  - prefer_self_in_static_references
+  - shorthand_optional_binding
+  - unused_declaration
+  - todo
+  - cyclomatic_complexity
+  - large_tuple
+  - prefixed_toplevel_constant
+  - anonymous_argument_in_multiline_closure
+  - closure_end_indentation
+  - implicit_return
+  - implicit_optional_initialization
+  - last_where
+  - modifier_order
+  - overridden_super_call
+  - toggle_bool
+  - redundant_nil_coalescing
+
+included:
+  - TeymiaHabit
 excluded:
   - Pods
   - DerivedData
+  - ./*/Packages
 
 disabled_rules:
-  - trailing_whitespace              
-  - implicit_optional_initialization  # for CloudKit
-  - identifier_name                  
+  - identifier_name
+  - multiple_closures_with_trailing_closure
+  - explicit_acl
 
-# SwiftData
+type_name:
+  min_length: 2
+  excluded:
+    - DS
+
 function_parameter_count:
-  warning: 12
-  error: 20
+  warning: 5
+  error: 8
 
 line_length:
-  warning: 160
-  error: 200
+  warning: 100
+  error: 120
+
+function_body_length:
+  warning: 20
+  error: 30
+
+file_length:
+  warning: 400
+  error: 500
+
+nesting:
+  type_level: 2
+
+cyclomatic_complexity:
+  warning: 10
+  error: 15
+
+opening_brace:
+  severity: warning
+
+empty_count:
+  severity: warning
+
+statement_position:
+  severity: warning
+
+redundant_nil_coalescing:
+  severity: warning
+
+# SwiftData Custom Rules
+custom_rules:
+  swiftdata_force_unwrap:
+    name: "SwiftData force unwrap"
+    regex: '@Model\s+class.*\n.*\n.*!'
+    message: "In SwiftData models, avoid force unwrap, use optional with default value"
+    severity: warning

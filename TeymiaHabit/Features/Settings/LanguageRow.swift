@@ -1,8 +1,10 @@
 import SwiftUI
 
-#if !targetEnvironment(macCatalyst)
 struct LanguageRow: View {
     var body: some View {
+#if !targetEnvironment(macCatalyst)
+        EmptyView()
+#else
         Button {
             openAppSettings()
         } label: {
@@ -16,9 +18,10 @@ struct LanguageRow: View {
                 Spacer()
                 Text(currentLanguage)
                     .foregroundStyle(DS.Colors.secondary)
-
+                
             }
         }
+#endif
     }
     
     private func openAppSettings() {
@@ -31,4 +34,3 @@ struct LanguageRow: View {
         return Locale.current.localizedString(forLanguageCode: languageCode)?.capitalized ?? languageCode
     }
 }
-#endif

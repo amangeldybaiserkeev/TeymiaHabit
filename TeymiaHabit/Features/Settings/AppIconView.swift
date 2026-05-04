@@ -1,8 +1,10 @@
 import SwiftUI
 
-#if !targetEnvironment(macCatalyst)
 struct AppIconRow: View {
     var body: some View {
+#if !targetEnvironment(macCatalyst)
+        EmptyView()
+#else
         NavigationLink {
             AppIconView()
         } label: {
@@ -17,14 +19,14 @@ struct AppIconRow: View {
                 )
             }
         }
+#endif
     }
 }
-#endif
 
 struct AppIconView: View {
     @Environment(AppDependencyContainer.self) private var appContainer
     @State private var currentIcon: AppIcon = .main
-
+    
     var body: some View {
         List {
             Section {
@@ -33,7 +35,7 @@ struct AppIconView: View {
                         appContainer.iconManager.setAppIcon(icon)
                         withAnimation(.spring()) { currentIcon = icon }
                     } label: {
-                        HStack(spacing: 16) {
+                        HStack(spacing: DS.Spacing.reg) {
                             AppIconImage(icon: icon)
                             Text(icon.title).foregroundStyle(Color.primary)
                             Spacer()
@@ -52,7 +54,7 @@ struct AppIconView: View {
 
 struct AppIconImage: View {
     let icon: AppIcon
-
+    
     var body: some View {
         Image(icon.previewImageName)
             .resizable()

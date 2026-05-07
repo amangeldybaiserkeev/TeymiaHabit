@@ -13,6 +13,17 @@ extension Int {
         }
     }
 
+    func formattedAsChartDuration() -> String {
+            let hours = self / 3600
+            let minutes = (self % 3600) / 60
+
+            if hours > 0 {
+                return String(format: "%d:%02d", hours, minutes)
+            } else {
+                return String(format: "0:%02d", minutes)
+            }
+        }
+
     func formattedAsLocalizedDuration() -> String {
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.hour, .minute]

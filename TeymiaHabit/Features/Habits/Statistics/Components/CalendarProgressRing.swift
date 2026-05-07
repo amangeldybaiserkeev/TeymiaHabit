@@ -1,8 +1,5 @@
 import SwiftUI
 
-// Lightweight ring used only in calendar cells.
-// Accepts plain values instead of a Habit model to avoid SwiftUI re-renders
-// triggered by SwiftData @Model observation.
 struct CalendarProgressRing: View {
     let progress: Double
     let ringColors: (dark: Color, light: Color)
@@ -30,7 +27,7 @@ struct CalendarProgressRing: View {
                     style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)
                 )
                 .rotationEffect(.degrees(-90))
-                .animation(.easeInOut(duration: 0.3), value: progress)
+                .animation(DS.Animations.easeInOut, value: progress)
         }
         .frame(width: size, height: size)
     }

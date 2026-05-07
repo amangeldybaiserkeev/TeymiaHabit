@@ -29,15 +29,7 @@ struct WeeklyCalendarView: View {
 
     var body: some View {
         VStack(spacing: DS.Spacing.xs) {
-            HStack(spacing: DS.Spacing.reg) {
-                ForEach(Array(dayHeaders.enumerated()), id: \.offset) { _, day in
-                    Text(day)
-                        .font(.system(size: DS.IconSize.xxs, weight: .medium))
-                        .foregroundStyle(DS.Colors.primary)
-                        .frame(maxWidth: .infinity)
-                }
-            }
-            .padding(.horizontal, DS.Spacing.reg)
+            WeekdayHeaderView()
 
             TabView(selection: $currentWeekIndex) {
                 ForEach(Array(weeks.enumerated()), id: \.element.first) { index, week in

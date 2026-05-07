@@ -1,24 +1,6 @@
 import SwiftUI
 import Charts
 
-// MARK: - Time Formatting
-
-extension Int {
-    /// Formats seconds into "H:MM" or "M:MM" without seconds, for chart display
-    func formattedAsChartDuration() -> String {
-        let hours = self / 3600
-        let minutes = (self % 3600) / 60
-
-        if hours > 0 {
-            return String(format: "%d:%02d", hours, minutes)
-        } else if minutes > 0 {
-            return String(format: "0:%02d", minutes)
-        } else {
-            return "0"
-        }
-    }
-}
-
 // MARK: - Y-Axis Values
 
 /// Computes up to 4 evenly spaced Y-axis tick values based on the chart data max
@@ -89,7 +71,6 @@ func chartTotalFormatted(chartData: [ChartDataPoint], habitType: HabitType) -> S
 
 // MARK: - Chart Container
 
-/// Platform-adaptive chart container: swipeable TabView on iOS, static on macOS
 struct ChartContainer<Content: View>: View {
     @Binding var currentIndex: Int
     let count: Int
@@ -100,125 +81,11 @@ struct ChartContainer<Content: View>: View {
             ForEach(0..<count, id: \.self) { index in
                 content()
                     .tag(index)
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, DS.Spacing.reg)
             }
         }
         .tabViewStyle(.page(indexDisplayMode: .never))
-        .frame(height: 180)
-    }
-}
-
-// MARK: - Chart Navigation Buttons
-
-struct ChartNavigationButton: View {
-    let systemImage: String
-    let isEnabled: Bool
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Image(systemName: systemImage)
-                .font(.system(size: 20))
-                .foregroundStyle(isEnabled ? DS.Colors.primary.gradient : DS.Colors.primary.opacity(0.5).gradient)
-                .contentShape(Rectangle())
-        }
-        .disabled(!isEnabled)
-        .buttonStyle(.plain)
-    }
-}
-
-// MARK: - Chart Stats Header
-
-/// The three-column stats row: average | selected date | total
-struct ChartStatsRow: View {
-    let averageLabel: String
-    let totalLabel: String
-    let selectedDateLabel: String?
-    let selectedValueLabel: String?
-    let primaryColor: Color = DS.Colors.primary
-    let secondaryColor: Color = DS.Colors.secondary.opacity(0.5)
-
-    var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("average")
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundStyle(secondaryColor.gradient)
-
-                Text(averageLabel)
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(primaryColor.gradient)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-
-            if let dateLabel = selectedDateLabel, let valueLabel = selectedValueLabel {
-                VStack(alignment: .center, spacing: 2) {
-                    Text(dateLabel.capitalized)
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                        .foregroundStyle(secondaryColor.gradient)
-
-                    Text(valueLabel)
-                        .font(.title3)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(primaryColor.gradient)
-                }
-                .frame(maxWidth: .infinity, alignment: .center)
-            }
-
-            VStack(alignment: .trailing, spacing: 2) {
-                Text("total")
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundStyle(secondaryColor.gradient)
-
-                Text(totalLabel)
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(primaryColor.gradient)
-            }
-            .frame(maxWidth: .infinity, alignment: .trailing)
-        }
-        .padding(.horizontal, 16)
-    }
-}
-
-// MARK: - Chart Period Header
-
-/// Navigation arrows + period title + stats row
-struct ChartPeriodHeader: View {
-    let title: String
-    let canGoPrevious: Bool
-    let canGoNext: Bool
-    let averageLabel: String
-    let totalLabel: String
-    let selectedDateLabel: String?
-    let selectedValueLabel: String?
-    let onPrevious: () -> Void
-    let onNext: () -> Void
-
-    var body: some View {
-        VStack(spacing: 12) {
-            HStack {
-                ChartNavigationButton(systemImage: "chevron.left", isEnabled: canGoPrevious, action: onPrevious)
-                Spacer()
-                Text(title)
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                Spacer()
-                ChartNavigationButton(systemImage: "chevron.right", isEnabled: canGoNext, action: onNext)
-            }
-            .padding(.horizontal, 16)
-
-            ChartStatsRow(
-                averageLabel: averageLabel,
-                totalLabel: totalLabel,
-                selectedDateLabel: selectedDateLabel,
-                selectedValueLabel: selectedValueLabel
-            )
-        }
+        .frame(height: 200)
     }
 }
 
@@ -244,4 +111,3 @@ extension View {
         modifier(HabitChartYAxisModifier(values: values))
     }
 }
-

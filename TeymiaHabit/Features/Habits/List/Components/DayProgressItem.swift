@@ -8,7 +8,9 @@ struct DayProgressItem: View, Equatable {
     var ringColors: (dark: Color, light: Color)? = nil
     var isOverallProgress: Bool = false
 
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    var circleSize = DS.IconSize.lg
+    var fontSize: CGFloat { circleSize * 0.4 }
+    var lineWidth: CGFloat { circleSize * 0.12 }
 
     private var calendar: Calendar { Calendar.userPreferred }
 
@@ -24,74 +26,42 @@ struct DayProgressItem: View, Equatable {
         date > Date()
     }
 
-    private var circleSize: CGFloat {
-        switch dynamicTypeSize {
-        case .accessibility5: return 40
-        case .accessibility4: return 38
-        case .accessibility3: return 36
-        case .accessibility2: return 34
-        case .accessibility1: return 32
-        default: return 30
-        }
-    }
-
-    private var lineWidth: CGFloat {
-        switch dynamicTypeSize {
-        case .accessibility5, .accessibility4, .accessibility3:
-            return 4.0
-        case .accessibility2, .accessibility1:
-            return 3.8
-        default:
-            return 3.5
-        }
-    }
-
-    private var fontSize: CGFloat {
-        switch dynamicTypeSize {
-        case .accessibility5: return 17
-        case .accessibility4: return 16
-        case .accessibility3: return 15
-        case .accessibility2: return 14
-        case .accessibility1: return 13.5
-        default: return 13
-        }
-    }
-
     private var fontWeight: Font.Weight {
         isSelected ? .bold : .regular
     }
 
     var body: some View {
-            VStack(spacing: 6) {
-                ZStack {
-                    if showProgressRing && !isFutureDate {
-                        if let colors = ringColors {
-                            CalendarProgressRing(
-                                progress: progress,
-                                ringColors: colors,
-                                size: circleSize,
-                                lineWidth: lineWidth
-                            )
-                        } else if isOverallProgress {
-                            overallProgressRing
-                        }
+        VStack(spacing: DS.Spacing.xs) {
+            ZStack {
+                if showProgressRing && !isFutureDate {
+                    if let colors = ringColors {
+                        CalendarProgressRing(
+                            progress: progress,
+                            ringColors: colors,
+                            size: circleSize,
+                            lineWidth: lineWidth
+                        )
+                    } else if isOverallProgress {
+                        weeklyCalendarRing
                     }
-
-                    Text(dayNumber)
-                        .font(.system(size: fontSize, weight: fontWeight))
-                        .foregroundStyle(isToday ? Color.mandarine.gradient : Color.primary.gradient)
                 }
-                .frame(width: circleSize, height: circleSize)
 
-                Circle()
-                    .fill(isToday ? Color.mandarine : Color.primary)
-                    .frame(width: 4, height: 4)
-                    .opacity(isSelected ? 1 : 0)
+                Text(dayNumber)
+                    .font(.system(size: fontSize, weight: fontWeight))
+                    .foregroundStyle(isToday ? .accentColor : DS.Colors.primary)
+                    .contentTransition(.numericText())
             }
+            .frame(width: circleSize, height: circleSize)
+
+            Circle()
+                .fill(isToday ? .accentColor : DS.Colors.primary)
+                .frame(width: 4, height: 4)
+                .opacity(isSelected ? 1 : 0)
+        }
     }
 
     @ViewBuilder
-    private var overallProgressRing: some View {
+    private var weeklyCalendarRing: some View {
         let isCompleted = progress >= 0.999
         let ringColors: [Color] = isCompleted
         ? [Color(#colorLiteral(red: 0.6274385452, green: 0.8037135005, blue: 0.2274374366, alpha: 1)), Color(#colorLiteral(red: 0.1764799058, green: 0.7451224923, blue: 0.3647513092, alpha: 1)), Color(#colorLiteral(red: 0.1764799058, green: 0.7451224923, blue: 0.3647513092, alpha: 1)), Color(#colorLiteral(red: 0.6274385452, green: 0.8037135005, blue: 0.2274374366, alpha: 1))]
@@ -99,7 +69,7 @@ struct DayProgressItem: View, Equatable {
 
         ZStack {
             Circle()
-                .stroke(.secondary.opacity(0.1), lineWidth: lineWidth)
+                .stroke(DS.Colors.tertiary, lineWidth: lineWidth)
 
             Circle()
                 .trim(from: 0, to: progress)
@@ -121,12 +91,12 @@ struct DayProgressItem: View, Equatable {
     }
 
     static func == (lhs: Self, rhs: Self) -> Bool {
-          Calendar.current.isDate(lhs.date, inSameDayAs: rhs.date) &&
-          lhs.isSelected == rhs.isSelected &&
-          abs(lhs.progress - rhs.progress) < 0.01 &&
-          lhs.showProgressRing == rhs.showProgressRing &&
-          lhs.isOverallProgress == rhs.isOverallProgress
+        Calendar.current.isDate(lhs.date, inSameDayAs: rhs.date) &&
+        lhs.isSelected == rhs.isSelected &&
+        abs(lhs.progress - rhs.progress) < 0.01 &&
+        lhs.showProgressRing == rhs.showProgressRing &&
+        lhs.isOverallProgress == rhs.isOverallProgress
 
-      }
+    }
 }
 

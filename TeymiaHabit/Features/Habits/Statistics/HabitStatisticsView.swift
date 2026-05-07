@@ -1,22 +1,22 @@
 import SwiftUI
 
 struct HabitStatisticsView: View {
-    @Environment(\.dismiss) private var dismiss
-    @State private var statsViewModel: HabitStatsViewModel
     let habit: Habit
+
+    @State private var vm: HabitStatisticsViewModel
 
     init(habit: Habit) {
         self.habit = habit
-        _statsViewModel = State(wrappedValue: HabitStatsViewModel(habit: habit))
+        self._vm = State(wrappedValue: HabitStatisticsViewModel(habit: habit))
     }
 
     var body: some View {
-        @Bindable var vm = statsViewModel
+        @Bindable var vm = vm
 
         NavigationStack {
-            Form {
+            List {
                 Section {
-                    StreaksView(viewModel: statsViewModel)
+                    StreaksView(current: vm.currentStreak, best: vm.bestStreak, total: vm.totalValue)
                 }
 
                 Section {
@@ -28,30 +28,24 @@ struct HabitStatisticsView: View {
                 .listRowInsets(EdgeInsets())
 
                 Section {
-                    VStack(spacing: 30) {
+                    VStack(spacing: DS.Spacing.reg) {
                         TimeRangePicker(selection: $vm.barChartTimeRange)
-                            .padding(.horizontal, 16)
 
-                        barChartContent
+                        HabitCharts(habit: habit, range: vm.barChartTimeRange)
+                            .id("\(habit.uuid.uuidString)-\(vm.barChartTimeRange.rawValue)")
                     }
+                    .padding(.vertical, DS.Spacing.reg)
                 }
                 .listRowInsets(EdgeInsets())
             }
-            .formStyle(.grouped)
             .navigationTitle(habit.title)
             .navigationSubtitle("Goal: \(habit.formattedGoal)")
             .toolbar {
                 CloseToolbarButton()
             }
-        }
-    }
-
-    @ViewBuilder
-    private var barChartContent: some View {
-        switch statsViewModel.barChartTimeRange {
-        case .week: WeeklyHabitChart(habit: habit)
-        case .month: MonthlyHabitChart(habit: habit)
-        case .year: YearlyHabitChart(habit: habit)
+            .onChange(of: habit.completions) { _, _ in
+                vm.refresh()
+            }
         }
     }
 }

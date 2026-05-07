@@ -31,7 +31,9 @@ struct ActionButtonsSection: View {
     // MARK: - Buttons
 
     private var resetButton: some View {
-        Button(action: onReset) {
+        Button {
+            onReset()
+        } label: {
             Image(systemName: "arrow.uturn.backward")
                 .font(.system(size: DS.IconSize.reg, weight: .medium))
                 .foregroundStyle(DS.Colors.primary)
@@ -43,7 +45,9 @@ struct ActionButtonsSection: View {
     }
 
     private var playPauseButton: some View {
-        Button(action: onTimerToggle) {
+        Button {
+            onTimerToggle()
+        } label: {
             Image(systemName: isTimerRunning ? "pause.fill" : "play.fill")
                 .font(.system(size: DS.IconSize.xl))
                 .contentTransition(.symbolEffect(.replace, options: .speed(1.3)))

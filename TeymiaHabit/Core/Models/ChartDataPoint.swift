@@ -7,7 +7,7 @@ struct ChartDataPoint: Identifiable, Equatable {
     let date: Date
     let value: Int
     let goal: Int
-    let habit: Habit
+    let habitType: HabitType
 
     // MARK: - Equatable
 
@@ -33,40 +33,73 @@ struct ChartDataPoint: Identifiable, Equatable {
     // MARK: - Formatting
 
     var formattedValue: String {
-        switch habit.type {
-        case .count:
-            return "\(value)"
-        case .time:
-            return value.formattedAsTime()
-        }
+        habitType == .count ? "\(value)" : value.formattedAsTime()
     }
 
     var formattedGoal: String {
-        switch habit.type {
-        case .count:
-            return "\(goal)"
-        case .time:
-            return goal.formattedAsTime()
-        }
+        habitType == .count ? "\(goal)" : goal.formattedAsLocalizedDuration()
     }
 
     /// Returns formatted time without seconds for cleaner chart display
     var formattedValueWithoutSeconds: String {
-        switch habit.type {
-        case .count:
-            return "\(value)"
-        case .time:
-            let hours = value / 3600
-            let minutes = (value % 3600) / 60
-
-            if hours > 0 {
-                return String(format: "%d:%02d", hours, minutes)
-            } else if minutes > 0 {
-                return String(format: "0:%02d", minutes)
-            } else {
-                return "0"
-            }
-        }
+        habitType == .count ? "\(value)" : value.formattedAsChartDuration()
     }
 }
 
+enum ChartTimeRange: String, CaseIterable {
+    case week, month, year
+
+    var displayName: LocalizedStringResource {
+        switch self {
+        case .week: return "chart_range_week"
+        case .month: return "chart_range_month"
+        case .year: return "chart_range_year"
+        }
+    }
+
+    var component: Calendar.Component {
+        switch self {
+        case .week: return .weekOfYear
+        case .month: return .month
+        case .year: return .year
+        }
+    }
+
+    var stepComponent: Calendar.Component {
+        switch self {
+        case .week: return .day
+        case .month: return .day
+        case .year: return .month
+        }
+    }
+
+    func stepsCount(for date: Date, calendar: Calendar) -> Int {
+        switch self {
+        case .week: return 7
+        case .month:
+            let range = calendar.range(of: .day, in: .month, for: date)
+            return range?.count ?? 30
+        case .year: return 12
+        }
+    }
+
+    func xAxisLabel(for date: Date, calendar: Calendar) -> String {
+        switch self {
+        case .week:
+            let index = calendar.component(.weekday, from: date) - 1
+            return calendar.shortWeekdaySymbols[index]
+        case .month:
+            return "\(calendar.component(.day, from: date))"
+        case .year:
+            let f = DateFormatter(); f.dateFormat = "MMM"
+            return String(f.string(from: date).prefix(1)).uppercased()
+        }
+    }
+
+    var xUnit: Calendar.Component {
+        switch self {
+        case .week, .month: return .day
+        case .year: return .month
+        }
+    }
+}

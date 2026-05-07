@@ -2,13 +2,13 @@ import SwiftUI
 import SwiftData
 
 @Observable @MainActor
-class HabitStatsViewModel {
+final class HabitStatisticsViewModel {
     let habit: Habit
-    var selectedDate: Date = Date()
-    var barChartTimeRange: ChartTimeRange = .week
     var currentStreak: Int = 0
     var bestStreak: Int = 0
     var totalValue: Int = 0
+    var selectedDate: Date = Date()
+    var barChartTimeRange: ChartTimeRange = .week
 
     init(habit: Habit) {
         self.habit = habit

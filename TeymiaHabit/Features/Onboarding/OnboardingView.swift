@@ -108,7 +108,7 @@ struct OnboardingContentView: View {
     }
 
     @ViewBuilder
-    func ScreenshotView() -> some View {
+    private func ScreenshotView() -> some View {
         let shape = ConcentricRectangle(corners: .concentric, isUniform: true)
 
         GeometryReader { geometry in
@@ -176,7 +176,7 @@ struct OnboardingContentView: View {
     }
 
     @ViewBuilder
-    func TextContentView() -> some View {
+    private func TextContentView() -> some View {
         GeometryReader { geometry in
             let size = geometry.size
 
@@ -214,7 +214,7 @@ struct OnboardingContentView: View {
     }
 
     @ViewBuilder
-    func IndicatorView() -> some View {
+    private func IndicatorView() -> some View {
         HStack(spacing: DS.Spacing.xs) {
             ForEach(items.indices, id: \.self) { index in
                 let isActive: Bool = currentIndex == index
@@ -229,7 +229,7 @@ struct OnboardingContentView: View {
     }
 
     @ViewBuilder
-    func ContinueButton() -> some View {
+    private func ContinueButton() -> some View {
         Button {
             if currentIndex == items.count - 1 {
                 onComplete()
@@ -253,7 +253,7 @@ struct OnboardingContentView: View {
     }
 
     @ViewBuilder
-    func BackButton() -> some View {
+    private func BackButton() -> some View {
         Button {
             withAnimation(animation) {
                 currentIndex = max(currentIndex - 1, 0)
@@ -272,7 +272,7 @@ struct OnboardingContentView: View {
     }
 
     @ViewBuilder
-    func VariableGlassBlur(_ radius: CGFloat) -> some View {
+    private func VariableGlassBlur(_ radius: CGFloat) -> some View {
         let tint: Color = .black.opacity(0.4)
         Rectangle()
             .fill(.clear)
@@ -284,7 +284,7 @@ struct OnboardingContentView: View {
             .ignoresSafeArea()
     }
 
-    var deviceCornerRadius: CGFloat {
+    private var deviceCornerRadius: CGFloat {
         if let imageSize = items.first?.screenshot?.size {
             let ratio = screenshotSize.height / imageSize.height
             let actualCornerRadius: CGFloat = 190

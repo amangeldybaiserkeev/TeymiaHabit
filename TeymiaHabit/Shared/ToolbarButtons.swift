@@ -10,7 +10,6 @@ struct CloseToolbarButton: ToolbarContent {
             } label: {
                 Image(systemName: "xmark")
                     .fontWeight(.semibold)
-                    .foregroundStyle(DS.Colors.primary)
             }
         }
     }

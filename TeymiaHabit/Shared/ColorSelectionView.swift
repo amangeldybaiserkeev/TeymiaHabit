@@ -2,8 +2,16 @@ import SwiftUI
 
 struct ColorSelectionView: View {
     @Binding var selectedColor: HabitIconColor
-    private let buttonSize = DS.IconSize.lg
-    private let fadeWidth: Double = 0.05
+
+    private enum Layout {
+        static let buttonSize = DS.IconSize.lg
+        static let fadeWidth: Double = 0.05
+
+        static let threshold: CGFloat = 0.8
+        static let minScale: CGFloat = 0.4
+        static let selectionScale: CGFloat = 1.15
+        static let innerStrokeScale: CGFloat = 0.9
+    }
 
     var body: some View {
         HStack {
@@ -20,8 +28,8 @@ struct ColorSelectionView: View {
                     LinearGradient(
                         gradient: Gradient(stops: [
                             .init(color: .clear, location: 0),
-                            .init(color: .black, location: fadeWidth),
-                            .init(color: .black, location: 1 - fadeWidth),
+                            .init(color: .black, location: Layout.fadeWidth),
+                            .init(color: .black, location: 1 - Layout.fadeWidth),
                             .init(color: .clear, location: 1)
                         ]),
                         startPoint: .leading,
@@ -30,7 +38,7 @@ struct ColorSelectionView: View {
                 }
             }
         }
-        .frame(height: buttonSize * 2)
+        .frame(height: Layout.buttonSize * 2)
         .glassEffect(.regular.interactive(false), in: .capsule)
         .sensoryFeedback(.selection, trigger: selectedColor)
         .clipShape(.capsule)
@@ -40,17 +48,23 @@ struct ColorSelectionView: View {
         let isSelected = selectedColor == color
 
         return GeometryReader { itemGeo in
+            // Calculate relative position and distance from center
             let midX = itemGeo.frame(in: .global).midX
             let leftEdge = geo.frame(in: .global).minX
             let rightEdge = geo.frame(in: .global).maxX
             let centerX = (leftEdge + rightEdge) / 2
+
             let distanceFromCenter = abs(midX - centerX)
             let maxDistance = (rightEdge - leftEdge) / 2
-            let threshold: CGFloat = 0.8
             let normalized = distanceFromCenter / maxDistance
-            let edgeFactor = normalized < threshold ? 0 : (normalized - threshold) / (1 - threshold)
-            let scale = 1.0 - edgeFactor * 0.4
-            let opacity = 1.0 - edgeFactor * 1.0
+
+            // Calculate effect intensity (only trigger in outer 20% of the view)
+            let rawFactor = (normalized - Layout.threshold) / (1 - Layout.threshold)
+            let edgeFactor = max(0, rawFactor)
+
+            // Apply visual transforms
+            let scale = 1.0 - edgeFactor * Layout.minScale
+            let opacity = 1.0 - edgeFactor
 
             Button {
                 withAnimation(DS.Animations.spring) {
@@ -59,19 +73,19 @@ struct ColorSelectionView: View {
             } label: {
                 Circle()
                     .fill(color.baseColor)
-                    .frame(width: buttonSize, height: buttonSize)
+                    .frame(size: Layout.buttonSize)
                     .overlay(
                         Circle()
                             .strokeBorder(DS.Colors.onPrimary, lineWidth: 2)
-                            .frame(size: buttonSize * 0.9)
+                            .frame(size: Layout.buttonSize * Layout.innerStrokeScale)
                             .opacity(isSelected ? 1 : 0)
                     )
-                    .scaleEffect(isSelected ? scale * 1.15 : scale)
+                    .scaleEffect(isSelected ? scale * Layout.selectionScale : scale)
                     .opacity(opacity)
             }
             .buttonStyle(.plain)
             .contentShape(.circle)
         }
-        .frame(width: buttonSize, height: buttonSize)
+        .frame(size: Layout.buttonSize)
     }
 }

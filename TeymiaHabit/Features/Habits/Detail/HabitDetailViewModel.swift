@@ -67,7 +67,7 @@ final class HabitDetailViewModel {
     // MARK: - Date Management
     func updateDisplayedDate(_ newDate: Date) {
         currentDisplayedDate = newDate
-        habitService.clearTemporaryProgress(for: habit.uuid)
+        habitService.clearTemporaryProgress(for: habit.uuid, date: newDate)
         goalSoundPlayed = false
         goalNotificationSent = false
     }
@@ -90,7 +90,7 @@ final class HabitDetailViewModel {
         let step = habit.type == .count ? 1 : 60
         let maxVal = habit.type == .count ? 999_999 : 86_400
         let new = min(currentProgress + step, maxVal)
-        habitService.setTemporaryProgress(for: habit.uuid, progress: new)
+        habitService.setTemporaryProgress(for: habit.uuid, date: currentDisplayedDate, progress: new)
         saveProgress(new)
         updateLiveActivityIfNeeded(progress: new, timerRunning: false)
     }
@@ -100,14 +100,14 @@ final class HabitDetailViewModel {
         stopTimerIfNeeded()
         let step = habit.type == .count ? 1 : 60
         let new = max(current - step, 0)
-        habitService.setTemporaryProgress(for: habit.uuid, progress: new)
+        habitService.setTemporaryProgress(for: habit.uuid, date: currentDisplayedDate, progress: new)
         saveProgress(new)
         updateLiveActivityIfNeeded(progress: new, timerRunning: false)
     }
 
     func resetProgress() {
         stopTimerAndEndActivity()
-        habitService.setTemporaryProgress(for: habit.uuid, progress: 0)
+        habitService.setTemporaryProgress(for: habit.uuid, date: currentDisplayedDate, progress: 0)
         habitService.resetProgress(for: habit, date: currentDisplayedDate)
         updateLiveActivityIfNeeded(progress: 0, timerRunning: false)
     }
@@ -115,7 +115,7 @@ final class HabitDetailViewModel {
     func completeHabit() {
         guard !isAlreadyCompleted else { return }
         stopTimerAndEndActivity()
-        habitService.setTemporaryProgress(for: habit.uuid, progress: habit.goal)
+        habitService.setTemporaryProgress(for: habit.uuid, date: currentDisplayedDate, progress: habit.goal)
         saveProgress(habit.goal)
         soundManager.playCompletionSound()
     }
@@ -123,7 +123,7 @@ final class HabitDetailViewModel {
     func addProgress(_ value: Int) {
         let maxValue = habit.type == .count ? 999_999 : 86_400
         let new = min(currentProgress + value, maxValue)
-        habitService.setTemporaryProgress(for: habit.uuid, progress: new)
+        habitService.setTemporaryProgress(for: habit.uuid, date: currentDisplayedDate, progress: new)
         saveProgress(new)
     }
 
@@ -169,13 +169,16 @@ final class HabitDetailViewModel {
     // MARK: - Private Helpers
 
     private func saveProgress(_ value: Int) {
-        habitService.saveProgress(value, for: habit, date: currentDisplayedDate)
+        let dateAtMomentOfSave = currentDisplayedDate
+
+        habitService.saveProgress(value, for: habit, date: dateAtMomentOfSave)
 
         saveTask?.cancel()
         saveTask = Task {
             try? await Task.sleep(for: .seconds(0.8))
             guard !Task.isCancelled else { return }
-            habitService.clearTemporaryProgress(for: habit.uuid)
+
+            habitService.clearTemporaryProgress(for: habit.uuid, date: dateAtMomentOfSave)
             widgetService.reloadWidgetsAfterDataChange()
         }
     }

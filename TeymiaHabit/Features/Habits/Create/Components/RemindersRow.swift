@@ -68,7 +68,7 @@ struct RemindersRow: View {
                     .datePickerStyle(.compact)
 
                     Button {
-                        withAnimation(.easeInOut(duration: 0.3)) {
+                        withAnimation(DS.Animations.easeInOut) {
                             guard reminderTimes.indices.contains(index) else { return }
                             reminderTimes.remove(at: index)
                         }
@@ -80,15 +80,12 @@ struct RemindersRow: View {
             }
 
             Button {
-                withAnimation(.easeInOut(duration: 0.3)) {
+                withAnimation(DS.Animations.easeInOut) {
                     reminderTimes.append(Date())
                 }
             } label: {
-                HStack {
-                    Image(systemName: "plus")
-                    Text("add_reminder")
-                }
-                .fontWeight(.medium)
+                Label("Add Reminder", systemImage: "plus")
+                    .fontWeight(.medium)
             }
         }
     }
@@ -100,7 +97,7 @@ struct RemindersRow: View {
 
         await MainActor.run {
             isProcessingToggle = false
-            withAnimation(.easeInOut(duration: 0.3)) {
+            withAnimation(DS.Animations.easeInOut) {
                 if isAuthorized {
                     isReminderEnabled = newValue
                 } else {

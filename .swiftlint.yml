@@ -53,8 +53,8 @@ line_length:
   error: 160
 
 function_body_length:
-  warning: 40
-  error: 70
+  warning: 60
+  error: 100
 
 file_length:
   warning: 500

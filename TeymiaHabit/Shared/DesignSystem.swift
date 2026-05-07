@@ -57,7 +57,7 @@ enum DS {
 
     enum Animations {
         static let spring = Animation.spring(response: 0.6, dampingFraction: 0.7)
-        static let bouncy = Animation.bouncy(duration: 0.5, extraBounce: 0.1)
+        static let bouncy = Animation.bouncy(duration: 0.5, extraBounce: 0.2)
         static let snappy = Animation.snappy(duration: 0.5)
         static let easeInOut = Animation.easeInOut(duration: 0.4)
     }

@@ -19,7 +19,7 @@ struct HabitsView: View {
     }
 
     var body: some View {
-        HabitsContentView(selectedDate: $selectedDate, vm: vm)
+        HabitsContentView(vm: vm, selectedDate: $selectedDate)
     }
 }
 
@@ -39,11 +39,6 @@ struct HabitsContentView: View {
     @State private var selectedHabit: Habit?
     @State private var showingNewHabit = false
     @State private var habitToEdit: Habit?
-
-    init(selectedDate: Binding<Date>, vm: HabitsViewModel) {
-        self._selectedDate = selectedDate
-        self.vm = vm
-    }
 
     var body: some View {
         Group {

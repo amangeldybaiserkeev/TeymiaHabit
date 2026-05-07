@@ -51,10 +51,11 @@ final class HabitsViewModel {
     func handleRingTap(on habit: Habit, date: Date) {
         switch habit.type {
         case .count:
-            let current = habitService.getTemporaryProgress(for: habit.uuid) ?? habit.progressForDate(date)
+
+            let current = habitService.getTemporaryProgress(for: habit.uuid, date: date) ?? habit.progressForDate(date)
             let newProgress = current + 1
 
-            habitService.setTemporaryProgress(for: habit.uuid, progress: newProgress)
+            habitService.setTemporaryProgress(for: habit.uuid, date: date, progress: newProgress)
 
             let result = habitService.addProgress(1, to: habit, date: date)
             handleResult(result)
@@ -63,7 +64,7 @@ final class HabitsViewModel {
             let habitId = habit.uuid.uuidString
             if timerService.isTimerRunning(for: habitId) {
                 if let finalProgress = timerService.stopTimer(for: habitId) {
-                    habitService.setTemporaryProgress(for: habit.uuid, progress: finalProgress)
+                    habitService.setTemporaryProgress(for: habit.uuid, date: date, progress: finalProgress)
                     let result = habitService.updateProgress(to: finalProgress, for: habit, date: date)
                     handleResult(result)
                 }
@@ -73,7 +74,7 @@ final class HabitsViewModel {
             }
         }
 
-        saveAndReloadWithDebounce(for: habit.uuid)
+        saveAndReloadWithDebounce(for: habit.uuid, date: date)
     }
 
     func completeHabit(_ habit: Habit, date: Date) {
@@ -140,12 +141,12 @@ final class HabitsViewModel {
 
     // MARK: - Debounce
 
-    private func saveAndReloadWithDebounce(for uuid: UUID) {
+    private func saveAndReloadWithDebounce(for uuid: UUID, date: Date) {
         try? modelContext.save()
         widgetService.reloadWidgetsAfterDataChange()
         Task {
             try? await Task.sleep(for: .seconds(0.6))
-            habitService.clearTemporaryProgress(for: uuid)
+            habitService.clearTemporaryProgress(for: uuid, date: date)
         }
     }
 }

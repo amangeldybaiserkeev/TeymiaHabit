@@ -16,6 +16,10 @@ struct SettingsView: View {
             }
 
             Section {
+                OnboardingRow()
+            }
+
+            Section {
                 RateRow()
                 ShareRow()
                 PrivacyRow()

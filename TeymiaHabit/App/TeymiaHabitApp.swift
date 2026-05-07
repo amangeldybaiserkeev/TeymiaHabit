@@ -3,6 +3,7 @@ import SwiftData
 
 @main
 struct TeymiaHabitApp: App {
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
     @Environment(\.scenePhase) private var scenePhase
 
     let modelContainer: ModelContainer
@@ -32,17 +33,21 @@ struct TeymiaHabitApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MainTabView()
-                .environment(appContainer)
-                .task {
-                    await appContainer.storeKitService.loadProducts()
-                }
-                .onAppear {
-                    setupLiveActivities()
-                }
-                .onOpenURL { url in
-                    handleDeepLink(url)
-                }
+            if hasCompletedOnboarding {
+                MainTabView()
+                    .environment(appContainer)
+                    .task {
+                        await appContainer.storeKitService.loadProducts()
+                    }
+                    .onAppear {
+                        setupLiveActivities()
+                    }
+                    .onOpenURL { url in
+                        handleDeepLink(url)
+                    }
+            } else {
+                OnboardingView()
+            }
         }
         .modelContainer(modelContainer)
         .onChange(of: scenePhase) { _, newPhase in

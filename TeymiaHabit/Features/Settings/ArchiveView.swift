@@ -74,6 +74,7 @@ struct ArchiveView: View {
                 Image(systemName: "arrow.uturn.backward")
             }
             .buttonStyle(.glass)
+            .buttonBorderShape(.circle)
             .accessibilityLabel("Unarchive habit")
 
             Button(role: .destructive) {

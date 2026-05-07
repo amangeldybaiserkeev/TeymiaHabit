@@ -8,44 +8,41 @@ struct NewHabitView: View {
 
     var habit: Habit?
 
-    @State private var viewModel: NewHabitViewModel?
-
     var body: some View {
-        Group {
-            if let viewModel {
-                NewHabitContentView(viewModel: viewModel, onSave: {
-                    viewModel.save()
-                    dismiss()
-                })
-                .interactiveDismissDisabled(viewModel.hasChanges)
-            }
-        }
-        .task {
-            guard viewModel == nil else { return }
-            viewModel = NewHabitViewModel(
+        NewHabitContentView(
+            vm: NewHabitViewModel(
                 habitService: appContainer.habitService,
                 habit: habit
-            )
-        }
+            ),
+            onDismiss: { dismiss() }
+        )
     }
 }
 
 // MARK: - Content View
 
 private struct NewHabitContentView: View {
-    @Bindable var viewModel: NewHabitViewModel
-    let onSave: () -> Void
+    @State var vm: NewHabitViewModel
+    let onDismiss: () -> Void
+
+    init(vm: NewHabitViewModel, onDismiss: @escaping () -> Void) {
+        _vm = State(wrappedValue: vm)
+        self.onDismiss = onDismiss
+    }
 
     @FocusState private var focusField: NewHabitField?
 
     var body: some View {
+        @Bindable var vm = vm
+
         NavigationStack {
             Form {
                 mainInfoSection
                 goalSection
                 scheduleSection
             }
-            .navigationTitle(viewModel.habit == nil ? "create_habit" : "edit_habit")
+            .interactiveDismissDisabled(vm.hasChanges)
+            .navigationTitle(vm.habit == nil ? "create_habit" : "edit_habit")
             .navigationBarTitleDisplayMode(.inline)
             .scrollDismissesKeyboard(.immediately)
             .toolbar {
@@ -67,8 +64,11 @@ private extension NewHabitContentView {
     var navigationToolbar: some ToolbarContent {
         CloseToolbarButton()
         ConfirmationToolbarButton(
-            action: onSave,
-            isDisabled: !viewModel.isFormValid
+            action: {
+                vm.save()
+                onDismiss()
+            },
+            isDisabled: !vm.isFormValid
         )
     }
 
@@ -92,10 +92,10 @@ private extension NewHabitContentView {
 
     var mainInfoSection: some View {
         Section {
-            HabitNameRow(title: $viewModel.title, focus: $focusField)
+            HabitNameRow(title: $vm.title, focus: $focusField)
             IconRow(
-                selectedIcon: $viewModel.selectedIcon,
-                selectedColor: $viewModel.selectedIconColor
+                selectedIcon: $vm.selectedIcon,
+                selectedColor: $vm.selectedIconColor
             )
         }
     }
@@ -103,8 +103,8 @@ private extension NewHabitContentView {
     var goalSection: some View {
         Section {
             GoalRow(
-                selectedType: $viewModel.selectedType,
-                config: $viewModel.goalConfig,
+                selectedType: $vm.selectedType,
+                config: $vm.goalConfig,
                 focus: $focusField
             )
         }
@@ -112,11 +112,11 @@ private extension NewHabitContentView {
 
     var scheduleSection: some View {
         Section {
-            RepeatDaysRow(activeDays: $viewModel.activeDays)
-            StartDateRow(startDate: $viewModel.startDate)
+            ActiveDaysRow(activeDays: $vm.activeDays)
+            StartDateRow(startDate: $vm.startDate)
             RemindersRow(
-                isReminderEnabled: $viewModel.isReminderEnabled,
-                reminderTimes: $viewModel.reminderTimes
+                isReminderEnabled: $vm.isReminderEnabled,
+                reminderTimes: $vm.reminderTimes
             )
         }
     }

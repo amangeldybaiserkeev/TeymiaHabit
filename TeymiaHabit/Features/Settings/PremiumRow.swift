@@ -4,18 +4,6 @@ struct PremiumRow: View {
     @Environment(AppDependencyContainer.self) private var appContainer
     @State private var showingPaywall = false
 
-    enum GradientPhase: CaseIterable {
-        case first, second, third
-
-        var colors: [Color] {
-            switch self {
-            case .first: return [Color(#colorLiteral(red: 0.4235294118, green: 0.5764705882, blue: 0.9960784314, alpha: 1)), Color(#colorLiteral(red: 0.7803921569, green: 0.3803921569, blue: 0.7568627451, alpha: 1))]
-            case .second: return [Color(#colorLiteral(red: 0.3181028366, green: 0.5400418043, blue: 0.9980412126, alpha: 1)), Color(#colorLiteral(red: 0.5766596198, green: 0.4650856853, blue: 0.9760690331, alpha: 1))]
-            case .third: return [Color(#colorLiteral(red: 0.4936487675, green: 0.5068361759, blue: 0.9980413318, alpha: 1)), Color(#colorLiteral(red: 0.8374075294, green: 0.424548924, blue: 0.8359348178, alpha: 1))]
-            }
-        }
-    }
-
     var body: some View {
         Section {
 #if DEBUG
@@ -31,7 +19,9 @@ struct PremiumRow: View {
         }
         .listRowBackground(Color.clear)
         .listRowInsets(EdgeInsets())
-        .sheet(isPresented: $showingPaywall) { PaywallView() }
+        .fullScreenCover(isPresented: $showingPaywall) {
+            PaywallView(storeKitService: appContainer.storeKitService)
+        }
     }
 
     private var premiumRowView: some View {
@@ -84,7 +74,7 @@ struct PremiumRow: View {
                         }
 
                     ForEach(0..<15, id: \.self) { _ in
-                        FloatingStar(baseOffsetX: CGFloat.random(in: 50...150))
+                        FloatingStars(baseOffsetX: CGFloat.random(in: 50...150))
                     }
 
                     Capsule()
@@ -118,6 +108,18 @@ struct PremiumRow: View {
         }
         .buttonStyle(.plain)
     }
+
+    enum GradientPhase: CaseIterable {
+        case first, second, third
+
+        var colors: [Color] {
+            switch self {
+            case .first: return [Color(#colorLiteral(red: 0.4235294118, green: 0.5764705882, blue: 0.9960784314, alpha: 1)), Color(#colorLiteral(red: 0.7803921569, green: 0.3803921569, blue: 0.7568627451, alpha: 1))]
+            case .second: return [Color(#colorLiteral(red: 0.3181028366, green: 0.5400418043, blue: 0.9980412126, alpha: 1)), Color(#colorLiteral(red: 0.5766596198, green: 0.4650856853, blue: 0.9760690331, alpha: 1))]
+            case .third: return [Color(#colorLiteral(red: 0.4936487675, green: 0.5068361759, blue: 0.9980413318, alpha: 1)), Color(#colorLiteral(red: 0.8374075294, green: 0.424548924, blue: 0.8359348178, alpha: 1))]
+            }
+        }
+    }
 }
 
 private var tryNowText: some View {
@@ -131,7 +133,7 @@ private var tryNowText: some View {
         .glassEffect(.clear.interactive(), in: .capsule)
 }
 
-private struct FloatingStar: View {
+private struct FloatingStars: View {
     @State private var offset = CGSize.zero
     @State private var opacity: Double = 0.5
     @State private var isAnimating = false

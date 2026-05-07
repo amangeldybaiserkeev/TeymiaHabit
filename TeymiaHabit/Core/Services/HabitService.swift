@@ -3,7 +3,7 @@ import SwiftData
 
 @Observable @MainActor
 final class HabitService {
-    var temporaryProgress: [UUID: Int] = [:]
+    var temporaryProgress: [String: Int] = [:]
 
     private let modelContext: ModelContext
     private let widgetService: WidgetService
@@ -56,7 +56,8 @@ final class HabitService {
     // MARK: - Progress
 
     func effectiveProgress(for habit: Habit, on date: Date) -> Int {
-        if let temp = temporaryProgress[habit.uuid] {
+        let key = makeKey(for: habit.uuid, date: date)
+        if let temp = temporaryProgress[key] {
             return temp
         }
 
@@ -69,16 +70,19 @@ final class HabitService {
         return habit.progressForDate(date)
     }
 
-    func setTemporaryProgress(for habitId: UUID, progress: Int) {
-        temporaryProgress[habitId] = progress
+    func setTemporaryProgress(for habitId: UUID, date: Date, progress: Int) {
+        let key = makeKey(for: habitId, date: date)
+        temporaryProgress[key] = progress
     }
 
-    func getTemporaryProgress(for habitId: UUID) -> Int? {
-        return temporaryProgress[habitId]
+    func getTemporaryProgress(for habitId: UUID, date: Date) -> Int? {
+        let key = makeKey(for: habitId, date: date)
+        return temporaryProgress[key]
     }
 
-    func clearTemporaryProgress(for habitId: UUID) {
-        temporaryProgress.removeValue(forKey: habitId)
+    func clearTemporaryProgress(for habitId: UUID, date: Date) {
+        let key = makeKey(for: habitId, date: date)
+        temporaryProgress.removeValue(forKey: key)
     }
 
     @discardableResult
@@ -190,6 +194,11 @@ final class HabitService {
             guard !Task.isCancelled, let self else { return }
             try? self.modelContext.save()
         }
+    }
+
+    private func makeKey(for uuid: UUID, date: Date) -> String {
+        let dateString = calendar.startOfDay(for: date).description
+        return "\(uuid.uuidString)_\(dateString)"
     }
 
     private func handleNotifications(for habit: Habit, isReminderEnabled: Bool) {

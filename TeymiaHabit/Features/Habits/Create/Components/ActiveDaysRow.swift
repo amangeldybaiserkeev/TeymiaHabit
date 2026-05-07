@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct RepeatDaysRow: View {
+struct ActiveDaysRow: View {
     @Binding var activeDays: [Bool]
 
     private var orderedWeekdays: [Weekday] {
@@ -18,14 +18,13 @@ struct RepeatDaysRow: View {
                     toggleDay(index)
                 } label: {
                     Text(dayName)
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(.system(size: DS.IconSize.xxs, weight: .semibold))
                         .minimumScaleFactor(0.5)
                         .foregroundStyle(isActive ? DS.Colors.onPrimary : DS.Colors.secondary)
                         .frame(size: DS.IconSize.xxl)
                         .background {
-                            if isActive {
-                                Circle()
-                            }
+                            Circle()
+                                .fill(isActive ? Color.accentColor : .clear)
                         }
                 }
                 .buttonStyle(.plain)

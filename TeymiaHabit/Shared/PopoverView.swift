@@ -23,7 +23,7 @@ struct PopoverView<Label: View, Content: View>: View {
             }
             .navigationTransition(.zoom(sourceID: "POPOVER", in: namespace))
         }
-        .sensoryFeedback(.selection, trigger: haptic)
+        .sensoryFeedback(.selection, trigger: isExpanded)
     }
 }
 

@@ -2,24 +2,21 @@ import SwiftUI
 import StoreKit
 
 struct PaywallView: View {
-    @Environment(AppDependencyContainer.self) private var appContainer
-    @State private var vm: PaywallViewModel?
+    @State private var vm: PaywallViewModel
+
+    init(storeKitService: StoreKitService) {
+        _vm = State(
+            initialValue: PaywallViewModel(storeKitService: storeKitService)
+        )
+    }
 
     var body: some View {
-        Group {
-            if let vm {
-                PaywallContentView(vm: vm)
-            }
-        }
-        .task {
-            guard vm == nil else { return }
-            vm = PaywallViewModel(storeKitService: appContainer.storeKitService)
-        }
+        PaywallContentView(vm: vm)
     }
 }
 
 // MARK: - Main Content View
-private struct PaywallContentView: View {
+struct PaywallContentView: View {
     @Environment(\.openURL) private var openURL
     @Environment(\.dismiss) private var dismiss
     @Bindable var vm: PaywallViewModel
@@ -32,12 +29,20 @@ private struct PaywallContentView: View {
                     features
                     footer
                 }
-                .padding(.horizontal, DS.Spacing.lg)
+                .padding(.horizontal, DS.Spacing.reg)
             }
-            .background { LivelyFloatingBlobsBackground() }
-            .toolbar { CloseToolbarButton() }
-            .safeAreaBar(edge: .bottom) { bottomBar }
+            .background {
+                LivelyFloatingBlobsBackground()
+            }
+            .toolbar {
+                CloseToolbarButton()
+            }
+            .safeAreaBar(edge: .bottom) {
+                bottomBar
+                    .preferredColorScheme(.dark)
+            }
         }
+        .preferredColorScheme(.dark)
         .onAppear { vm.selectDefaultProduct() }
         .alert("paywall_purchase_result_title", isPresented: $vm.showingAlert) {
             Button("paywall_ok_button") {}
@@ -50,11 +55,13 @@ private struct PaywallContentView: View {
     private var header: some View {
         VStack(alignment: .trailing, spacing: 0) {
             Text("Teymia Habit")
-                .font(DS.AppFont.largeTitle).fontDesign(.rounded)
-                .foregroundStyle(UIStyle.headerGradient)
+                .font(DS.AppFont.largeTitle)
+                .fontDesign(.rounded)
+                .foregroundStyle(headerGradient)
 
             Text("Premium")
-                .font(DS.AppFont.footnoteMedium).fontDesign(.serif)
+                .font(DS.AppFont.footnoteMedium)
+                .fontDesign(.serif)
                 .foregroundStyle(DS.Colors.onPrimary.gradient)
                 .padding(.horizontal, DS.Spacing.xs)
                 .padding(.vertical, DS.Spacing.xxs)
@@ -63,12 +70,21 @@ private struct PaywallContentView: View {
         }
     }
 
+    private var headerGradient: LinearGradient {
+        LinearGradient(
+            colors: [DS.Colors.primary, DS.Colors.primary.opacity(0.8), DS.Colors.onPrimary.opacity(0.8)],
+            startPoint: .top, endPoint: .bottom
+        )
+    }
+
     private var features: some View {
         VStack(spacing: DS.Spacing.lg) {
             ForEach(PaywallFeature.allFeatures) { feature in
                 FeatureRow(feature: feature)
             }
         }
+        .padding(DS.Spacing.reg)
+        .glassEffect(.clear, in: .rect(cornerRadius: DS.Radius.xxl))
     }
 
     private var footer: some View {
@@ -133,8 +149,7 @@ private struct PaywallContentView: View {
 
             PurchaseButton(
                 selectedProduct: vm.selectedProduct,
-                isPurchasing: vm.isPurchasing,
-                isLoading: vm.products.isEmpty
+                isPurchasing: vm.isPurchasing
             ) {
                 vm.purchaseSelected { dismiss() }
             }
@@ -180,95 +195,59 @@ private struct ProductsRow: View {
 
     var body: some View {
         HStack(spacing: DS.Spacing.sm) {
-            if products.isEmpty {
-                ForEach(0..<3, id: \.self) { _ in
-                    PricingCardView(state: .skeleton)
-                }
-            } else {
-                ForEach(products) { product in
-                    PricingCardView(state: .data(product, isSelected: selectedProduct?.id == product.id)) {
+            ForEach(products) { product in
+                PricingCardView(
+                    product: product,
+                    isSelected: selectedProduct?.id == product.id
+                ) {
+                    withAnimation(DS.Animations.easeInOut) {
                         selectedProduct = product
                     }
                 }
             }
         }
+        .sensoryFeedback(.selection, trigger: selectedProduct)
     }
 }
 
 // MARK: - Pricing Card
 private struct PricingCardView: View {
-    @Environment(\.colorScheme) private var colorScheme
-    let state: State
-    var action: (() -> Void)? = nil
+    let product: Product
+    let isSelected: Bool
+    let action: () -> Void
 
-    private var isDark: Bool { colorScheme == .dark }
+    private var config: (icon: String, title: LocalizedStringResource) {
+        product.paywallConfig
+    }
 
     var body: some View {
-        Button { action?() } label: {
+        Button {
+            action()
+        } label: {
             VStack(spacing: DS.Spacing.xs) {
-                content
+                Image(systemName: config.icon)
+                    .font(.system(size: DS.IconSize.xs))
+                Text(config.title)
+                    .font(DS.AppFont.caption)
+                    .fontWeight(.semibold)
+                Text(product.displayPrice)
+                    .font(DS.AppFont.headline)
+                    .fontWeight(.bold)
+                    .fontDesign(.monospaced)
             }
+            .foregroundStyle(isSelected ? DS.Colors.onPrimary : DS.Colors.primary)
             .frame(maxWidth: .infinity)
             .frame(height: 100)
+            .contentShape(.rect)
             .padding(.horizontal, DS.Spacing.xs)
-            .contentShape(.rect(cornerRadius: DS.Radius.xl))
+            .background {
+                RoundedRectangle(cornerRadius: DS.Radius.xl)
+                    .fill(.white.gradient)
+                    .opacity(isSelected ? 1 : 0)
+            }
         }
         .buttonStyle(.plain)
-        .glassEffect(.regular.interactive(), in: .rect(cornerRadius: DS.Radius.xl))
-        .overlay {
-                if case let .data(_, isSelected) = state, isSelected {
-                    RoundedRectangle(cornerRadius: DS.Radius.xl)
-                        .stroke(DS.Colors.primary.gradient, lineWidth: 2)
-                }
-            }
-        .animation(DS.Animations.easeInOut, value: isSelected)
-        .allowsHitTesting(!isSkeleton)
-        .shimmer(.init(
-            highlight: .white,
-            blur: 20,
-            highlightOpacity: isDark ? 0.4 : 1,
-            delay: isSkeleton ? 0 : 1.7
-        ))
-        .contentShape(.rect(cornerRadius: DS.Radius.xl))
-    }
-
-    @ViewBuilder
-    private var content: some View {
-        switch state {
-        case .skeleton:
-            Capsule().fill(DS.Colors.secondary.opacity(0.2)).frame(width: 40, height: 12)
-            Capsule().fill(DS.Colors.secondary.opacity(0.2)).frame(width: 60, height: 12)
-            Capsule().fill(DS.Colors.secondary.opacity(0.2)).frame(width: 70, height: 12)
-        case .data(let product, _):
-            let config = product.paywallConfig
-            Image(systemName: config.icon)
-                .font(.system(size: DS.IconSize.xs))
-                .foregroundStyle(DS.Colors.primary)
-            Text(config.title)
-                .font(DS.AppFont.caption).fontWeight(.semibold)
-                .foregroundStyle(DS.Colors.primary)
-            Text(product.displayPrice)
-                .font(DS.AppFont.headline).fontWeight(.bold)
-                .fontDesign(.monospaced)
-                .foregroundStyle(DS.Colors.primary)
-        }
-    }
-
-    // State
-    enum State {
-        case skeleton
-        case data(Product, isSelected: Bool)
-
-        var check: Bool {
-            if case .skeleton = self { return true }
-            return false
-        }
-    }
-
-    private var isSkeleton: Bool { state.check }
-    private var isSelected: Bool {
-        if case let.data(_, selected) = state { return selected }
-        return false
+        .glassEffect(.clear.interactive(), in: .rect(cornerRadius: DS.Radius.xl))
     }
 }
 
@@ -276,7 +255,6 @@ private struct PricingCardView: View {
 private struct PurchaseButton: View {
     let selectedProduct: Product?
     let isPurchasing: Bool
-    let isLoading: Bool
     let onTap: () -> Void
 
     var body: some View {
@@ -286,15 +264,10 @@ private struct PurchaseButton: View {
                     ProgressView()
                 }
 
-                if isLoading {
-                    Capsule()
-                        .fill(DS.Colors.secondary.opacity(0.2))
-                        .frame(width: 280, height: 24)
-                } else {
-                    Text(buttonTitle)
-                        .font(DS.AppFont.headline)
-                        .foregroundStyle(DS.Colors.primary.gradient)
-                }
+                Text(buttonTitle)
+                    .font(DS.AppFont.headline)
+                    .foregroundStyle(DS.Colors.primary.gradient)
+                    .contentTransition(.numericText())
             }
             .frame(maxWidth: .infinity)
             .frame(height: DS.TouchTarget.large)
@@ -307,14 +280,8 @@ private struct PurchaseButton: View {
             cornerRadius: DS.Radius.xl
         )
         .buttonStyle(.plain)
-        .glassEffect(.regular.interactive(), in: .capsule)
-        .allowsHitTesting(!isLoading && !isPurchasing && selectedProduct != nil)
-        .overlay {
-            if isLoading {
-                Color.clear
-                    .shimmer(ShimmerConfig(highlight: DS.Colors.primary, blur: 40, highlightOpacity: 0.3, delay: 0))
-            }
-        }
+        .glassEffect(.clear.interactive(), in: .capsule)
+        .allowsHitTesting(!isPurchasing && selectedProduct != nil)
     }
 
     private var buttonTitle: LocalizedStringResource {
@@ -324,14 +291,7 @@ private struct PurchaseButton: View {
     }
 }
 
-// MARK: - Helpers & Logic Extensions
-
-private enum UIStyle {
-    static let headerGradient = LinearGradient(
-        colors: [DS.Colors.primary, DS.Colors.primary.opacity(0.8), DS.Colors.onPrimary.opacity(0.8)],
-        startPoint: .top, endPoint: .bottom
-    )
-}
+// MARK: - Helpers
 
 extension Product {
     var paywallConfig: (icon: String, title: LocalizedStringResource) {

@@ -30,10 +30,12 @@ private struct NewHabitContentView: View {
         self.onDismiss = onDismiss
     }
 
+    @Environment(AppDependencyContainer.self) private var appContainer
     @FocusState private var focusField: NewHabitField?
 
     var body: some View {
         @Bindable var vm = vm
+        @Bindable var container = appContainer
 
         NavigationStack {
             List {
@@ -42,7 +44,7 @@ private struct NewHabitContentView: View {
                 scheduleSection
             }
             .interactiveDismissDisabled(vm.hasChanges)
-            .navigationTitle(vm.habit == nil ? "create_habit" : "edit_habit")
+            .navigationTitle(vm.habit == nil ? "Create Habit" : "Edit Habit")
             .navigationBarTitleDisplayMode(.inline)
             .scrollDismissesKeyboard(.immediately)
             .toolbar {
@@ -51,6 +53,9 @@ private struct NewHabitContentView: View {
             }
             .onAppear {
                 focusField = .title
+            }
+            .adaptiveSheet(isPresented: Bindable(appContainer).showingPaywall) {
+                PaywallView(storeKitService: appContainer.storeKitService)
             }
         }
     }

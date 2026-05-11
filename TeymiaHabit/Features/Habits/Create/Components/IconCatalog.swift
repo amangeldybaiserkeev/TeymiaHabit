@@ -1,12 +1,12 @@
 import SwiftUI
 
-struct CategorySection: Identifiable, Hashable {
+struct CategorySection: Identifiable {
     let id: String
-    let name: String
+    let name: LocalizedStringResource
     let icons: [String]
 
-    init(name: String, icons: [String]) {
-        self.id = name
+    init(name: LocalizedStringResource, icons: [String]) {
+        self.id = name.key
         self.name = name
         self.icons = icons
     }
@@ -14,7 +14,7 @@ struct CategorySection: Identifiable, Hashable {
 
 enum IconCatalog {
     static let categories: [CategorySection] = [
-        CategorySection(name: "sport", icons: [
+        CategorySection(name: "Sport", icons: [
             "person.yoga", "person.yoga.fill", "person.meditation",
             "person.meditation.fill", "person.yoga.ball", "person.yoga.ball.fill",
             "person.windsurf", "person.windsurf.fill", "person.volleyball",
@@ -51,7 +51,7 @@ enum IconCatalog {
             "trophy.fill", "badget.check", "badget.check.fill"
         ]),
 
-        CategorySection(name: "productivity", icons: [
+        CategorySection(name: "Productivity", icons: [
             "book", "book.fill", "book2",
             "book2.fill", "book.bookmark", "book.bookmark.fill",
             "books", "books.fill", "book.person",
@@ -92,7 +92,7 @@ enum IconCatalog {
             "target2.fill", "bolt", "bolt.fill"
         ]),
 
-        CategorySection(name: "health", icons: [
+        CategorySection(name: "Health", icons: [
             "doctor", "doctor.fill", "doctor.case",
             "doctor.case.fill", "nurse", "nurse.fill",
             "hospital", "hospital.fill", "medical",
@@ -123,7 +123,7 @@ enum IconCatalog {
             "pizza.fill"
         ]),
 
-        CategorySection(name: "self-care", icons: [
+        CategorySection(name: "Self-care", icons: [
             "face.smile.tongue", "face.smile.tongue.fill", "face.sunglasses",
             "face.sunglasses.fill", "face.awesome", "face.awesome.fill",
             "face.drooling", "face.drooling.fill", "face.sleeping",
@@ -154,7 +154,7 @@ enum IconCatalog {
             "facial.massage.fill", "moustache", "moustache.fill"
         ]),
 
-        CategorySection(name: "hobbies", icons: [
+        CategorySection(name: "Hobbies", icons: [
             "ballet.dance", "ballet.dance.fill", "theater.masks",
             "theater.masks.fill", "clapper.open", "clapper.open.fill",
             "video.camera.alt", "video.camera.alt.fill", "camera",
@@ -183,7 +183,7 @@ enum IconCatalog {
             "play.circle.fill", "swing", "swing.fill"
         ]),
 
-        CategorySection(name: "lifestyle", icons: [
+        CategorySection(name: "Lifestyle", icons: [
             "face.smile", "face.smile.fill", "face.smile.beam",
             "face.smile.beam.fill", "face.smile.hearts", "face.smile.hearts.fill",
             "face.smiling.hands", "face.smiling.hands.fill", "face.party",
@@ -224,7 +224,7 @@ enum IconCatalog {
         ])
         ,
 
-        CategorySection(name: "brands", icons: [
+        CategorySection(name: "Brands", icons: [
             "apple.logo", "android", "google",
             "meta", "facebook", "instagram",
             "threads", "twitter.x", "linkedin",
@@ -240,7 +240,7 @@ enum IconCatalog {
             "bitcoin", "ethereum"
         ]),
 
-        CategorySection(name: "other", icons: [
+        CategorySection(name: "Other", icons: [
             "heart", "heart.fill", "anatomical.heart",
             "anatomical.heart.fill", "sparkles", "sparkles.fill",
             "diamond", "diamond.fill", "fire.flame",

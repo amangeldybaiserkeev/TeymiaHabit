@@ -7,7 +7,7 @@ struct ArchiveRow: View {
             ArchiveView()
         } label: {
             Label {
-                Text("settings_archived_habits")
+                Text("Archive")
             } icon: {
                 RowIcon(iconName: "archivebox")
             }
@@ -30,7 +30,7 @@ struct ArchiveView: View {
         List {
             listContent
         }
-        .navigationTitle("settings_archived_habits")
+        .navigationTitle("Archive")
         .deleteHabitAlert(habit: $habitToDelete) { habit in
             appContainer.habitService.delete(habit)
         }
@@ -40,9 +40,9 @@ struct ArchiveView: View {
     private var listContent: some View {
         if archivedHabits.isEmpty {
             ContentUnavailableView(
-                "settings_archive_title",
+                "No Archived Habits",
                 systemImage: "archivebox.fill",
-                description: Text("settings_archive_description")
+                description: Text("Archived habits will appear here")
             )
             .listRowBackground(Color.clear)
         } else {
@@ -75,7 +75,6 @@ struct ArchiveView: View {
             }
             .buttonStyle(.glass)
             .buttonBorderShape(.circle)
-            .accessibilityLabel("Unarchive habit")
 
             Button(role: .destructive) {
                 habitToDelete = habit

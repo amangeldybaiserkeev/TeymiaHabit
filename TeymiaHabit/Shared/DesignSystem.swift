@@ -5,7 +5,7 @@ enum DS {
     enum Colors {
         static let primary = Color.appPrimary
         static let secondary = Color.secondary
-        static let tertiary = Color(.systemGray6)
+        static let tertiary = Color.appTertiary
         static let onPrimary = Color.onPrimary
         static let premiumBlue = Color.premiumBlue
         static let premiumPink = Color.premiumPink

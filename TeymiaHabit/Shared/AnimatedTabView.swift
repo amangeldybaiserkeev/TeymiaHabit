@@ -1,7 +1,7 @@
 import SwiftUI
 
 protocol AnimatedTabSelectionProtocol: CaseIterable, Hashable {
-    var title: LocalizedStringResource { get }
+    var title: LocalizedStringKey { get }
     var symbolImage: String { get }
 }
 

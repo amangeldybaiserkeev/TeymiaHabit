@@ -3,6 +3,7 @@ import SwiftData
 
 @Observable @MainActor
 final class AppDependencyContainer {
+    var showingPaywall = false
 
     // MARK: - Managers
     let navManager = NavigationManager()

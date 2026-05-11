@@ -1,4 +1,4 @@
-import Foundation
+import SwiftUI
 
 enum CompletionSound: String, CaseIterable, Identifiable {
     case `default`, chime, chord, click, droplet, echo, flow, glow, horizon,
@@ -6,9 +6,9 @@ enum CompletionSound: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
-    var displayName: LocalizedStringResource {
+    var displayName: LocalizedStringKey {
         switch self {
-        case .default: return "default_sound"
+        case .default: return "Default"
         case .chime: return "Chime"
         case .chord: return "Chord"
         case .click: return "Click"
@@ -32,4 +32,8 @@ enum CompletionSound: String, CaseIterable, Identifiable {
     var fileExtension: String { "wav" }
 }
 
-extension CompletionSound: HabitSoundProtocol {}
+extension CompletionSound: HabitSoundProtocol {
+    var isFree: Bool {
+        self == .default
+    }
+}

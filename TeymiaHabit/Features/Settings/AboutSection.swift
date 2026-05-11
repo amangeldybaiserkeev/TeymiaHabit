@@ -7,7 +7,7 @@ struct RateRow: View {
         Button {
             openURL(AppConfig.rateAppURL)
         } label: {
-            AboutLabel(title: "settings_rate", icon: "star")
+            AboutLabel(title: "Rate", icon: "star")
         }
     }
 }
@@ -16,7 +16,7 @@ struct RateRow: View {
 struct ShareRow: View {
     var body: some View {
         ShareLink(item: AppConfig.appStoreURL) {
-            AboutLabel(title: "settings_share", icon: "square.and.arrow.up")
+            AboutLabel(title: "Share", icon: "square.and.arrow.up")
         }
     }
 }
@@ -28,7 +28,7 @@ struct PrivacyRow: View {
         Button {
             openURL(AppConfig.privacyPolicyURL, prefersInApp: true)
         } label: {
-            AboutLabel(title: "settings_privacy_policy", icon: "lock")
+            AboutLabel(title: "Privacy Policy", icon: "lock")
         }
     }
 }
@@ -40,7 +40,7 @@ struct TermsRow: View {
         Button {
             openURL(AppConfig.termsOfServiceURL, prefersInApp: true)
         } label: {
-            AboutLabel(title: "settings_tos", icon: "doc.text")
+            AboutLabel(title: "Terms of Service", icon: "doc.text")
         }
     }
 }

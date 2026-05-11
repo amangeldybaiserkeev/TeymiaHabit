@@ -10,8 +10,8 @@ extension Calendar {
 
 extension Date {
     func formattedAsNavigationTitle() -> String {
-        if Calendar.current.isDateInToday(self) { return "today".capitalized }
-        if Calendar.current.isDateInYesterday(self) { return "yesterday".capitalized }
+        if Calendar.current.isDateInToday(self) { return "Today".capitalized }
+        if Calendar.current.isDateInYesterday(self) { return "Yesterday".capitalized }
         let formatter = DateFormatter()
         formatter.dateFormat = "d MMMM"
         return formatter.string(from: self).capitalized

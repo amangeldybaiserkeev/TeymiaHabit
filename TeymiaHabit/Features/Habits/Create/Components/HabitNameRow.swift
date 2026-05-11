@@ -12,7 +12,7 @@ struct HabitNameRow: View {
     var body: some View {
         Label {
             HStack {
-                TextField("habit_name", text: $title)
+                TextField("Habit name", text: $title)
                     .fontWeight(.medium)
                     .focused($focus, equals: .title)
                     .submitLabel(.next)

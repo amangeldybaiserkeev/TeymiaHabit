@@ -12,8 +12,8 @@ extension View {
                 set: { if !$0 { habit.wrappedValue = nil } }
             )
         ) {
-            Button("button_cancel", role: .cancel) { }
-            Button("button_delete", role: .destructive) {
+            Button("Cancel", role: .cancel) { }
+            Button("Delete", role: .destructive) {
                 habit.wrappedValue.map(onDelete)
             }
         } message: {

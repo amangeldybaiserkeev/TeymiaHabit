@@ -2,7 +2,6 @@ import SwiftUI
 
 struct PremiumRow: View {
     @Environment(AppDependencyContainer.self) private var appContainer
-    @State private var showingPaywall = false
 
     var body: some View {
         Section {
@@ -19,14 +18,11 @@ struct PremiumRow: View {
         }
         .listRowBackground(Color.clear)
         .listRowInsets(EdgeInsets())
-        .adaptiveSheet(isPresented: $showingPaywall) {
-            PaywallView(storeKitService: appContainer.storeKitService)
-        }
     }
 
     private var premiumRowView: some View {
         Button {
-            showingPaywall = true
+            appContainer.showingPaywall = true
         } label: {
             HStack {
                 Image(systemName: "sparkles.2")
@@ -40,13 +36,16 @@ struct PremiumRow: View {
                         .foregroundStyle(.white.gradient)
 
                     HStack(spacing: DS.Spacing.xxs) {
-                        Text("Try")
+                        Text("7 days")
                             .foregroundStyle(.white.opacity(0.8))
+                            .fontWeight(.medium)
                         Text("free")
+                            .fontDesign(.monospaced)
+                            .fontWeight(.semibold)
                             .foregroundStyle(.white.gradient)
-                        Text("for 7 days")
-                            .foregroundStyle(.white.opacity(0.8))
                     }
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
                     .font(DS.AppFont.subheadline)
                 }
                 Spacer()
@@ -179,21 +178,4 @@ private struct FloatingStars: View {
                 }
             }
     }
-}
-
-#Preview {
-    let container = PreviewContainer.container
-    let appContainer = AppDependencyContainer(modelContext: container.mainContext)
-    appContainer.storeKitService.setDebugPremium(false)
-    return List {
-        PremiumRow()
-
-        Section {
-            Text("Appearance")
-            Text("App Tint")
-            Text("App Icon")
-        }
-    }
-    .environment(appContainer)
-    .modelContainer(container)
 }

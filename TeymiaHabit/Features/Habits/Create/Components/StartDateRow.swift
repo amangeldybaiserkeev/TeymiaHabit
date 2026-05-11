@@ -5,10 +5,11 @@ struct StartDateRow: View {
 
     var body: some View {
         HStack {
-            Label(
-                title: { Text("start_date") },
-                icon: { RowIcon(iconName: "calendar.badge") }
-            )
+            Label {
+                Text("Start Date")
+            } icon: {
+                RowIcon(iconName: "calendar.badge")
+            }
 
             Spacer()
 

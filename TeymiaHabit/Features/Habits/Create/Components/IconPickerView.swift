@@ -13,7 +13,7 @@ struct IconRow: View {
         } label: {
             HStack {
                 Label {
-                    Text("icon")
+                    Text("Icon")
                 } icon: {
                     RowIcon(iconName: "app.specular")
                 }
@@ -79,7 +79,7 @@ struct IconPickerView: View {
                 .padding(.vertical, DS.Spacing.reg)
             }
         }
-        .navigationTitle("icon")
+        .navigationTitle("Icon")
         .animation(DS.Animations.snappy, value: searchText)
         .sensoryFeedback(.selection, trigger: selectedIcon)
         .safeAreaBar(edge: .bottom) {
@@ -92,7 +92,7 @@ struct IconPickerView: View {
 
     // MARK: - Private Views
 
-    private func sectionHeader(_ title: String) -> some View {
+    private func sectionHeader(_ title: LocalizedStringResource) -> some View {
         Text(title)
             .font(DS.AppFont.title2)
             .foregroundStyle(DS.Colors.primary)

@@ -17,18 +17,20 @@ struct NotificationsRow: View {
             }
         )) {
             Label {
-                Text("settings_notifications")
+                Text("Notifications")
             } icon: {
                 RowIcon(iconName: "bell.badge")
                     .symbolEffect(.wiggle, value: manager.notificationsEnabled)
             }
         }
         .tint(nil)
-        .alert("alert_notifications_permission", isPresented: $isPermissionAlertPresented) {
-            Button("button_cancel", role: .cancel) { }
-            Button("button_settings") { openSettings() }
+        .alert("Allow Notifications", isPresented: $isPermissionAlertPresented) {
+            Button("Cancel", role: .cancel) { }
+            Button("Settings") { openSettings() }
         } message: {
-            Text("alert_notifications_permission_message")
+            Text(
+                "Enable notifications for habit reminders."
+            )
         }
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {

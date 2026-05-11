@@ -13,11 +13,11 @@ enum ThemeMode: Int, CaseIterable {
         }
     }
 
-    var localizedName: LocalizedStringResource {
+    var localizedName: LocalizedStringKey {
         switch self {
-        case .system: "appearance_system"
-        case .light:  "appearance_light"
-        case .dark:   "appearance_dark"
+        case .system: "System"
+        case .light:  "Light"
+        case .dark:   "Dark"
         }
     }
 

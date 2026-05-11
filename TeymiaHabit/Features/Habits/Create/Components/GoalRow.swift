@@ -34,8 +34,8 @@ struct GoalRow: View {
                 Text("daily_goal")
                 Spacer()
                 Picker("", selection: $selectedType.animation(.snappy)) {
-                    Text("count").tag(HabitType.count)
-                    Text("time").tag(HabitType.time)
+                    Text("Count").tag(HabitType.count)
+                    Text("Time").tag(HabitType.time)
                 }
                 .pickerStyle(.segmented)
                 .frame(maxWidth: Constants.pickerWidth)
@@ -68,7 +68,7 @@ struct GoalRow: View {
             if type == .count {
                 countField
             } else {
-                Text("goalsection_choose_time")
+                Text("Choose time")
                     .foregroundStyle(.secondary.opacity(0.8))
             }
 
@@ -99,7 +99,7 @@ struct GoalRow: View {
     // Stepper and TextField both read/write directly to config.countText.
 
     private var countField: some View {
-        TextField("goalsection_enter_count", text: $config.countText)
+        TextField("Enter count", text: $config.countText)
             .keyboardType(.numberPad)
             .focused($focus, equals: .count)
             .foregroundStyle(.primary)

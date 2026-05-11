@@ -1,29 +1,29 @@
-import Foundation
+import SwiftUI
 
 enum AppIcon: String, CaseIterable, Identifiable {
     case main = "AppIcon"
     case dark = "AppIconDark"
-    case orange = "AppIconOrange"
+    case mandarin = "AppIconMandarin"
     case mint = "AppIconMint"
     case raspberry = "AppIconRaspberry"
     case lime = "AppIconLime"
-    case yellow = "AppIconYellow"
-    case indigo = "AppIconIndigo"
-    case cyan = "AppIconCyan"
+    case bumblebee = "AppIconBumblebee"
+    case midnightIndigo = "AppIconMidnightIndigo"
+    case lagoon = "AppIconLagoon"
 
     var id: String { rawValue }
 
-    var title: LocalizedStringResource {
+    var title: LocalizedStringKey {
         switch self {
-        case .main: return "appicon_main"
-        case .dark: return "appicon_dark"
-        case .orange: return "appicon_orange"
-        case .mint: return "appicon_mint"
-        case .raspberry: return "appicon_raspberry"
-        case .lime: return "appicon_lime"
-        case .yellow: return "appicon_yellow"
-        case .indigo: return "appicon_indigo"
-        case .cyan: return "appicon_cyan"
+        case .main: return "Main"
+        case .dark: return "Dark"
+        case .mandarin: return "Mandarin"
+        case .mint: return "Mint"
+        case .raspberry: return "Raspberry"
+        case .lime: return "Lime"
+        case .bumblebee: return "Bumblebee"
+        case .midnightIndigo: return "Midnight Indigo"
+        case .lagoon: return "Lagoon"
         }
     }
 
@@ -38,3 +38,11 @@ enum AppIcon: String, CaseIterable, Identifiable {
     }
 }
 
+extension AppIcon {
+    var isFree: Bool {
+        switch self {
+        case .main, .dark, .mandarin: return true
+        default: return false
+        }
+    }
+}

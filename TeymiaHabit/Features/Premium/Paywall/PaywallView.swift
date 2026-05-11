@@ -31,12 +31,8 @@ struct PaywallContentView: View {
                 }
                 .padding(.horizontal, DS.Spacing.reg)
             }
-            .background {
-                LivelyFloatingBlobsBackground()
-            }
-            .toolbar {
-                CloseToolbarButton()
-            }
+            .background { LivelyFloatingBlobsBackground() }
+            .toolbar { CloseToolbarButton() }
             .safeAreaBar(edge: .bottom) {
                 bottomBar
                     .preferredColorScheme(.dark)
@@ -44,8 +40,8 @@ struct PaywallContentView: View {
         }
         .preferredColorScheme(.dark)
         .onAppear { vm.selectDefaultProduct() }
-        .alert("paywall_purchase_result_title", isPresented: $vm.showingAlert) {
-            Button("paywall_ok_button") {}
+        .alert("Purchase Result", isPresented: $vm.showingAlert) {
+            Button("OK") {}
         } message: {
             Text(vm.alertMessage)
         }
@@ -92,7 +88,7 @@ struct PaywallContentView: View {
             Button {
                 vm.restorePurchases { dismiss() }
             } label: {
-                Text("paywall_restore_purchases_button")
+                Text("Restore Purchases")
                     .font(DS.AppFont.subheadline)
                     .fontWeight(.semibold)
                     .foregroundStyle(DS.Colors.primary)
@@ -109,7 +105,7 @@ struct PaywallContentView: View {
                 if let url = URL(string: "https://www.apple.com/family-sharing/") { openURL(url, prefersInApp: true) }
             } label: {
                 Label {
-                    Text("paywall_family_sharing_button")
+                    Text("Supports Family Sharing")
                         .font(DS.AppFont.footnoteMedium)
                         .foregroundStyle(DS.Colors.primary)
                 } icon: {
@@ -121,7 +117,7 @@ struct PaywallContentView: View {
             }
 
             HStack(spacing: DS.Spacing.xxl) {
-                Button("paywall_terms_of_service") {
+                Button("Terms of Service") {
                     if let url = URL(
                         string: "https://www.notion.so/Terms-of-Service-204d5178e65a80b89993e555ffd3511f"
                     ) {
@@ -129,7 +125,7 @@ struct PaywallContentView: View {
                     }
                 }
 
-                Button("paywall_privacy_policy") {
+                Button("Privacy Policy") {
                     if let url = URL(string: "https://www.notion.so/Privacy-Policy-1ffd5178e65a80d4b255fd5491fba4a8") {
                         openURL(url, prefersInApp: true)
                     }
@@ -216,7 +212,7 @@ private struct PricingCardView: View {
     let isSelected: Bool
     let action: () -> Void
 
-    private var config: (icon: String, title: LocalizedStringResource) {
+    private var config: (icon: String, title: LocalizedStringKey) {
         product.paywallConfig
     }
 
@@ -284,9 +280,13 @@ private struct PurchaseButton: View {
         .allowsHitTesting(!isPurchasing && selectedProduct != nil)
     }
 
-    private var buttonTitle: LocalizedStringResource {
-        if isPurchasing { return "paywall_processing_button" }
-        guard let product = selectedProduct else { return "paywall_continue" }
+    private var buttonTitle: LocalizedStringKey {
+        if isPurchasing {
+            return "Processing..."
+        }
+        guard let product = selectedProduct else {
+            return "Сontinue"
+        }
         return product.ctaTitle
     }
 }
@@ -294,19 +294,25 @@ private struct PurchaseButton: View {
 // MARK: - Helpers
 
 extension Product {
-    var paywallConfig: (icon: String, title: LocalizedStringResource) {
-        if id.contains("lifetime") { return ("infinity", "paywall_lifetime_plan") }
-        if id.contains("yearly") { return ("gift", "paywall_yearly_plan") }
-        return ("calendar.badge.checkmark", "paywall_monthly_plan")
+    var paywallConfig: (icon: String, title: LocalizedStringKey) {
+        if id.contains("lifetime") {
+            return ("infinity", "Lifetime")
+        }
+        if id.contains("yearly") {
+            return ("gift", "Yearly")
+        }
+        return ("calendar.badge.checkmark", "Monthly")
     }
 
-    var ctaTitle: LocalizedStringResource {
-        if id.contains("lifetime") { return "paywall_lifetime_cta" }
+    var ctaTitle: LocalizedStringKey {
+        if id.contains("lifetime") {
+            return "Get Lifetime"
+        }
         if id.contains("yearly") {
             let monthlyPrice = (price / 12).formatted(.currency(code: priceFormatStyle.currencyCode))
-            return "paywall_start_trial_monthly \(monthlyPrice)"
+            return "Start 7 days free \(monthlyPrice)"
         }
-        return "paywall_subscribe_cta"
+        return "Subscribe"
     }
 }
 

@@ -65,8 +65,8 @@ struct BarChartView: View {
                 selectionOverlay
 
                 BarMark(
-                    x: .value("Date", dataPoint.date, unit: vm.range == .year ? .month : .day),
-                    y: .value("Value", Double(dataPoint.value))
+                    x: .value("", dataPoint.date, unit: vm.range == .year ? .month : .day),
+                    y: .value("", Double(dataPoint.value))
                 )
                 .foregroundStyle(vm.chartGradient)
                 .cornerRadius(Constants.barCornerRadius(for: vm.range))
@@ -114,7 +114,7 @@ struct BarChartView: View {
     @ChartContentBuilder
     private var selectionOverlay: some ChartContent {
         if let selectedPoint = vm.selectedPoint {
-            RuleMark(x: .value("Selected", selectedPoint.date, unit: vm.range.xUnit))
+            RuleMark(x: .value("", selectedPoint.date, unit: vm.range.xUnit))
                 .foregroundStyle(vm.chartGradient.opacity(0.8))
                 .annotation(position: .top, overflowResolution: .init(x: .fit(to: .chart), y: .disabled)) {
                     ChartSelectionAnnotation(
@@ -146,8 +146,6 @@ private struct ChartContainer<Content: View>: View {
                     .padding(.horizontal, DS.Spacing.reg)
             }
         }
-        .accessibilityLabel("Chart periods")
-        .accessibilityValue("Page \(currentIndex + 1) of \(count)")
         .tabViewStyle(.page(indexDisplayMode: .never))
         .frame(height: ChartContainerConstants.tabViewHeight)
     }

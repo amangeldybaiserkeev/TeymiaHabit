@@ -123,7 +123,7 @@ struct HabitCard: View {
             vm.toggleSkip(for: habit, date: date)
         } label: {
             Label(
-                isSkipped ? "unskip" : "skip",
+                isSkipped ? "Unskip" : "Skip",
                 systemImage: isSkipped ? "arrow.left" : "arrow.right"
             )
         }
@@ -134,7 +134,7 @@ struct HabitCard: View {
         Button {
             onEdit?()
         } label: {
-            Label("button_edit", systemImage: "pencil")
+            Label("Edit", systemImage: "pencil")
         }
         .tint(contextMenuTint)
     }
@@ -143,7 +143,7 @@ struct HabitCard: View {
         Button {
             vm.archiveHabit(habit)
         } label: {
-            Label("archive", systemImage: "archivebox")
+            Label("Archive", systemImage: "archivebox")
         }
         .tint(contextMenuTint)
     }
@@ -152,7 +152,7 @@ struct HabitCard: View {
         Button(role: .destructive) {
             habitToDelete = habit
         } label: {
-            Label("button_delete", systemImage: "trash")
+            Label("Delete", systemImage: "trash")
         }
         .tint(.red)
     }

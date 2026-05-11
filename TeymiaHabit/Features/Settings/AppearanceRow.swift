@@ -10,7 +10,7 @@ struct AppearanceRow: View {
             }
         } label: {
             Label(
-                title: { Text("settings_appearance") },
+                title: { Text("Appearance") },
                 icon: { RowIcon(iconName: themeMode.iconName) }
             )
             .contentTransition(.symbolEffect(.replace))

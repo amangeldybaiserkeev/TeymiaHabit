@@ -8,7 +8,7 @@ struct OnboardingRow: View {
             showOnboarding = true
         } label: {
             Label {
-                Text("show_onboarding")
+                Text("Show Onboarding")
                     .foregroundStyle(DS.Colors.primary)
             } icon: {
                 RowIcon(iconName: "hand.wave")

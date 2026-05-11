@@ -1,4 +1,4 @@
-import Foundation
+import SwiftUI
 
 /// Represents a single data point for habit progress charts
 /// Used in statistics views to display habit completion over time
@@ -49,11 +49,11 @@ struct ChartDataPoint: Identifiable, Equatable {
 enum ChartTimeRange: String, CaseIterable {
     case week, month, year
 
-    var displayName: LocalizedStringResource {
+    var displayName: LocalizedStringKey {
         switch self {
-        case .week: return "chart_range_week"
-        case .month: return "chart_range_month"
-        case .year: return "chart_range_year"
+        case .week: return "Week"
+        case .month: return "Month"
+        case .year: return "Year"
         }
     }
 

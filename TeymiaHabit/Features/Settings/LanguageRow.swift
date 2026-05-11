@@ -10,7 +10,7 @@ struct LanguageRow: View {
         } label: {
             HStack {
                 Label {
-                    Text("settings_language")
+                    Text("Language")
                         .foregroundStyle(DS.Colors.primary)
                 } icon: {
                     RowIcon(iconName: "globe")

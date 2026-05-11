@@ -16,11 +16,11 @@ enum AppTab: AnimatedTabSelectionProtocol {
         }
     }
 
-    var title: LocalizedStringResource {
+    var title: LocalizedStringKey {
         switch self {
-        case .habits: "tabview_habits"
-        case .statistics: "tabview_statistics"
-        case .settings: "tabview_settings"
+        case .habits: "Habits"
+        case .statistics: "Statistics"
+        case .settings: "Settings"
         }
     }
 }
@@ -33,6 +33,7 @@ struct MainTabView: View {
     @State private var selectedDate: Date = .now
 
     var body: some View {
+        @Bindable var appContainer = appContainer
         @Bindable var nav = appContainer.navManager
 
         AnimatedTabView(selection: $nav.selectedTab) {
@@ -48,6 +49,9 @@ struct MainTabView: View {
         .tint(DS.Colors.primary)
         .preferredColorScheme(themeMode.colorScheme)
         .tabBarMinimizeBehavior(.onScrollDown)
+        .adaptiveSheet(isPresented: $appContainer.showingPaywall) {
+            PaywallView(storeKitService: appContainer.storeKitService)
+        }
     }
 
     @TabContentBuilder<AppTab>

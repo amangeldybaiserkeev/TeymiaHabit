@@ -86,7 +86,7 @@ struct DayProgressPopover: View {
             }
             .padding(.vertical, DS.Spacing.sm)
 
-            actionButton("button_add") {
+            actionButton("Add") {
                 addProgress()
             }
         }
@@ -100,7 +100,7 @@ struct DayProgressPopover: View {
     }
 
     // MARK: - Components
-    private func actionButton(_ label: LocalizedStringResource, action: @escaping () -> Void) -> some View {
+    private func actionButton(_ label: LocalizedStringKey, action: @escaping () -> Void) -> some View {
         Button {
             action()
             dismiss()

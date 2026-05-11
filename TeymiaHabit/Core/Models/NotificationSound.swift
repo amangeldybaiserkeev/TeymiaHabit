@@ -1,4 +1,4 @@
-import Foundation
+import SwiftUI
 import UserNotifications
 
 enum NotificationSound: String, CaseIterable, Identifiable {
@@ -7,9 +7,9 @@ enum NotificationSound: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
-    var displayName: LocalizedStringResource {
+    var displayName: LocalizedStringKey {
         switch self {
-        case .system: return "sound_system"
+        case .system: return "System"
         case .bellsEcho: return "Bells Echo"
         case .clear: return "Clear"
         case .guitar: return "Guitar"
@@ -34,10 +34,15 @@ extension NotificationSound {
     }
 }
 
-extension NotificationSound: HabitSoundProtocol {}
+extension NotificationSound: HabitSoundProtocol {
+    var isFree: Bool {
+        self == .system
+    }
+}
 
 protocol HabitSoundProtocol: Identifiable {
-    var displayName: LocalizedStringResource { get }
+    var displayName: LocalizedStringKey { get }
     var rawValue: String { get }
+    var isFree: Bool { get }
 }
 

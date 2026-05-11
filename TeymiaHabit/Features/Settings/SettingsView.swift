@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SettingsView: View {
+
     var body: some View {
         List {
             PremiumRow()
@@ -30,7 +31,7 @@ struct SettingsView: View {
                 Text("Teymia Habit \(Bundle.main.appVersion)")
             }
         }
-        .navigationTitle("settings")
+        .navigationTitle("Settings")
     }
 }
 

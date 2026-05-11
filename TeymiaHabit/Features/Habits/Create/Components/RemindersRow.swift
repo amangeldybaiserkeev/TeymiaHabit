@@ -27,7 +27,7 @@ struct RemindersRow: View {
                 }
             )) {
                 Label {
-                    Text("reminders")
+                    Text("Reminders")
                 } icon: {
                     RowIcon(iconName: "bell.badge")
                         .symbolEffect(.wiggle, value: isReminderEnabled)
@@ -44,11 +44,11 @@ struct RemindersRow: View {
                     ))
             }
         }
-        .alert("alert_notifications_permission", isPresented: $isNotificationPermissionAlertPresented) {
-            Button("button_cancel", role: .cancel) { }
-            Button("settings") { openSettings() }
+        .alert("Allow Notifications", isPresented: $isNotificationPermissionAlertPresented) {
+            Button("Cancel", role: .cancel) { }
+            Button("Settings") { openSettings() }
         } message: {
-            Text("alert_notifications_permission_message")
+            Text("Enable notifications for habit reminders.")
         }
     }
 
@@ -58,7 +58,7 @@ struct RemindersRow: View {
         Group {
             ForEach(Array(reminderTimes.indices), id: \.self) { index in
                 HStack {
-                    Text("reminder \(index + 1)")
+                    Text("Reminder \(index + 1)")
                     Spacer()
                     DatePicker(
                         "",
@@ -81,8 +81,14 @@ struct RemindersRow: View {
             }
 
             Button {
-                withAnimation(DS.Animations.easeInOut) {
-                    reminderTimes.append(Date())
+                let maxCount = appContainer.storeKitService.maxRemindersCount
+
+                if reminderTimes.count < maxCount {
+                    withAnimation(DS.Animations.easeInOut) {
+                        reminderTimes.append(Date())
+                    }
+                } else {
+                    appContainer.showingPaywall = true
                 }
             } label: {
                 Label {
@@ -90,9 +96,10 @@ struct RemindersRow: View {
                         .fontWeight(.medium)
                 } icon: {
                     Image(systemName: "plus")
-                        .font(DS.AppFont.caption)
+                        .foregroundStyle(DS.Colors.primary)
+                        .font(.system(size: DS.IconSize.xxs))
                         .fontWeight(.bold)
-                        .padding(DS.Spacing.xs)
+                        .frame(size: DS.IconSize.lg)
                         .background(DS.Colors.tertiary, in: .circle)
                 }
             }

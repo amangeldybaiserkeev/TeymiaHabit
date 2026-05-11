@@ -1,4 +1,4 @@
-import Foundation
+import SwiftUI
 import StoreKit
 
 @Observable @MainActor
@@ -7,7 +7,7 @@ final class PaywallViewModel {
 
     var selectedProduct: Product?
     var isPurchasing = false
-    var alertMessage: LocalizedStringResource = ""
+    var alertMessage: LocalizedStringKey = ""
     var showingAlert = false
 
     init(storeKitService: StoreKitService) {
@@ -35,12 +35,12 @@ final class PaywallViewModel {
                 case .cancelled:
                     break
                 case .pending:
-                    alertMessage = "paywall_purchase_pending_message"
+                    alertMessage = "Your purchase is pending approval."
                     showingAlert = true
                 }
             } catch {
                 isPurchasing = false
-                alertMessage = "paywall_purchase_failed_message"
+                alertMessage = "Purchase failed. Please try again."
                 showingAlert = true
             }
         }
@@ -56,12 +56,12 @@ final class PaywallViewModel {
                 if storeKitService.isPremium {
                     onSuccess()
                 } else {
-                    alertMessage = "paywall_no_purchases_to_restore_message"
+                    alertMessage = "No previous purchases found."
                     showingAlert = true
                 }
             } catch {
                 isPurchasing = false
-                alertMessage = "paywall_no_purchases_to_restore_message"
+                alertMessage = "Restore failed. No purchases available."
                 showingAlert = true
             }
         }

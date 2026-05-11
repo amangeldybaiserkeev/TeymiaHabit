@@ -9,7 +9,7 @@ struct AppIconRow: View {
             AppIconView()
         } label: {
             Label {
-                Text("settings_app_icon")
+                Text("App Icon")
             } icon: {
                 RowIcon(iconName: "checkmark.app")
             }
@@ -26,21 +26,39 @@ struct AppIconView: View {
         List {
             Section {
                 ForEach(AppIcon.allCases) { icon in
+                    let isLocked = !appContainer.storeKitService.canUseIcon(icon)
+
                     Button {
-                        appContainer.iconManager.setAppIcon(icon)
-                        withAnimation(.spring()) { currentIcon = icon }
+                        if !isLocked {
+                            appContainer.iconManager.setAppIcon(icon)
+                            withAnimation(.spring()) { currentIcon = icon }
+                        } else {
+                            appContainer.showingPaywall = true
+                        }
                     } label: {
                         HStack(spacing: DS.Spacing.reg) {
-                            AppIconImage(icon: icon)
+                            ZStack(alignment: .topTrailing) {
+                                AppIconImage(icon: icon)
+
+                                if isLocked {
+                                    PremiumLockBadge()
+                                        .offset(x: 6, y: -6)
+                                }
+                            }
+
                             Text(icon.title).foregroundStyle(Color.primary)
+
                             Spacer()
-                            if currentIcon == icon { SelectionCheckmark() }
+
+                            if currentIcon == icon {
+                                SelectionCheckmark()
+                            }
                         }
                     }
                 }
             }
         }
-        .navigationTitle("settings_app_icon")
+        .navigationTitle("App Icon")
         .onAppear {
             currentIcon = appContainer.iconManager.currentIcon
         }

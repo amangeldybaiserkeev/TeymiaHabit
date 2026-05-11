@@ -12,7 +12,7 @@ struct StatisticsView: View {
         ScrollView {
             VStack(spacing: DS.Spacing.reg) {
                 if habits.isEmpty {
-                    emptyState
+                    emptyView
                 } else {
                     LazyVStack(spacing: DS.Spacing.reg) {
                         ForEach(habits) { habit in
@@ -24,16 +24,16 @@ struct StatisticsView: View {
             }
             .padding(.vertical, DS.Spacing.sm)
         }
-        .navigationTitle("tabview_statistics")
+        .navigationTitle("Statistics")
     }
 
     // MARK: - Subviews
 
-    private var emptyState: some View {
+    private var emptyView: some View {
         ContentUnavailableView(
-            "no_habits",
-            systemImage: "chart.bar",
-            description: Text("statistics_empty_description")
+            "No Habits",
+            systemImage: "chart.bar.fill",
+            description: Text("Add your first habit to track progress")
         )
         .padding(.top, DS.Spacing.xxl)
     }

@@ -3,10 +3,10 @@ import SwiftData
 
 @main
 struct TeymiaHabitApp: App {
+    let modelContainer: ModelContainer
+
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
     @Environment(\.scenePhase) private var scenePhase
-
-    let modelContainer: ModelContainer
     @State private var appContainer: AppDependencyContainer
 
     init() {

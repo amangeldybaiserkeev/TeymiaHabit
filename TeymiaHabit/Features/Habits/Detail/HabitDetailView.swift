@@ -185,7 +185,7 @@ struct HabitDetailContentView: View {
             Button(role: .destructive) {
                 habitToDelete = habit
             } label: {
-                Label("button_delete", systemImage: "trash")
+                Label("Delete", systemImage: "trash")
             }
             .tint(.red)
 
@@ -195,13 +195,13 @@ struct HabitDetailContentView: View {
                 vm.archiveHabit()
                 dismiss()
             } label: {
-                Label("archive", systemImage: "archivebox")
+                Label("Archive", systemImage: "archivebox")
             }
 
             Button {
                 isEditPresented = true
             } label: {
-                Label("button_edit", systemImage: "pencil")
+                Label("Edit", systemImage: "pencil")
             }
         } label: {
             Image(systemName: "ellipsis")
@@ -301,11 +301,11 @@ struct HabitDetailContentView: View {
         .disabled(habit.type == .count && vm.isAlreadyCompleted)
     }
 
-    private func buttonLabel(vm: HabitDetailViewModel) -> String {
+    private func buttonLabel(vm: HabitDetailViewModel) -> LocalizedStringKey {
         if habit.type == .time && Calendar.current.isDateInToday(date) {
             return vm.isTimerRunning ? "Stop Timer" : "Start Timer"
         }
-        return vm.isAlreadyCompleted ? "completed" : "complete"
+        return vm.isAlreadyCompleted ? "Completed" : "Complete"
     }
 }
 

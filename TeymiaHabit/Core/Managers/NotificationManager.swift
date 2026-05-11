@@ -34,8 +34,8 @@ final class NotificationManager {
         guard notificationsEnabled, await ensureAuthorization() else { return }
 
         let content = UNMutableNotificationContent()
-        content.title = String(localized: "goal_achieved_title")
-        content.body = String(localized: "goal_achieved_body \(habit.title)")
+        content.title = "🎉 \(String(localized: "Goal Achieved!"))"
+        content.body = String(localized: "You've completed \(habit.title)")
         content.sound = selectedNotificationSound.notificationSound
 
         let request = UNNotificationRequest(

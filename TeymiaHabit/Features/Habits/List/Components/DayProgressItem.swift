@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct DayProgressItem: View, Equatable {
-    
+
     let date: Date
     let isSelected: Bool
     let progress: Double

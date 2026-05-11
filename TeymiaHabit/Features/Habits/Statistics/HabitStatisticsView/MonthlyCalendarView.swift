@@ -10,7 +10,6 @@ struct MonthlyCalendarView: View {
         self._vm = State(wrappedValue: MonthlyCalendarViewModel(habit: habit))
     }
 
-    // MARK: - Body
     var body: some View {
         VStack(spacing: 0) {
             headerView
@@ -26,11 +25,10 @@ struct MonthlyCalendarView: View {
         .onChange(of: selectedDate) { _, newDate in
             vm.updateMonthIfNeeded(for: newDate)
         }
-        .sheet(item: $vm.detailSheetDate) { date in
+        .sheet(item: $vm.detailSheetDate, onDismiss: {
+            vm.clearDetailSheet()
+        }) { date in
             HabitDetailView(habit: vm.habit, date: date, showStatsButton: false)
-                .onDisappear {
-                    vm.clearDetailSheet()
-                }
         }
     }
 
@@ -95,14 +93,15 @@ struct MonthlyCalendarView: View {
                     showProgressRing: isFullActive,
                     ringColors: vm.habit.ringColors
                 )
-                .opacity(isCurrentMonth ? 1.0 : 0.3)
+                .opacity(isCurrentMonth ? 1.0 : 0.25)
                 .grayscale(isCurrentMonth ? 0 : 1.0)
                 .frame(maxWidth: .infinity)
                 .contentShape(.rect)
                 .onTapGesture {
                     guard isCurrentMonth && isFullActive else { return }
-                    selectedDate = date
-                    vm.detailSheetDate = date
+                    let normalizedDate = Calendar.current.startOfDay(for: date)
+                    selectedDate = normalizedDate
+                    vm.detailSheetDate = normalizedDate
                 }
             }
         }

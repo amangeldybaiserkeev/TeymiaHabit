@@ -114,11 +114,16 @@ struct HabitsContentView: View {
 
         ToolbarItem(placement: .topBarTrailing) {
             Button {
-                showingNewHabit = true
+                if allHabits.count < appContainer.storeKitService.maxHabitsCount {
+                    showingNewHabit = true
+                } else {
+                    appContainer.showingPaywall = true
+                }
             } label: {
                 Image(systemName: "plus")
             }
             .tint(DS.Colors.primary)
+            .sensoryFeedback(.selection, trigger: showingNewHabit)
         }
     }
 
@@ -209,7 +214,7 @@ struct HabitsContentView: View {
     private var emptyView: some View {
         ContentUnavailableView {
             Label {
-                Text("no_habits")
+                Text("No Habits")
                     .padding(.bottom, DS.Spacing.xxl)
             } icon: {
                 Image(systemName: "")
@@ -220,7 +225,7 @@ struct HabitsContentView: View {
                 showingNewHabit = true
             } label: {
                 Label {
-                    Text("create_habit")
+                    Text("Create Habit")
                 } icon: {
                     Image(systemName: "plus")
                 }
@@ -230,7 +235,8 @@ struct HabitsContentView: View {
                 .padding(.vertical, DS.Spacing.sm)
             }
             .buttonStyle(.plain)
-            .glassEffect(.regular.interactive(), in: .capsule)
+            .glassEffect(.regular.interactive().tint(DS.Colors.primary), in: .capsule)
+            .sensoryFeedback(.selection, trigger: showingNewHabit)
         }
     }
 

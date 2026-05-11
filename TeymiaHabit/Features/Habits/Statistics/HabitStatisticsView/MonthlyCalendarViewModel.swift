@@ -180,8 +180,7 @@ final class MonthlyCalendarViewModel {
     }
 
     private func generateCalendarDays(for month: Date) -> [[Date?]] {
-        guard let monthRange = calendar.range(of: .day, in: .month, for: month),
-              let firstDayOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: month)) else {
+        guard let firstDayOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: month)) else {
             return []
         }
 
@@ -192,16 +191,40 @@ final class MonthlyCalendarViewModel {
             return []
         }
 
+        guard let nextMonth = calendar.date(byAdding: DateComponents(month: 1), to: firstDayOfMonth),
+              let lastDayOfMonth = calendar.date(byAdding: .day, value: -1, to: nextMonth) else {
+            return []
+        }
+
         var daysGrid: [[Date?]] = []
         var currentDate = startDate
+        var hasReachedEnd = false
 
         for _ in 0..<6 {
             var week: [Date?] = []
+
             for _ in 0..<7 {
-                week.append(currentDate)
-                currentDate = calendar.date(byAdding: .day, value: 1, to: currentDate) ?? currentDate
+                let isInCurrentMonth = calendar.isDate(currentDate, equalTo: month, toGranularity: .month)
+                week.append(isInCurrentMonth ? currentDate : nil)
+
+                if let nextDate = calendar.date(byAdding: .day, value: 1, to: currentDate) {
+                    currentDate = nextDate
+                }
             }
+
             daysGrid.append(week)
+
+            if !hasReachedEnd && currentDate > lastDayOfMonth {
+                hasReachedEnd = true
+            }
+
+            if hasReachedEnd && daysGrid.count >= 4 {
+                break
+            }
+        }
+
+        while daysGrid.count < 6 {
+            daysGrid.append(Array(repeating: nil, count: 7))
         }
 
         return daysGrid

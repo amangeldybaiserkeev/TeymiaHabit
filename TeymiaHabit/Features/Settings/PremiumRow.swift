@@ -19,7 +19,7 @@ struct PremiumRow: View {
         }
         .listRowBackground(Color.clear)
         .listRowInsets(EdgeInsets())
-        .fullScreenCover(isPresented: $showingPaywall) {
+        .adaptiveSheet(isPresented: $showingPaywall) {
             PaywallView(storeKitService: appContainer.storeKitService)
         }
     }

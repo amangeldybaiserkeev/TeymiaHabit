@@ -15,10 +15,7 @@ struct IconRow: View {
                 Label {
                     Text("icon")
                 } icon: {
-                    RowIcon(
-                        iconName: "app.specular",
-                        gradientColors: [.purple, .pink]
-                    )
+                    RowIcon(iconName: "app.specular")
                 }
 
                 Spacer()
@@ -114,7 +111,7 @@ struct IconPickerView: View {
         } label: {
             ZStack {
                 Circle()
-                    .fill(isSelected ? selectedColor.baseColor : DS.Colors.secondary.opacity(0.1))
+                    .fill(isSelected ? selectedColor.baseColor : DS.Colors.tertiary)
 
                 Image(icon)
                     .resizable()

@@ -9,7 +9,7 @@ struct SoundsRow: View {
             Label {
                 Text("settings_sounds")
             } icon: {
-                RowIcon(iconName: "speaker.wave.3.fill", color: .pink, size: 20)
+                RowIcon(iconName: "speaker.wave.1")
             }
         }
     }
@@ -66,6 +66,7 @@ struct SoundsView: View {
                         withAnimation(.snappy) { soundManager.setSoundEnabled(newValue) }
                     }
                 ))
+                .tint(nil)
             }
 
             if soundManager.isSoundEnabled {

@@ -1,13 +1,13 @@
 import SwiftUI
 import Charts
 
-struct HabitChartsView: View {
+struct BarChartView: View {
     let habit: Habit
-    @State private var vm: HabitChartsViewModel
+    @State private var vm: BarChartViewModel
 
     init(habit: Habit, range: ChartTimeRange) {
         self.habit = habit
-        self._vm = State(initialValue: HabitChartsViewModel(habit: habit, range: range))
+        self._vm = State(initialValue: BarChartViewModel(habit: habit, range: range))
     }
 
     private enum Constants {

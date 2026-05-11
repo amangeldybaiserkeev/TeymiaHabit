@@ -16,14 +16,14 @@ struct NotificationsRow: View {
                 Task { await handleToggle(to: newValue) }
             }
         )) {
-            Label(
-                title: { Text("settings_notifications") },
-                icon: {
-                    RowIcon(iconName: "bell.badge.fill", color: .red)
-                        .symbolEffect(.wiggle, value: manager.notificationsEnabled)
-                }
-            )
+            Label {
+                Text("settings_notifications")
+            } icon: {
+                RowIcon(iconName: "bell.badge")
+                    .symbolEffect(.wiggle, value: manager.notificationsEnabled)
+            }
         }
+        .tint(nil)
         .alert("alert_notifications_permission", isPresented: $isPermissionAlertPresented) {
             Button("button_cancel", role: .cancel) { }
             Button("button_settings") { openSettings() }

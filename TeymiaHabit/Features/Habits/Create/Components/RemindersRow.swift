@@ -29,10 +29,11 @@ struct RemindersRow: View {
                 Label {
                     Text("reminders")
                 } icon: {
-                    RowIcon(iconName: "bell.badge.fill", color: .red)
+                    RowIcon(iconName: "bell.badge")
                         .symbolEffect(.wiggle, value: isReminderEnabled)
                 }
             }
+            .tint(nil)
             .disabled(isProcessingToggle)
 
             if isReminderEnabled {
@@ -84,8 +85,16 @@ struct RemindersRow: View {
                     reminderTimes.append(Date())
                 }
             } label: {
-                Label("Add Reminder", systemImage: "plus")
-                    .fontWeight(.medium)
+                Label {
+                    Text("Add Reminder")
+                        .fontWeight(.medium)
+                } icon: {
+                    Image(systemName: "plus")
+                        .font(DS.AppFont.caption)
+                        .fontWeight(.bold)
+                        .padding(DS.Spacing.xs)
+                        .background(DS.Colors.tertiary, in: .circle)
+                }
             }
         }
     }

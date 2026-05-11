@@ -7,12 +7,14 @@ struct SettingsView: View {
 
             Section {
                 AppearanceRow()
-                AppTintRow()
                 AppIconRow()
+                LanguageRow()
+            }
+
+            Section {
                 ArchiveRow()
                 SoundsRow()
                 NotificationsRow()
-                LanguageRow()
             }
 
             Section {

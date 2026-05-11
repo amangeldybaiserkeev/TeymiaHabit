@@ -46,9 +46,9 @@ final class StoreKitService {
 
         do {
             let fetched = try await Product.products(for: ProductID.all)
-            products = fetched.sorted {
-                (ProductID.ordered.firstIndex(of: $0.id) ?? .max) <
-                (ProductID.ordered.firstIndex(of: $1.id) ?? .max)
+            products = fetched.sorted { product1, product2 in
+                (ProductID.ordered.firstIndex(of: product1.id) ?? .max) <
+                (ProductID.ordered.firstIndex(of: product2.id) ?? .max)
             }
         } catch {
             print("[StoreKitService] Failed to load products: \(error)")

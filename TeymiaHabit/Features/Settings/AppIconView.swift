@@ -11,12 +11,7 @@ struct AppIconRow: View {
             Label {
                 Text("settings_app_icon")
             } icon: {
-                RowIcon(
-                    iconName: "checkmark",
-                    weight: .semibold,
-                    color: Color.primary,
-                    isWhiteBG: true
-                )
+                RowIcon(iconName: "checkmark.app")
             }
         }
 #endif

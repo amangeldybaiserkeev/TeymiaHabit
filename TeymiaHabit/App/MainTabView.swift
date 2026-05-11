@@ -27,7 +27,6 @@ enum AppTab: AnimatedTabSelectionProtocol {
 
 struct MainTabView: View {
     @AppStorage("themeMode") private var themeMode: ThemeMode = .system
-    @AppStorage("appTintColor") private var appTintColor: String = AppTintColor.primary.rawValue
     @Environment(AppDependencyContainer.self) private var appContainer
     @Environment(\.modelContext) private var modelContext
 
@@ -46,7 +45,7 @@ struct MainTabView: View {
             }
         }
         .fontDesign(.rounded)
-        .tint(AppTintColor(rawValue: appTintColor)?.color ?? .primary)
+        .tint(DS.Colors.primary)
         .preferredColorScheme(themeMode.colorScheme)
         .tabBarMinimizeBehavior(.onScrollDown)
     }

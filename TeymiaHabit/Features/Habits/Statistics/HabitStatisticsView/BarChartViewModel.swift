@@ -2,7 +2,7 @@ import SwiftUI
 import Charts
 
 @Observable
-final class HabitChartsViewModel {
+final class BarChartViewModel {
     let habit: Habit
     var range: ChartTimeRange
     var periods: [Date] = []
@@ -124,7 +124,7 @@ final class HabitChartsViewModel {
 }
 
 // MARK: - Logic
-private extension HabitChartsViewModel {
+private extension BarChartViewModel {
     func isSamePeriod(_ d1: Date, _ d2: Date) -> Bool {
         let granularity: Calendar.Component = (range == .year) ? .month : .day
         return calendar.isDate(d1, equalTo: d2, toGranularity: granularity)
@@ -202,7 +202,7 @@ private extension HabitChartsViewModel {
 }
 
 // MARK: - Formatting
-extension HabitChartsViewModel {
+extension BarChartViewModel {
 
     static let shortDateFormatter: DateFormatter = {
         let f = DateFormatter(); f.dateFormat = "d MMM"; return f
@@ -273,7 +273,7 @@ extension HabitChartsViewModel {
 }
 
 // MARK: - Y-Axis
-extension HabitChartsViewModel {
+extension BarChartViewModel {
     var yAxisValues: [Double] {
         let rawMax = maxChartValue
 

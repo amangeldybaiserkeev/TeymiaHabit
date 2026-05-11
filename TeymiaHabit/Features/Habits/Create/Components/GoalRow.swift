@@ -41,7 +41,7 @@ struct GoalRow: View {
                 .frame(maxWidth: Constants.pickerWidth)
             }
         } icon: {
-            RowIcon(iconName: "trophy.fill", color: .appYellow)
+            RowIcon(iconName: "trophy")
                 .symbolEffect(.bounce, value: selectedType)
         }
     }

@@ -11,7 +11,7 @@ struct OnboardingRow: View {
                 Text("show_onboarding")
                     .foregroundStyle(DS.Colors.primary)
             } icon: {
-                RowIcon(iconName: "hand.wave", color: .appCoral)
+                RowIcon(iconName: "hand.wave")
             }
         }
         .fullScreenCover(isPresented: $showOnboarding) {

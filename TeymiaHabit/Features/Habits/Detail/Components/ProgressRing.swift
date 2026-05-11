@@ -12,14 +12,12 @@ struct ProgressRing: View {
     var lineWidth: CGFloat? = nil
     var hideContent: Bool = false
 
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
     private enum Metrics {
         // Dimensions
         static let ringLineWidthRatio: CGFloat = 0.12
         static let checkmarkSizeRatio: CGFloat = 0.4
         static let iconSizeRatio: CGFloat = 0.35
-        static let textSizeRatio: CGFloat = 0.25
+        static let textSizeRatio: CGFloat = 0.2
         static let textFrameWidthRatio: CGFloat = 0.65
         static let textFrameHeightRatio: CGFloat = 0.35
         static let minimumScaleFactor: CGFloat = 0.3
@@ -101,7 +99,7 @@ private extension ProgressRing {
                 style: StrokeStyle(lineWidth: adaptiveLineWidth, lineCap: .round)
             )
             .rotationEffect(.degrees(Metrics.startAngle))
-            .animation(reduceMotion ? nil : Metrics.animation, value: progress)
+            .animation(Metrics.animation, value: progress)
     }
 
     var overflowRingGroup: some View {
@@ -138,7 +136,7 @@ private extension ProgressRing {
                     .rotationEffect(.degrees(Metrics.fullCircle * progress))
             }
         }
-        .animation(reduceMotion ? nil : Metrics.animation, value: progress)
+        .animation(Metrics.animation, value: progress)
     }
 
     @ViewBuilder
@@ -152,40 +150,31 @@ private extension ProgressRing {
 
     @ViewBuilder
     var compactContent: some View {
-        if isCompleted || isExceeded {
-            checkmarkIcon.id("checkmark")
-        } else {
-            actionIcon.id("action")
-        }
+        let iconName = isCompleted || isExceeded
+        ? "checkmark"
+        : (habit.type == .count ? "plus" : (isTimerRunning ? "pause.fill" : "play.fill"))
+
+        Image(systemName: iconName)
+            .font(.system(size: size * Metrics.iconSizeRatio, weight: .bold))
+            .foregroundStyle(
+                isCompleted || isExceeded
+                ? AnyShapeStyle(
+                    LinearGradient(
+                        colors: [ringColors.light, ringColors.dark],
+                        startPoint: .topTrailing, endPoint: .bottomLeading
+                    )
+                )
+                : AnyShapeStyle(DS.Colors.primary)
+            )
+            .contentTransition(.symbolEffect(.replace))
+            .animation(Metrics.animation, value: isCompleted)
+            .animation(Metrics.animation, value: isExceeded)
+            .animation(Metrics.animation, value: isTimerRunning)
     }
 
     @ViewBuilder
     var detailContent: some View {
-        if isCompleted && !isExceeded {
-            checkmarkIcon
-        } else {
-            progressValueText
-        }
-    }
-
-    var checkmarkIcon: some View {
-        Image(systemName: "checkmark")
-            .font(.system(size: size * Metrics.checkmarkSizeRatio, weight: .bold))
-            .foregroundStyle(
-                LinearGradient(
-                    colors: [ringColors.light, ringColors.dark],
-                    startPoint: .topTrailing, endPoint: .bottomLeading
-                )
-            )
-            .transition(.symbolEffect(.drawOn))
-    }
-
-    var actionIcon: some View {
-        let iconName = habit.type == .count ? "plus" : (isTimerRunning ? "pause.fill" : "play.fill")
-        return Image(systemName: iconName)
-            .font(.system(size: size * Metrics.iconSizeRatio, weight: .semibold))
-            .foregroundStyle(.primary)
-            .contentTransition(.symbolEffect(.replace, options: .speed(Metrics.iconReplaceSpeed)))
+        progressValueText
     }
 
     var progressValueText: some View {

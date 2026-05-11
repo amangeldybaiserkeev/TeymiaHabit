@@ -24,7 +24,7 @@ struct ActiveDaysRow: View {
                         .frame(size: DS.IconSize.xxl)
                         .background {
                             Circle()
-                                .fill(isActive ? Color.accentColor : .clear)
+                                .fill(isActive ? DS.Colors.primary : .clear)
                         }
                 }
                 .buttonStyle(.plain)

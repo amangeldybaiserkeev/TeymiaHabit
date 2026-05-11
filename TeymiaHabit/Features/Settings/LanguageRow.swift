@@ -13,7 +13,7 @@ struct LanguageRow: View {
                     Text("settings_language")
                         .foregroundStyle(DS.Colors.primary)
                 } icon: {
-                    RowIcon(iconName: "globe", color: .blue)
+                    RowIcon(iconName: "globe")
                 }
                 Spacer()
                 Text(currentLanguage)

@@ -3,12 +3,12 @@ import SwiftUI
 enum DS {
     // MARK: - Colors
     enum Colors {
-        static let primary = Color.primary
+        static let primary = Color.appPrimary
         static let secondary = Color.secondary
         static let tertiary = Color(.systemGray6)
         static let onPrimary = Color.onPrimary
-        static let premiumBlue = Color.appPremiumBlue
-        static let premiumPink = Color.appPremiumPink
+        static let premiumBlue = Color.premiumBlue
+        static let premiumPink = Color.premiumPink
     }
 
     // MARK: - IconSize
@@ -61,6 +61,7 @@ enum DS {
         static let bouncy = Animation.bouncy(duration: 0.5, extraBounce: 0.2)
         static let snappy = Animation.snappy(duration: 0.5)
         static let easeInOut = Animation.easeInOut(duration: 0.4)
+        static let smooth = Animation.smooth(duration: 0.6, extraBounce: 0)
     }
 
     // MARK: - Typography
@@ -76,6 +77,7 @@ enum DS {
         static let headline = appFont(.headline, weight: .semibold)
         static let subheadline = appFont(.subheadline, weight: .regular)
         static let bodyMedium = appFont(.body, weight: .medium)
+        static let callout = appFont(.callout, weight: .regular)
         static let footnote = appFont(.footnote, weight: .regular)
         static let footnoteMedium = appFont(.footnote, weight: .medium)
         static let caption = appFont(.caption, weight: .regular)

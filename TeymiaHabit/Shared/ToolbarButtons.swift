@@ -29,6 +29,7 @@ struct ConfirmationToolbarButton: ToolbarContent {
                     .fontWeight(.semibold)
             }
             .buttonStyle(.glassProminent)
+            .tint(DS.Colors.primary)
             .disabled(isDisabled)
         }
     }

@@ -36,7 +36,7 @@ private struct NewHabitContentView: View {
         @Bindable var vm = vm
 
         NavigationStack {
-            Form {
+            List {
                 mainInfoSection
                 goalSection
                 scheduleSection
@@ -92,7 +92,10 @@ private extension NewHabitContentView {
 
     var mainInfoSection: some View {
         Section {
-            HabitNameRow(title: $vm.title, focus: $focusField)
+            HabitNameRow(
+                title: $vm.title,
+                focus: $focusField
+            )
             IconRow(
                 selectedIcon: $vm.selectedIcon,
                 selectedColor: $vm.selectedIconColor

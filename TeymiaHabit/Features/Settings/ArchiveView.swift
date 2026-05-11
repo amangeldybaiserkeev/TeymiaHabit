@@ -9,7 +9,7 @@ struct ArchiveRow: View {
             Label {
                 Text("settings_archived_habits")
             } icon: {
-                RowIcon(iconName: "archivebox.fill", color: .gray)
+                RowIcon(iconName: "archivebox")
             }
         }
     }

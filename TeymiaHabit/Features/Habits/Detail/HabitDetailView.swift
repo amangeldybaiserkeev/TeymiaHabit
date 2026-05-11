@@ -42,11 +42,18 @@ struct HabitDetailContentView: View {
     let date: Date
     let showStatsButton: Bool
 
+    static let backgroundColors: [Color] = [
+        Color(#colorLiteral(red: 0.1389154494, green: 0.1585697234, blue: 0.1820063889, alpha: 1)), Color(#colorLiteral(red: 0.1408694983, green: 0.1213375106, blue: 0.12524423, alpha: 1)), Color(#colorLiteral(red: 0.180054009, green: 0.167724371, blue: 0.1702881455, alpha: 1)), Color(#colorLiteral(red: 0.1898193061, green: 0.1917725205, blue: 0.1859131753, alpha: 1)), Color(#colorLiteral(red: 0.3071291447, green: 0.2973631024, blue: 0.2744144797, alpha: 1)),
+        Color(#colorLiteral(red: 0.1558837593, green: 0.1566162407, blue: 0.1547851861, alpha: 1)), Color(#colorLiteral(red: 0.1359860003, green: 0.1458741426, blue: 0.162841469, alpha: 1)), Color(#colorLiteral(red: 0.2690429091, green: 0.271240294, blue: 0.2695312202, alpha: 1)), Color(#colorLiteral(red: 0.1982423067, green: 0.1668695211, blue: 0.2817369103, alpha: 1)), Color(#colorLiteral(red: 0.08221431822, green: 0.08221431822, blue: 0.08221431822, alpha: 1))
+    ]
+
     @Environment(\.dismiss) private var dismiss
     @State private var viewModel: HabitDetailViewModel
     @State private var showingStats  = false
     @State private var isEditPresented = false
     @State private var habitToDelete: Habit?
+    @State private var haptic = 0
+    @State private var currentBgColor: Color = Self.backgroundColors.randomElement() ?? .black
 
     init(
         habit: Habit,
@@ -64,8 +71,17 @@ struct HabitDetailContentView: View {
         @Bindable var vm = viewModel
         NavigationStack {
             mainContent(vm: viewModel)
+                .sensoryFeedback(.selection, trigger: haptic)
+                .background(currentBgColor.gradient)
                 .toolbar {
-                    toolbarContent(vm: viewModel)
+                    ToolbarItem(placement: .topBarLeading) {
+                        if !Calendar.current.isDateInToday(date) {
+                            Text(date.formattedAsNavigationTitle())
+                                .foregroundStyle(DS.Colors.secondary)
+                                .fixedSize(horizontal: true, vertical: false)
+                        }
+                    }
+                    .sharedBackgroundVisibility(.hidden)
                 }
                 .deleteHabitAlert(habit: $habitToDelete) { _ in
                     viewModel.deleteHabit()
@@ -85,126 +101,236 @@ struct HabitDetailContentView: View {
                     HabitStatisticsView(habit: habit)
                 }
         }
+        .preferredColorScheme(.dark)
     }
 
     // MARK: - Content
 
     @ViewBuilder
     private func mainContent(vm: HabitDetailViewModel) -> some View {
-        ScrollView {
-            VStack(spacing: DS.Spacing.xxl) {
-                headerView
-                    .padding(.horizontal, DS.Spacing.xl)
+            VStack(spacing: 0) {
+                Capsule()
+                    .fill(.white.opacity(0.4))
+                    .frame(width: 60, height: 5)
+                    .padding(.vertical, DS.Spacing.xs)
 
-                Spacer()
+                Spacer(minLength: DS.Spacing.xl)
 
-                HabitProgressView(vm: vm, habit: habit)
+                ProgressRing(
+                    progress: vm.completionPercentage,
+                    currentValue: "\(vm.currentProgress)",
+                    isCompleted: vm.isAlreadyCompleted,
+                    isExceeded: vm.currentProgress > habit.goal,
+                    habit: habit,
+                    size: 240,
+                    lineWidth: 26
+                )
+                .padding(.vertical, DS.Spacing.xxl)
 
-                actionButtonsSection(vm: vm)
+                Spacer(minLength: DS.Spacing.xl)
+
+                habitTitle(vm: vm)
+
+                Spacer(minLength: DS.Spacing.xl)
+
+                actionButtonsRow(vm: vm)
+
+                Spacer(minLength: DS.Spacing.reg)
+
                 completeButtonView(vm: vm)
-                    .disabled(vm.isAlreadyCompleted)
-                    .padding(.horizontal, DS.Spacing.xl)
-                Spacer()
+                .padding(.bottom, DS.Spacing.xxl)
             }
-        }
+            .padding(.horizontal, DS.Spacing.xl)
     }
 
     @ViewBuilder
-    private var headerView: some View {
-        VStack(spacing: DS.Spacing.xs) {
-            Text(habit.title)
-                .font(DS.AppFont.largeTitle)
-                .multilineTextAlignment(.center)
-                .minimumScaleFactor(0.8)
-                .lineLimit(2)
-            Text("Goal: \(habit.formattedGoal)")
-                .font(DS.AppFont.subheadline)
-                .foregroundStyle(.secondary)
-        }
-        .padding(.horizontal, DS.Spacing.xl)
-    }
-
-    // MARK: - Toolbar
-
-    @ToolbarContentBuilder
-    private func toolbarContent(vm: HabitDetailViewModel) -> some ToolbarContent {
-        ToolbarItem(placement: .topBarLeading) {
-            if !Calendar.current.isDateInToday(date) {
-                Text(date.formattedAsNavigationTitle())
-                    .foregroundStyle(.tertiary)
-                    .fixedSize(horizontal: true, vertical: false)
+    private func habitTitle(vm: HabitDetailViewModel) -> some View {
+        HStack {
+            VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
+                Text(habit.title)
+                    .font(DS.AppFont.title2)
+                Text("Goal: \(habit.formattedGoal)")
+                    .font(DS.AppFont.subheadline)
+                    .foregroundStyle(DS.Colors.secondary)
             }
-        }
-        .sharedBackgroundVisibility(.hidden)
 
-        if showStatsButton {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    showingStats = true
-                } label: {
-                    Image(systemName: "chart.bar.fill")
+            Spacer()
+
+            HStack(spacing: DS.Spacing.reg) {
+                if showStatsButton {
+                        Button {
+                            showingStats = true
+                        } label: {
+                            Image(systemName: "chart.bar.fill")
+                                .font(.system(size: DS.IconSize.xs))
+                                .frame(size: DS.IconSize.lg)
+                                .background {
+                                    Circle()
+                                        .fill(.white.opacity(0.1))
+                                }
+                        }
+                        .tint(DS.Colors.primary)
                 }
-                .tint(.primary)
-            }
-        }
 
-        ToolbarItem(placement: .topBarTrailing) {
-            menuButton(vm: vm)
+                menuButton(vm: vm)
+            }
         }
     }
 
-    // MARK: - Buttons
+    // MARK: - Menu
 
     @ViewBuilder
     private func menuButton(vm: HabitDetailViewModel) -> some View {
         Menu {
-            Button { isEditPresented = true } label: {
-                Label("button_edit", systemImage: "pencil")
-            }
-            Button {
-                vm.archiveHabit()
-                dismiss()
-            } label: {
-                Label("archive", systemImage: "archivebox")
-            }
-            Divider()
             Button(role: .destructive) {
                 habitToDelete = habit
             } label: {
                 Label("button_delete", systemImage: "trash")
             }
             .tint(.red)
+
+            Divider()
+
+            Button {
+                vm.archiveHabit()
+                dismiss()
+            } label: {
+                Label("archive", systemImage: "archivebox")
+            }
+
+            Button {
+                isEditPresented = true
+            } label: {
+                Label("button_edit", systemImage: "pencil")
+            }
         } label: {
             Image(systemName: "ellipsis")
+                .font(.system(size: DS.IconSize.xs, weight: .bold))
+                .frame(size: DS.IconSize.lg)
+                .background {
+                    Circle()
+                        .fill(.white.opacity(0.1))
+                }
         }
         .tint(DS.Colors.primary)
     }
 
-    private func actionButtonsSection(vm: HabitDetailViewModel) -> some View {
-        ActionButtonsSection(
-            habit: habit,
-            date: date,
-            isToday: Calendar.current.isDateInToday(date),
-            isTimerRunning: vm.isTimerRunning,
-            onReset: { vm.resetProgress() },
-            onTimerToggle: { vm.toggleTimer() },
-            onAddProgress: { value in vm.addProgress(value) }
-        )
+    // MARK: - Actions
+
+    @ViewBuilder
+    private func actionButtonsRow(vm: HabitDetailViewModel) -> some View {
+        HStack(spacing: DS.Spacing.xxl) {
+            Button {
+                withAnimation(DS.Animations.easeInOut) {
+                    vm.resetProgress()
+                }
+                haptic += 1
+            } label: {
+                Image(systemName: "minus.arrow.trianglehead.counterclockwise")
+                    .font(.system(size: DS.IconSize.reg, weight: .medium))
+                    .foregroundStyle(DS.Colors.primary)
+                    .frame(size: DS.TouchTarget.comfortable)
+                    .contentShape(.circle)
+            }
+            .glassEffect(.clear.interactive(), in: .capsule)
+
+            ProgressIconButton(
+                systemName: "minus",
+                action: {
+                    withAnimation(DS.Animations.easeInOut) {
+                        vm.decrementProgress()
+                    }
+                },
+                isDisabled: vm.currentProgress <= 0
+            )
+
+            ProgressIconButton(
+                systemName: "plus",
+                action: {
+                    withAnimation(DS.Animations.easeInOut) {
+                        vm.incrementProgress()
+                    }
+                }
+            )
+
+            PopoverView {
+                Image(systemName: "plus.arrow.trianglehead.clockwise")
+                    .font(.system(size: DS.IconSize.reg, weight: .medium))
+                    .foregroundStyle(DS.Colors.primary)
+                    .frame(size: DS.TouchTarget.comfortable)
+                    .contentShape(.circle)
+            } content: {
+                DayProgressPopover(habit: habit, date: date, onAddProgress: vm.addProgress)
+            }
+            .glassEffect(.clear.interactive(), in: .capsule)
+        }
     }
 
+    // MARK: - Complete
+
+    @ViewBuilder
     private func completeButtonView(vm: HabitDetailViewModel) -> some View {
         Button {
-            vm.completeHabit()
+            withAnimation(DS.Animations.easeInOut) {
+                if habit.type == .time && Calendar.current.isDateInToday(date) {
+                    vm.toggleTimer()
+                } else {
+                    vm.completeHabit()
+                }
+            }
+            haptic += 1
         } label: {
-            Text(viewModel.isAlreadyCompleted ? "completed" : "complete")
-                .font(DS.AppFont.headline)
-                .foregroundStyle(DS.Colors.onPrimary)
-                .frame(maxWidth: .infinity, minHeight: DS.TouchTarget.large)
-                .contentShape(.capsule)
+            HStack(spacing: DS.Spacing.sm) {
+                if habit.type == .time && Calendar.current.isDateInToday(date) {
+                    Image(systemName: vm.isTimerRunning ? "pause.fill" : "play.fill")
+                        .contentTransition(.symbolEffect(.replace))
+                }
+
+                Text(buttonLabel(vm: vm))
+                    .contentTransition(.numericText())
+                    .animation(.snappy, value: vm.isTimerRunning)
+                    .animation(.snappy, value: vm.isAlreadyCompleted)
+            }
+            .font(DS.AppFont.headline)
+            .foregroundStyle(DS.Colors.primary)
+            .frame(maxWidth: .infinity, minHeight: DS.TouchTarget.large)
+            .contentShape(.capsule)
         }
         .buttonStyle(.plain)
-        .glassEffect(.clear.interactive().tint(habit.iconColor.baseColor), in: .capsule)
-        .padding(.horizontal, DS.Spacing.xl)
+        .glassEffect(.clear.interactive(), in: .capsule)
+        .disabled(habit.type == .count && vm.isAlreadyCompleted)
+    }
+
+    private func buttonLabel(vm: HabitDetailViewModel) -> String {
+        if habit.type == .time && Calendar.current.isDateInToday(date) {
+            return vm.isTimerRunning ? "Stop Timer" : "Start Timer"
+        }
+        return vm.isAlreadyCompleted ? "completed" : "complete"
+    }
+}
+
+private struct ProgressIconButton: View {
+    let systemName: String
+    let action: () -> Void
+    var isDisabled: Bool = false
+
+    @State private var haptic = 0
+
+    var body: some View {
+        Button {
+            action()
+            haptic += 1
+        } label: {
+            Image(systemName: systemName)
+                .font(.system(size: DS.IconSize.reg, weight: .medium))
+                .foregroundStyle(DS.Colors.primary)
+                .frame(size: DS.TouchTarget.comfortable)
+                .contentShape(.circle)
+        }
+        .buttonStyle(.plain)
+        .glassEffect(.clear.interactive(), in: .circle)
+        .disabled(isDisabled)
+        .sensoryFeedback(.selection, trigger: haptic)
     }
 }
 

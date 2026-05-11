@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct DayProgressItem: View, Equatable {
+    
     let date: Date
     let isSelected: Bool
     let progress: Double
@@ -54,7 +55,7 @@ struct DayProgressItem: View, Equatable {
             .frame(width: circleSize, height: circleSize)
 
             Circle()
-                .fill(isToday ? .accentColor : DS.Colors.primary)
+                .fill(isToday ? Color.mandarine : DS.Colors.primary)
                 .frame(width: 4, height: 4)
                 .opacity(isSelected ? 1 : 0)
         }
@@ -64,8 +65,8 @@ struct DayProgressItem: View, Equatable {
     private var weeklyCalendarRing: some View {
         let isCompleted = progress >= 0.999
         let ringColors: [Color] = isCompleted
-        ? [Color(#colorLiteral(red: 0.6274385452, green: 0.8037135005, blue: 0.2274374366, alpha: 1)), Color(#colorLiteral(red: 0.1764799058, green: 0.7451224923, blue: 0.3647513092, alpha: 1)), Color(#colorLiteral(red: 0.1764799058, green: 0.7451224923, blue: 0.3647513092, alpha: 1)), Color(#colorLiteral(red: 0.6274385452, green: 0.8037135005, blue: 0.2274374366, alpha: 1))]
-        : [Color(#colorLiteral(red: 0.9450980392, green: 0.6392156863, blue: 0.231372549, alpha: 1)), Color(#colorLiteral(red: 1, green: 0.3882352941, blue: 0.003921568627, alpha: 1)), Color(#colorLiteral(red: 1, green: 0.3882352941, blue: 0.003921568627, alpha: 1)), Color(#colorLiteral(red: 0.9450980392, green: 0.6392156863, blue: 0.231372549, alpha: 1))]
+        ? [Color(#colorLiteral(red: 0.6274385452, green: 0.8037135005, blue: 0.2274374366, alpha: 1)), Color(#colorLiteral(red: 0.1764799058, green: 0.7451224923, blue: 0.3647513092, alpha: 1))]
+        : [Color(#colorLiteral(red: 0.9804754853, green: 0.6000884771, blue: 0.3020181358, alpha: 1)), Color(#colorLiteral(red: 0.9726642966, green: 0.4391923547, blue: 0.2118133008, alpha: 1))]
 
         ZStack {
             Circle()
@@ -74,12 +75,11 @@ struct DayProgressItem: View, Equatable {
             Circle()
                 .trim(from: 0, to: progress)
                 .stroke(
-                    AngularGradient(
+                    LinearGradient(
                         colors: ringColors,
-                        center: .center,
-                        startAngle: .degrees(-90),
-                        endAngle: .degrees(270)
-                        ),
+                        startPoint: .top,
+                        endPoint: .bottom
+                    ),
                     style: StrokeStyle(
                         lineWidth: lineWidth,
                         lineCap: .round

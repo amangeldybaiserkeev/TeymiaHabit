@@ -1,13 +1,12 @@
 import SwiftUI
 
-// MARK: - Background
 struct LivelyFloatingBlobsBackground: View {
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         GeometryReader { geo in
             ZStack {
-                DS.Colors.onPrimary
+                Color.black
                     .ignoresSafeArea()
 
                 LivelyBlob(

@@ -16,7 +16,24 @@ struct HabitStatisticsView: View {
         NavigationStack {
             List {
                 Section {
-                    StreaksView(current: vm.currentStreak, best: vm.bestStreak, total: vm.totalValue)
+                    HStack {
+                        Label {
+                            Text("Total all time")
+                                .foregroundStyle(DS.Colors.primary)
+                        } icon: {
+                            RowIcon(iconName: "hand.thumbsup")
+                        }
+                        Spacer()
+                        Text(vm.formattedTotal)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(
+                                LinearGradient(
+                                    colors: [Color(#colorLiteral(red: 0.9961017966, green: 0.4863132238, blue: 0.1490832567, alpha: 1)), Color(#colorLiteral(red: 0.9961031079, green: 0.2039290071, blue: 0.01577392034, alpha: 1))],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                    }
                 }
 
                 Section {
@@ -31,7 +48,7 @@ struct HabitStatisticsView: View {
                     VStack(spacing: DS.Spacing.md) {
                         TimeRangePicker(selection: $vm.barChartTimeRange)
 
-                        HabitChartsView(habit: habit, range: vm.barChartTimeRange)
+                        BarChartView(habit: habit, range: vm.barChartTimeRange)
                             .id("\(habit.uuid.uuidString)-\(vm.barChartTimeRange.rawValue)")
                     }
                     .padding(.top, DS.Spacing.reg)

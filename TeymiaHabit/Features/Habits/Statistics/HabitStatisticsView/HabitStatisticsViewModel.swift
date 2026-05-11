@@ -15,6 +15,16 @@ final class HabitStatisticsViewModel {
         refresh()
     }
 
+    var formattedTotal: String {
+        habit.type == .time
+        ? totalRawValue.formattedAsLocalizedDuration()
+        : "\(totalRawValue)"
+    }
+
+    private var totalRawValue: Int {
+        (habit.completions ?? []).reduce(0) { $0 + $1.value }
+    }
+
     func refresh() {
         let calendar = Calendar.current
         let goal = habit.goal

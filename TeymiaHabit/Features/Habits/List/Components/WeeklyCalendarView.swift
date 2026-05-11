@@ -85,8 +85,8 @@ struct WeeklyCalendarView: View {
     }
 
     private func calculateProgress(for date: Date) -> Double {
-        let activeHabits = habits.filter {
-            !$0.isArchived && $0.isActiveOnDate(date) && date >= $0.startDate
+        let activeHabits = habits.filter { habit in
+            !habit.isArchived && habit.isActiveOnDate(date) && date >= habit.startDate
         }
 
         guard !activeHabits.isEmpty else { return 0 }

@@ -24,16 +24,8 @@ enum ThemeMode: Int, CaseIterable {
     var iconName: String {
         switch self {
         case .system: "circle.righthalf.filled"
-        case .light:  "sun.max.fill"
-        case .dark:   "moon.fill"
-        }
-    }
-
-    var iconColor: Color {
-        switch self {
-        case .system: .cyan
-        case .light:  .yellow
-        case .dark:   .indigo
+        case .light:  "sun.max"
+        case .dark:   "moon"
         }
     }
 }

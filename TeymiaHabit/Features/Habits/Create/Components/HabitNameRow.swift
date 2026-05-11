@@ -37,7 +37,7 @@ struct HabitNameRow: View {
             }
             .contentShape(.rect)
         } icon: {
-            RowIcon(iconName: "applepencil", color: .gray)
+            RowIcon(iconName: "applepencil")
         }
     }
 }

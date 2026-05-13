@@ -1,9 +1,10 @@
 import SwiftUI
 
 struct SettingsView: View {
+//    @State private var selectedSection: SettingsSection
 
     var body: some View {
-        List {
+        Form {
             PremiumRow()
 
             Section {
@@ -16,10 +17,6 @@ struct SettingsView: View {
                 ArchiveRow()
                 SoundsRow()
                 NotificationsRow()
-            }
-
-            Section {
-                OnboardingRow()
             }
 
             Section {

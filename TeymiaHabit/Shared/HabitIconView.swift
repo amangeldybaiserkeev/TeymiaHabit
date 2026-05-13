@@ -23,12 +23,40 @@ struct HabitIconView: View {
 
     private var resolvedImage: some View {
         let name = iconName ?? fallbackIcon
-        let isAsset = UIImage(named: name) != nil
+        
+        // Пробуем найти кастомное изображение в Asset Catalog
+        if isCustomImageAvailable(name: name) {
+            return Image(name)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: size, height: size)
+                .foregroundStyle(color.gradient)
+                .eraseToAnyView()
+        } else {
+            // Используем system image
+            return Image(systemName: name)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: size, height: size)
+                .foregroundStyle(color.gradient)
+                .eraseToAnyView()
+        }
+    }
+    
+    private func isCustomImageAvailable(name: String) -> Bool {
+        #if os(iOS)
+        return UIImage(named: name) != nil
+        #elseif os(macOS)
+        return NSImage(named: name) != nil
+        #else
+        return false
+        #endif
+    }
+}
 
-        return (isAsset ? Image(name) : Image(systemName: name))
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .frame(width: size, height: size)
-            .foregroundStyle(color.gradient)
+// Helper для стирания типа
+extension View {
+    func eraseToAnyView() -> AnyView {
+        AnyView(self)
     }
 }

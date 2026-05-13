@@ -9,6 +9,9 @@ struct NotificationsRow: View {
     @State private var isPermissionAlertPresented = false
 
     var body: some View {
+        #if os(macOS)
+        EmptyView()
+        #else
         let manager = appContainer.notificationManager
         Toggle(isOn: Binding(
             get: { manager.notificationsEnabled },
@@ -37,6 +40,7 @@ struct NotificationsRow: View {
                 Task { await manager.refreshPermissionStatus() }
             }
         }
+#endif
     }
 
     @MainActor
@@ -55,9 +59,11 @@ struct NotificationsRow: View {
             await manager.updateAllNotifications(modelContext: modelContext)
         }
     }
-
+    
+    #if os(iOS)
     private func openSettings() {
         guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
         UIApplication.shared.open(url)
     }
+    #endif
 }

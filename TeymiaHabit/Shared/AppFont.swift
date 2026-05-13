@@ -1,5 +1,5 @@
 import SwiftUI
-
+#if os(iOS)
 enum AppFont {
 
     private static let titleSize: CGFloat = 18
@@ -41,3 +41,4 @@ extension UIFont {
         return UIFont(descriptor: descriptor.withDesign(.rounded) ?? descriptor, size: size)
     }
 }
+#endif

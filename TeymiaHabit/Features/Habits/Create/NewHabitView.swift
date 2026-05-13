@@ -54,7 +54,7 @@ private struct NewHabitContentView: View {
             .onAppear {
                 focusField = .title
             }
-            .adaptiveSheet(isPresented: Bindable(appContainer).showingPaywall) {
+            .sheet(isPresented: Bindable(appContainer).showingPaywall) {
                 PaywallView(storeKitService: appContainer.storeKitService)
             }
         }

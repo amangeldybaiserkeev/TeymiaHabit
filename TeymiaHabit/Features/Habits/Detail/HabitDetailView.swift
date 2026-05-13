@@ -43,8 +43,8 @@ struct HabitDetailContentView: View {
     let showStatsButton: Bool
 
     static let backgroundColors: [Color] = [
-        Color(#colorLiteral(red: 0.1389154494, green: 0.1585697234, blue: 0.1820063889, alpha: 1)), Color(#colorLiteral(red: 0.1408694983, green: 0.1213375106, blue: 0.12524423, alpha: 1)), Color(#colorLiteral(red: 0.180054009, green: 0.167724371, blue: 0.1702881455, alpha: 1)), Color(#colorLiteral(red: 0.1898193061, green: 0.1917725205, blue: 0.1859131753, alpha: 1)), Color(#colorLiteral(red: 0.3071291447, green: 0.2973631024, blue: 0.2744144797, alpha: 1)),
-        Color(#colorLiteral(red: 0.1558837593, green: 0.1566162407, blue: 0.1547851861, alpha: 1)), Color(#colorLiteral(red: 0.1359860003, green: 0.1458741426, blue: 0.162841469, alpha: 1)), Color(#colorLiteral(red: 0.2690429091, green: 0.271240294, blue: 0.2695312202, alpha: 1)), Color(#colorLiteral(red: 0.1982423067, green: 0.1668695211, blue: 0.2817369103, alpha: 1)), Color(#colorLiteral(red: 0.08221431822, green: 0.08221431822, blue: 0.08221431822, alpha: 1))
+        Color(#colorLiteral(red: 0.1389154494, green: 0.1585697234, blue: 0.1820063889, alpha: 1)), Color(#colorLiteral(red: 0.1131844893, green: 0.1154304668, blue: 0.1189380512, alpha: 1)), Color(#colorLiteral(red: 0.1128983721, green: 0.1153769568, blue: 0.1175429896, alpha: 1)), Color(#colorLiteral(red: 0.1898193061, green: 0.1917725205, blue: 0.1859131753, alpha: 1)), Color(#colorLiteral(red: 0.3071291447, green: 0.2973631024, blue: 0.2744144797, alpha: 1)),
+        Color(#colorLiteral(red: 0.08233620971, green: 0.08233659714, blue: 0.09095162898, alpha: 1)), Color(#colorLiteral(red: 0.1359860003, green: 0.1458741426, blue: 0.162841469, alpha: 1)), Color(#colorLiteral(red: 0.2690429091, green: 0.271240294, blue: 0.2695312202, alpha: 1)), Color(#colorLiteral(red: 0.1608034074, green: 0.1646784544, blue: 0.1881882548, alpha: 1)), Color(#colorLiteral(red: 0.08221431822, green: 0.08221431822, blue: 0.08221431822, alpha: 1))
     ]
 
     @Environment(\.dismiss) private var dismiss
@@ -74,7 +74,7 @@ struct HabitDetailContentView: View {
                 .sensoryFeedback(.selection, trigger: haptic)
                 .background(currentBgColor.gradient)
                 .toolbar {
-                    ToolbarItem(placement: .topBarLeading) {
+                    ToolbarItem(placement: .cancellationAction) {
                         if !Calendar.current.isDateInToday(date) {
                             Text(date.formattedAsNavigationTitle())
                                 .foregroundStyle(DS.Colors.secondary)
@@ -299,6 +299,18 @@ struct HabitDetailContentView: View {
         .buttonStyle(.plain)
         .glassEffect(.clear.interactive(), in: .capsule)
         .disabled(habit.type == .count && vm.isAlreadyCompleted)
+        .focusable()
+        .onKeyPress(keys: [.space]) { _ in
+            withAnimation(DS.Animations.easeInOut) {
+                if habit.type == .time && Calendar.current.isDateInToday(date) {
+                    vm.toggleTimer()
+                } else {
+                    vm.completeHabit()
+                }
+            }
+            haptic += 1
+            return .handled
+        }
     }
 
     private func buttonLabel(vm: HabitDetailViewModel) -> LocalizedStringKey {

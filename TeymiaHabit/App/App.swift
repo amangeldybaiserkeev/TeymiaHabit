@@ -10,8 +10,10 @@ struct TeymiaHabitApp: App {
     @State private var appContainer: AppDependencyContainer
 
     init() {
+        #if os(iOS)
         AppFont.configureAppearance()
-
+        #endif
+        
         guard let groupURL = FileManager.default.containerURL(
             forSecurityApplicationGroupIdentifier: "group.com.amanbayserkeev.teymiahabit"
         ) else {
@@ -46,7 +48,7 @@ struct TeymiaHabitApp: App {
                         handleDeepLink(url)
                     }
             } else {
-                OnboardingView()
+//                OnboardingView()
             }
         }
         .modelContainer(modelContainer)

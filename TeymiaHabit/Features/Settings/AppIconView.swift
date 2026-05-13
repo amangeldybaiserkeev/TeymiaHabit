@@ -2,7 +2,7 @@ import SwiftUI
 
 struct AppIconRow: View {
     var body: some View {
-#if targetEnvironment(macCatalyst)
+#if os(macOS)
         EmptyView()
 #else
         NavigationLink {
@@ -17,7 +17,7 @@ struct AppIconRow: View {
 #endif
     }
 }
-
+#if os(iOS)
 struct AppIconView: View {
     @Environment(AppDependencyContainer.self) private var appContainer
 
@@ -66,7 +66,7 @@ struct AppIconView: View {
     }
 }
 
-struct AppIconImage: View {
+private struct AppIconImage: View {
     let icon: AppIcon
 
     private static let size: CGFloat = 48
@@ -85,3 +85,4 @@ struct AppIconImage: View {
             }
     }
 }
+#endif

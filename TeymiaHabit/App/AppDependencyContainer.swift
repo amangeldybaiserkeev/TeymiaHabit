@@ -11,7 +11,7 @@ final class AppDependencyContainer {
     let timerService = TimerService()
     let habitLiveActivityManager = HabitLiveActivityManager()
     let soundManager = SoundManager()
-    let iconManager = AppIconManager()
+    let iconManager: any AppIconManagerProtocol
     let widgetService = WidgetService()
 
     // MARK: - Services
@@ -26,5 +26,6 @@ final class AppDependencyContainer {
             notificationManager: notificationManager,
             timerService: timerService
         )
+        self.iconManager = AppIconManager()
     }
 }

@@ -1,5 +1,6 @@
 import SwiftUI
 
+#if os(iOS)
 protocol AnimatedTabSelectionProtocol: CaseIterable, Hashable {
     var title: LocalizedStringKey { get }
     var symbolImage: String { get }
@@ -116,3 +117,4 @@ fileprivate extension UIView {
         subviews.flatMap { $0.subviews(type: type) }
     }
 }
+#endif

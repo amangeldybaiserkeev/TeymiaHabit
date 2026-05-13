@@ -60,7 +60,7 @@ struct HabitsContentView: View {
         .sheet(item: $habitToEdit) { habit in
             NewHabitView(habit: habit)
         }
-        .fullScreenCover(item: $selectedHabit) { habit in
+        .sheet(item: $selectedHabit) { habit in
             HabitDetailView(habit: habit, date: selectedDate)
                 .navigationTransition(.zoom(sourceID: habit.id, in: habitCardAnimation))
         }
@@ -78,7 +78,7 @@ struct HabitsContentView: View {
     private var toolbarContent: some ToolbarContent {
 
         if !vm.allBaseHabits.isEmpty {
-            ToolbarItem(placement: .topBarLeading) {
+            ToolbarItem(placement: .cancellationAction) {
                 if editMode == .active {
                     Button {
                         withAnimation {
@@ -104,7 +104,7 @@ struct HabitsContentView: View {
         }
 
         if !Calendar.current.isDateInToday(selectedDate) {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: .cancellationAction) {
                 Button {
                     selectedDate = Date()
                 } label: {
@@ -114,9 +114,9 @@ struct HabitsContentView: View {
             }
         }
 
-        ToolbarSpacer(.fixed, placement: .topBarTrailing)
+        ToolbarSpacer(.fixed, placement: .cancellationAction)
 
-        ToolbarItem(placement: .topBarTrailing) {
+        ToolbarItem(placement: .confirmationAction) {
             Button {
                 if allHabits.count < appContainer.storeKitService.maxHabitsCount {
                     showingNewHabit = true
@@ -141,7 +141,6 @@ struct HabitsContentView: View {
         .environment(\.editMode, $editMode)
         .environment(vm)
         .navigationTitle(vm.navigationTitle(for: selectedDate))
-        .navigationBarTitleDisplayMode(.inline)
         .toolbar { toolbarContent }
         .safeAreaBar(edge: .bottom) {
             if editMode.isEditing && !selection.isEmpty {

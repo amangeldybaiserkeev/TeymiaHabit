@@ -71,7 +71,7 @@ struct HabitStatisticsView: View {
             .onChange(of: habit.completions) { _, _ in
                 vm.refresh()
             }
-            .adaptiveSheet(isPresented: $showingLocalPaywall) {
+            .sheet(isPresented: $showingLocalPaywall) {
                 PaywallView(storeKitService: appContainer.storeKitService)
             }
         }

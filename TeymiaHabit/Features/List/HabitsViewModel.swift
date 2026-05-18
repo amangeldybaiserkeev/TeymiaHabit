@@ -1,0 +1,155 @@
+import SwiftUI
+import SwiftData
+
+@Observable @MainActor
+final class HabitsViewModel {
+    private let modelContext: ModelContext
+    private let habitService: any HabitServiceProtocol
+    private let soundManager: SoundManager
+    private let timerService: TimerService
+    private let widgetService: WidgetService
+    private let notificationManager: NotificationManager
+
+    var allBaseHabits: [Habit] = []
+    var calendarUpdateTrigger = false
+
+    init(
+        modelContext: ModelContext,
+        habitService: any HabitServiceProtocol,
+        notificationManager: NotificationManager,
+        soundManager: SoundManager,
+        widgetService: WidgetService,
+        timerService: TimerService
+    ) {
+        self.modelContext = modelContext
+        self.habitService = habitService
+        self.notificationManager = notificationManager
+        self.soundManager = soundManager
+        self.widgetService = widgetService
+        self.timerService = timerService
+    }
+
+    // MARK: - Computed Properties
+
+    func activeHabits(for date: Date) -> [Habit] {
+        allBaseHabits.filter { habit in
+            !habit.isArchived &&
+            habit.isActiveOnDate(date) &&
+            date >= habit.startDate
+        }
+    }
+
+    func navigationTitle(for date: Date) -> String {
+        date.formattedAsNavigationTitle()
+    }
+
+    // MARK: - Actions
+
+    func getEffectiveProgress(for habit: Habit, on date: Date) -> Int {
+        habitService.effectiveProgress(for: habit, on: date)
+    }
+
+    private func triggerCalendarUpdate() {
+        calendarUpdateTrigger.toggle()
+    }
+
+    private func handleResult(_ didComplete: Bool) {
+        if didComplete { soundManager.playCompletionSound() }
+    }
+
+    func handleRingTap(on habit: Habit, date: Date) {
+        switch habit.type {
+        case .count:
+
+            let current = habitService.getTemporaryProgress(for: habit.uuid, date: date) ?? habit.progressForDate(date)
+            let newProgress = current + 1
+
+            habitService.setTemporaryProgress(for: habit.uuid, date: date, progress: newProgress)
+
+            let result = habitService.addProgress(1, to: habit, date: date)
+            handleResult(result)
+
+        case .time:
+            let habitId = habit.uuid.uuidString
+            if timerService.isTimerRunning(for: habitId) {
+                if let finalProgress = timerService.stopTimer(for: habitId) {
+                    habitService.setTemporaryProgress(for: habit.uuid, date: date, progress: finalProgress)
+                    let result = habitService.updateProgress(to: finalProgress, for: habit, date: date)
+                    handleResult(result)
+                }
+            } else {
+                let current = habit.progressForDate(date)
+                _ = timerService.startTimer(for: habitId, baseProgress: current)
+            }
+        }
+
+        triggerCalendarUpdate()
+        saveAndReloadWithDebounce(for: habit.uuid, date: date)
+    }
+
+    func completeHabit(_ habit: Habit, date: Date) {
+        habitService.completeHabit(for: habit, date: date)
+    }
+
+    func toggleSkip(for habit: Habit, date: Date) {
+        if habit.isSkipped(on: date) {
+            habitService.unskipDate(date, for: habit)
+        } else {
+            habitService.skipDate(date, for: habit)
+        }
+    }
+
+    func archiveHabit(_ habit: Habit) {
+        habitService.archive(habit)
+    }
+
+    func deleteHabit(_ habit: Habit) {
+        habitService.delete(habit)
+    }
+
+    // MARK: - Reorder
+
+    func moveHabits(from source: IndexSet, to destination: Int, date: Date) {
+        let activeHabits = activeHabits(for: date)
+        var updatedAllHabits = allBaseHabits.sorted { $0.displayOrder < $1.displayOrder }
+
+        let habitsToMove = source.map { activeHabits[$0] }
+
+        let targetIndex: Int
+        if destination < activeHabits.count {
+            let targetHabit = activeHabits[destination]
+            targetIndex = updatedAllHabits.firstIndex(of: targetHabit) ?? updatedAllHabits.count
+        } else {
+            if let lastVisible = activeHabits.last,
+               let lastIndexInAll = updatedAllHabits.firstIndex(of: lastVisible) {
+                targetIndex = lastIndexInAll + 1
+            } else {
+                targetIndex = updatedAllHabits.count
+            }
+        }
+
+        let sourceIndices = IndexSet(habitsToMove.compactMap { updatedAllHabits.firstIndex(of: $0) })
+        updatedAllHabits.move(fromOffsets: sourceIndices, toOffset: targetIndex)
+
+        habitService.reorderHabits(updatedAllHabits)
+    }
+
+    // MARK: - Timer
+
+    func checkCompletionForActiveTimer(_ habit: Habit, date: Date) {
+        guard let liveProgress = timerService.getLiveProgress(for: habit.uuid.uuidString),
+              habit.progressForDate(date) < habit.goal,
+              liveProgress >= habit.goal else { return }
+        soundManager.playCompletionSound()
+    }
+
+    // MARK: - Debounce
+
+    private func saveAndReloadWithDebounce(for uuid: UUID, date: Date) {
+        Task {
+            try? await Task.sleep(for: .seconds(0.6))
+            habitService.clearTemporaryProgress(for: uuid, date: date)
+        }
+    }
+}
+

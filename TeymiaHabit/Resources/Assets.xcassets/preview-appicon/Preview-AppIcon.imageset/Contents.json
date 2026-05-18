@@ -3,6 +3,16 @@
     {
       "filename" : "AppIconMinimal-iOS-Default-60x60@2x.png",
       "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "AppIconMinimal-iOS-Dark-60x60@2x.png",
+      "idiom" : "universal"
     }
   ],
   "info" : {

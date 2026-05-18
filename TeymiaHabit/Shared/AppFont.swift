@@ -1,5 +1,5 @@
 import SwiftUI
-#if os(iOS)
+
 enum AppFont {
 
     private static let titleSize: CGFloat = 18
@@ -29,6 +29,8 @@ enum AppFont {
     private static func configureTabBar() {
         let appearance = UITabBarAppearance()
         appearance.configureWithTransparentBackground()
+        appearance.backgroundColor = .clear
+        appearance.shadowColor = .clear
 
         UITabBar.appearance().standardAppearance = appearance
         UITabBar.appearance().scrollEdgeAppearance = appearance
@@ -41,4 +43,4 @@ extension UIFont {
         return UIFont(descriptor: descriptor.withDesign(.rounded) ?? descriptor, size: size)
     }
 }
-#endif
+

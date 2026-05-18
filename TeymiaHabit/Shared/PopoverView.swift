@@ -1,5 +1,4 @@
 import SwiftUI
-import AppKit
 
 struct PopoverView<Label: View, Content: View>: View {
     @ViewBuilder var label: Label
@@ -22,10 +21,8 @@ struct PopoverView<Label: View, Content: View>: View {
             PopOverHelper {
                 content
             }
-            #if os(iOS)
+            #if !targetEnvironment(macCatalyst)
             .navigationTransition(.zoom(sourceID: "POPOVER", in: namespace))
-            #else
-            .navigationTransition(.automatic)
             #endif
         }
         .sensoryFeedback(.selection, trigger: isExpanded)

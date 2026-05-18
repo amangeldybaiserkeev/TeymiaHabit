@@ -1,10 +1,10 @@
 import SwiftUI
 
 struct RowIcon: View {
-    let iconName: String
+    let symbol: RowSymbol
 
     var body: some View {
-        Image(systemName: iconName)
+        Image(systemName: symbol.iconName)
             .font(DS.AppFont.callout)
             .fontWeight(.medium)
             .foregroundStyle(DS.Colors.primary)

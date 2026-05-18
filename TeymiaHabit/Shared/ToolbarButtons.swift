@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct CloseToolbarButton: ToolbarContent {
-    @Environment(\.dismiss) private var dismiss
+    let dismiss: () -> Void
 
     var body: some ToolbarContent {
         ToolbarItem(placement: .cancellationAction) {
@@ -29,6 +29,7 @@ struct ConfirmationToolbarButton: ToolbarContent {
                     .fontWeight(.semibold)
             }
             .buttonStyle(.glassProminent)
+            .buttonBorderShape(.circle)
             .tint(DS.Colors.primary)
             .disabled(isDisabled)
         }

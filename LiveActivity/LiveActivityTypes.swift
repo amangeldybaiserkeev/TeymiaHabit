@@ -1,4 +1,3 @@
-#if !os(macOS)
 import SwiftUI
 import ActivityKit
 import WidgetKit
@@ -84,4 +83,3 @@ struct LiveActivityHabitIcon: View {
         )
     }
 }
-#endif

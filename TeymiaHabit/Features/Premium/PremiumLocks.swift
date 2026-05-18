@@ -33,7 +33,7 @@ struct PremiumLockBadge: View {
         }
         .overlay {
             Circle()
-                .stroke(Color(.secondarySystemGroupedBackground), lineWidth: 2)
+                .stroke(DS.Colors.onPrimary, lineWidth: 2)
                 .frame(size: size)
         }
     }

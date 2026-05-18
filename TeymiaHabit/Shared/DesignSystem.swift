@@ -3,12 +3,20 @@ import SwiftUI
 enum DS {
     // MARK: - Colors
     enum Colors {
+        static let accent = Color.accent
         static let primary = Color.appPrimary
         static let secondary = Color.secondary
-        static let tertiary = Color.secondary.opacity(0.1)
+        static let tertiary = Color.appTertiary
         static let onPrimary = Color.onPrimary
         static let premiumBlue = Color.premiumBlue
         static let premiumPink = Color.premiumPink
+
+        static let primaryButton = Color.primaryButton
+        static let primaryButtonText = Color.primaryButtonText
+
+        static let appBackground = Color.appBackground
+        static let groupBackground = Color.groupBackground
+        static let rowBackground = Color.rowBackground
     }
 
     // MARK: - IconSize
@@ -25,9 +33,9 @@ enum DS {
 
     // MARK: - Touch Target
     enum TouchTarget {
-        static let minimum: CGFloat = 44
-        static let comfortable: CGFloat = 48
-        static let large: CGFloat = 56
+        static let minimum: CGFloat = 40
+        static let comfortable: CGFloat = 44
+        static let large: CGFloat = 52
     }
 
     // MARK: - Radius

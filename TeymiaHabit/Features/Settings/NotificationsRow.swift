@@ -9,7 +9,7 @@ struct NotificationsRow: View {
     @State private var isPermissionAlertPresented = false
 
     var body: some View {
-        #if os(macOS)
+#if targetEnvironment(macCatalyst)
         EmptyView()
         #else
         let manager = appContainer.notificationManager
@@ -22,7 +22,7 @@ struct NotificationsRow: View {
             Label {
                 Text("Notifications")
             } icon: {
-                RowIcon(iconName: "bell.badge")
+                RowIcon(symbol: .notifications)
                     .symbolEffect(.wiggle, value: manager.notificationsEnabled)
             }
         }
@@ -59,11 +59,10 @@ struct NotificationsRow: View {
             await manager.updateAllNotifications(modelContext: modelContext)
         }
     }
-    
-    #if os(iOS)
+
     private func openSettings() {
         guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
         UIApplication.shared.open(url)
     }
-    #endif
 }
+

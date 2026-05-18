@@ -9,7 +9,7 @@ struct ArchiveRow: View {
             Label {
                 Text("Archive")
             } icon: {
-                RowIcon(iconName: "archivebox")
+                RowIcon(symbol: .archive)
             }
         }
     }
@@ -27,29 +27,39 @@ struct ArchiveView: View {
     @State private var habitToDelete: Habit?
 
     var body: some View {
+        Group {
+            if archivedHabits.isEmpty {
+                emptyView
+            } else {
+                habitList
+            }
+        }
+    }
+
+    private var habitList: some View {
         List {
-            listContent
+            ForEach(archivedHabits) { habit in
+                archivedHabitRow(habit)
+            }
+            .rowBackground()
         }
         .navigationTitle("Archive")
+        .appBackground(.grouped)
         .deleteHabitAlert(habit: $habitToDelete) { habit in
             appContainer.habitService.delete(habit)
         }
     }
 
-    @ViewBuilder
-    private var listContent: some View {
-        if archivedHabits.isEmpty {
-            ContentUnavailableView(
-                "No Archived Habits",
-                systemImage: "archivebox.fill",
-                description: Text("Archived habits will appear here")
-            )
-            .listRowBackground(Color.clear)
-        } else {
-            ForEach(archivedHabits) { habit in
-                archivedHabitRow(habit)
-            }
+    private var emptyView: some View {
+        EmptyStateView(
+            title: "No Archived Habits",
+            message: "Habits you archive will appear here."
+        ) {
+            Image(systemName: "archivebox.fill")
+                .font(.system(size: DS.IconSize.xxl))
+                .foregroundStyle(DS.Colors.secondary.opacity(0.5))
         }
+        .appBackground()
     }
 
     @ViewBuilder
@@ -74,7 +84,6 @@ struct ArchiveView: View {
                 Image(systemName: "arrow.uturn.backward")
             }
             .buttonStyle(.glass)
-            .buttonBorderShape(.circle)
 
             Button(role: .destructive) {
                 habitToDelete = habit

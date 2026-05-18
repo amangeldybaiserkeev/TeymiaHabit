@@ -77,12 +77,12 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Core/Extensions/TimeFormatting.swift,
-				Core/Extensions/ViewLayout.swift,
 				"Core/Extensions/Сolor.swift",
 				Core/Models/HabitIconColor.swift,
 				Resources/Assets.xcassets,
 				Shared/DesignSystem.swift,
 				Shared/HabitIconView.swift,
+				Shared/Modifiers/ViewLayout.swift,
 			);
 			target = 077FAE6D2E12DE7C007790C5 /* liveactivityExtension */;
 		};
@@ -98,7 +98,6 @@
 			membershipExceptions = (
 				Core/Extensions/Calendar.swift,
 				Core/Extensions/TimeFormatting.swift,
-				Core/Extensions/ViewLayout.swift,
 				"Core/Extensions/Сolor.swift",
 				Core/Models/Habit.swift,
 				Core/Models/HabitCompletion.swift,
@@ -108,6 +107,7 @@
 				Resources/Assets.xcassets,
 				Shared/DesignSystem.swift,
 				Shared/HabitIconView.swift,
+				Shared/Modifiers/ViewLayout.swift,
 			);
 			target = 07EA6CCB2E31DFB800171765 /* TeymiaHabitWidgetsExtension */;
 		};
@@ -117,6 +117,10 @@
 				LiveActivityState.swift,
 				LiveActivityTypes.swift,
 			);
+			platformFiltersByRelativePath = {
+				LiveActivityState.swift = (ios, );
+				LiveActivityTypes.swift = (ios, );
+			};
 			target = 07A95EF92D9849F300044A7A /* TeymiaHabit */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -596,7 +600,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "\"AppIcon-Dark, AppIcon-Mandarin, AppIcon-Mint, AppIcon-Raspberry, AppIcon-Lime, AppIcon-Bumblebee, AppIcon-MidnightIndigo, AppIcon-Lagoon\"";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				ASSETCATALOG_OTHER_FLAGS = "--enable-icon-stack-fallback-generation=disabled";
 				AUTOMATION_APPLE_EVENTS = NO;
@@ -643,8 +647,8 @@
 				RUNTIME_EXCEPTION_DEBUGGING_TOOL = NO;
 				RUNTIME_EXCEPTION_DISABLE_EXECUTABLE_PAGE_PROTECTION = NO;
 				RUNTIME_EXCEPTION_DISABLE_LIBRARY_VALIDATION = NO;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -659,7 +663,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "\"AppIcon-Dark, AppIcon-Mandarin, AppIcon-Mint, AppIcon-Raspberry, AppIcon-Lime, AppIcon-Bumblebee, AppIcon-MidnightIndigo, AppIcon-Lagoon\"";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				ASSETCATALOG_OTHER_FLAGS = "--enable-icon-stack-fallback-generation=disabled";
 				AUTOMATION_APPLE_EVENTS = NO;
@@ -706,8 +710,8 @@
 				RUNTIME_EXCEPTION_DEBUGGING_TOOL = NO;
 				RUNTIME_EXCEPTION_DISABLE_EXECUTABLE_PAGE_PROTECTION = NO;
 				RUNTIME_EXCEPTION_DISABLE_LIBRARY_VALIDATION = NO;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;

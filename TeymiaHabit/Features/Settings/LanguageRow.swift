@@ -2,7 +2,7 @@ import SwiftUI
 
 struct LanguageRow: View {
     var body: some View {
-#if os(macOS)
+#if targetEnvironment(macCatalyst)
         EmptyView()
 #else
         Button {
@@ -13,7 +13,7 @@ struct LanguageRow: View {
                     Text("Language")
                         .foregroundStyle(DS.Colors.primary)
                 } icon: {
-                    RowIcon(iconName: "globe.americas")
+                    RowIcon(symbol: .language)
                 }
                 Spacer()
                 Text(currentLanguage)
@@ -24,12 +24,10 @@ struct LanguageRow: View {
 #endif
     }
 
-    #if os(iOS)
     private func openAppSettings() {
         guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
         UIApplication.shared.open(url)
     }
-    #endif
 
     private var currentLanguage: String {
         let languageCode = Bundle.main.preferredLocalizations.first ?? "en"

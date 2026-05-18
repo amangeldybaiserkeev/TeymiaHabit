@@ -25,7 +25,7 @@ enum ThemeMode: Int, CaseIterable {
         switch self {
         case .system: "circle.righthalf.filled"
         case .light:  "sun.max"
-        case .dark:   "moon"
+        case .dark:   "moon.stars"
         }
     }
 }

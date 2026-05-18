@@ -30,12 +30,20 @@ struct PaywallContentView: View {
                     footer
                 }
                 .padding(.horizontal, DS.Spacing.reg)
+                .applyAdaptiveWidth()
             }
-            .background { LivelyFloatingBlobsBackground() }
-            .toolbar { CloseToolbarButton() }
+            .background {
+                LivelyFloatingBlobsBackground()
+            }
+            .toolbar {
+                CloseToolbarButton {
+                    dismiss()
+                }
+            }
             .safeAreaBar(edge: .bottom) {
                 bottomBar
                     .preferredColorScheme(.dark)
+                    .applyAdaptiveWidth()
             }
         }
         .preferredColorScheme(.dark)

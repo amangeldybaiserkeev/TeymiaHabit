@@ -10,10 +10,8 @@ struct TeymiaHabitApp: App {
     @State private var appContainer: AppDependencyContainer
 
     init() {
-        #if os(iOS)
         AppFont.configureAppearance()
-        #endif
-        
+
         guard let groupURL = FileManager.default.containerURL(
             forSecurityApplicationGroupIdentifier: "group.com.amanbayserkeev.teymiahabit"
         ) else {
@@ -35,21 +33,23 @@ struct TeymiaHabitApp: App {
 
     var body: some Scene {
         WindowGroup {
-            if hasCompletedOnboarding {
-                MainTabView()
-                    .environment(appContainer)
-                    .task {
-                        await appContainer.storeKitService.loadProducts()
-                    }
-                    .onAppear {
-                        setupLiveActivities()
-                    }
-                    .onOpenURL { url in
-                        handleDeepLink(url)
-                    }
-            } else {
-//                OnboardingView()
-            }
+            MainTabView()
+                .environment(appContainer)
+                .task {
+                    await appContainer.storeKitService.loadProducts()
+                }
+                .onAppear {
+                    setupLiveActivities()
+                }
+                .onOpenURL { url in
+                    handleDeepLink(url)
+                }
+                .onAppear {
+                    hasCompletedOnboarding = true
+                } // TODO: delete for production
+                .sheet(isPresented: $hasCompletedOnboarding) {
+                    OnboardingView(hasCompletedOnboarding: $hasCompletedOnboarding)
+                }
         }
         .modelContainer(modelContainer)
         .onChange(of: scenePhase) { _, newPhase in
@@ -118,3 +118,4 @@ struct TeymiaHabitApp: App {
         }
     }
 }
+

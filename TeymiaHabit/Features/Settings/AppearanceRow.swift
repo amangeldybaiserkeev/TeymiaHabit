@@ -11,7 +11,7 @@ struct AppearanceRow: View {
         } label: {
             Label(
                 title: { Text("Appearance") },
-                icon: { RowIcon(iconName: themeMode.iconName) }
+                icon: { RowIcon(symbol: .appearance(themeMode)) }
             )
             .contentTransition(.symbolEffect(.replace))
         }

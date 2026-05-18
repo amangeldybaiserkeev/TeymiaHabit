@@ -2,7 +2,7 @@ import SwiftUI
 
 struct AppIconRow: View {
     var body: some View {
-#if os(macOS)
+#if targetEnvironment(macCatalyst)
         EmptyView()
 #else
         NavigationLink {
@@ -11,20 +11,20 @@ struct AppIconRow: View {
             Label {
                 Text("App Icon")
             } icon: {
-                RowIcon(iconName: "checkmark.app")
+                RowIcon(symbol: .appIcon)
             }
         }
 #endif
     }
 }
-#if os(iOS)
+
 struct AppIconView: View {
     @Environment(AppDependencyContainer.self) private var appContainer
 
     private static let lockBadgeOffset: CGFloat = 7
 
     var body: some View {
-        List {
+        Form {
             Section {
                 ForEach(AppIcon.allCases) { icon in
                     let isLocked = !appContainer.storeKitService.canUseIcon(icon)
@@ -57,7 +57,10 @@ struct AppIconView: View {
                     }
                 }
             }
+            .rowBackground()
         }
+        .formStyle(.grouped)
+        .appBackground(.grouped)
         .navigationTitle("App Icon")
         .animation(DS.Animations.easeInOut, value: appContainer.iconManager.currentIcon)
         .onAppear {
@@ -70,19 +73,11 @@ private struct AppIconImage: View {
     let icon: AppIcon
 
     private static let size: CGFloat = 48
-    private static let lineWidth: CGFloat = 0.5
-    private static let cornerRadius = DS.Radius.sm
 
     var body: some View {
         Image(icon.previewImageName)
             .resizable()
             .aspectRatio(contentMode: .fit)
             .frame(size: Self.size)
-            .clipShape(.rect(cornerRadius: Self.cornerRadius))
-            .overlay {
-                RoundedRectangle(cornerRadius: Self.cornerRadius)
-                    .stroke(DS.Colors.tertiary, lineWidth: Self.lineWidth)
-            }
     }
 }
-#endif

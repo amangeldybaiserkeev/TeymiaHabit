@@ -9,7 +9,7 @@ struct SoundsRow: View {
             Label {
                 Text("Sounds")
             } icon: {
-                RowIcon(iconName: "speaker.wave.1")
+                RowIcon(symbol: .sounds)
             }
         }
     }
@@ -35,15 +35,21 @@ struct SoundsView: View {
     var body: some View {
         List {
             Section {
-                Picker("", selection: $selectedTab) {
-                    ForEach(SoundTab.allCases, id: \.self) { tab in
-                        Text(tab.localizedName).tag(tab)
+                HStack {
+                    Spacer()
+
+                    Picker("", selection: $selectedTab) {
+                        ForEach(SoundTab.allCases, id: \.self) { tab in
+                            Text(tab.localizedName).tag(tab)
+                        }
                     }
+                    .pickerStyle(.segmented)
+                    .frame(maxWidth: 500)
+
+                    Spacer()
                 }
-                .pickerStyle(.segmented)
-                .frame(maxWidth: 500)
-                .listRowBackground(Color.clear)
             }
+            .listRowBackground(Color.clear)
 
             if selectedTab == .completion {
                 completionSection
@@ -52,6 +58,7 @@ struct SoundsView: View {
             }
         }
         .navigationTitle("Sounds")
+        .appBackground(.grouped)
     }
 
     // MARK: - Sections
@@ -70,6 +77,7 @@ struct SoundsView: View {
                 ))
                 .tint(nil)
             }
+            .rowBackground()
 
             if soundManager.isSoundEnabled {
                 Section {
@@ -95,6 +103,7 @@ struct SoundsView: View {
                         )
                     }
                 }
+                .rowBackground()
                 .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
@@ -132,6 +141,7 @@ struct SoundsView: View {
                 )
             }
         }
+        .rowBackground()
         .transition(.opacity.combined(with: .move(edge: .top)))
     }
 }

@@ -1,136 +1,83 @@
 import SwiftUI
-
-// MARK: - Entry Point
+import SwiftData
 
 struct NewHabitView: View {
-    @Environment(AppDependencyContainer.self) private var appContainer
+    let habit: Habit?
+    let template: HabitTemplate?
+
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+    @Environment(HealthKitManager.self) private var healthKitManager
 
-    var habit: Habit?
-
-    var body: some View {
-        NewHabitContentView(
-            vm: NewHabitViewModel(
-                habitService: appContainer.habitService,
-                habit: habit
-            ),
-            onDismiss: { dismiss() }
-        )
-    }
-}
-
-// MARK: - Content View
-
-private struct NewHabitContentView: View {
-    @State var vm: NewHabitViewModel
-    let onDismiss: () -> Void
-
-    init(vm: NewHabitViewModel, onDismiss: @escaping () -> Void) {
-        _vm = State(wrappedValue: vm)
-        self.onDismiss = onDismiss
-    }
-
-    @Environment(AppDependencyContainer.self) private var appContainer
+    @State private var viewModel = NewHabitViewModel()
     @FocusState private var focusField: NewHabitField?
 
+    init(habit: Habit? = nil, template: HabitTemplate? = nil) {
+        self.habit = habit
+        self.template = template
+    }
+
     var body: some View {
-        @Bindable var vm = vm
-        @Bindable var container = appContainer
+        ScrollView {
+            VStack(spacing: Spacing.md) {
+                ListSection {
+                    HabitNameRow(
+                        title: $viewModel.title,
+                        focus: $focusField
+                    )
+                    IconRow(
+                        selectedIcon: $viewModel.selectedIcon,
+                        selectedColor: $viewModel.selectedIconColor
+                    )
+                }
 
-        NavigationStack {
-            List {
-                mainInfoSection
-                goalSection
-                scheduleSection
+                ListSection(header: "Goal Settings") {
+                    GoalRow(
+                        selectedType: $viewModel.selectedType,
+                        countText: $viewModel.goalCountText,
+                        hours: $viewModel.goalHours,
+                        minutes: $viewModel.minutes,
+                        focus: $focusField
+                    )
+                }
+
+                ListSection(header: "Schedule") {
+                    ActiveDaysRow(activeDays: $viewModel.activeDays)
+                    StartDateRow(startDate: $viewModel.startDate)
+                    RemindersRow(
+                        isReminderEnabled: $viewModel.isReminderEnabled,
+                        reminderTimes: $viewModel.reminderTimes
+                    )
+                }
             }
-            .applyAdaptiveWidth()
-            .appBackground(.grouped)
-            .interactiveDismissDisabled(vm.hasChanges)
-            .navigationTitle(vm.habit == nil ? "Create Habit" : "Edit Habit")
-            .scrollDismissesKeyboard(.immediately)
-            .toolbar {
-                navigationToolbar
-                keyboardToolbar
+            .padding(.top, Spacing.reg)
+        }
+        .navigationTitle(habit == nil ? "Create Habit" : "Edit Habit")
+        .toolbarTitleDisplayMode(.inline)
+        .scrollDismissesKeyboard(.immediately)
+        .toolbar {
+            ConfirmationToolbarButton(isDisabled: !viewModel.isFormValid) {
+                viewModel.save(context: modelContext, existingHabit: habit)
+                dismiss()
             }
-            .onAppear {
-                focusField = .title
-            }
-            .sheet(isPresented: Bindable(appContainer).showingPaywall) {
-                PaywallView(storeKitService: appContainer.storeKitService)
+
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button {
+                    focusField = nil
+                } label: {
+                    Image(systemName: "keyboard.chevron.compact.down")
+                }
+                .tint(.appPrimary)
             }
         }
-        .presentationSizing(.page)
-    }
-}
-
-// MARK: - Toolbar
-
-private extension NewHabitContentView {
-
-    @ToolbarContentBuilder
-    var navigationToolbar: some ToolbarContent {
-        CloseToolbarButton(dismiss: onDismiss)
-        ConfirmationToolbarButton(
-            action: {
-                vm.save()
-                onDismiss()
-            },
-            isDisabled: !vm.isFormValid
-        )
-    }
-
-    @ToolbarContentBuilder
-    var keyboardToolbar: some ToolbarContent {
-        ToolbarItemGroup(placement: .keyboard) {
-            Spacer()
-            Button {
-                focusField = nil
-            } label: {
-                Image(systemName: "keyboard.chevron.compact.down")
-            }
-            .tint(DS.Colors.primary)
+        .onAppear {
+            viewModel.setup(habit: habit, template: template)
+            focusField = .title
+            viewModel.requestHealthKitPermission(using: healthKitManager)
         }
-    }
-}
-
-// MARK: - Sections
-
-private extension NewHabitContentView {
-
-    var mainInfoSection: some View {
-        Section {
-            HabitNameRow(
-                title: $vm.title,
-                focus: $focusField
-            )
-            IconRow(
-                selectedIcon: $vm.selectedIcon,
-                selectedColor: $vm.selectedIconColor
-            )
+        .fullScreenCover(isPresented: $viewModel.showingPaywall) {
+            PaywallView()
         }
-        .rowBackground()
-    }
-
-    var goalSection: some View {
-        Section {
-            GoalRow(
-                selectedType: $vm.selectedType,
-                config: $vm.goalConfig,
-                focus: $focusField
-            )
-        }
-        .rowBackground()
-    }
-
-    var scheduleSection: some View {
-        Section {
-            ActiveDaysRow(activeDays: $vm.activeDays)
-            StartDateRow(startDate: $vm.startDate)
-            RemindersRow(
-                isReminderEnabled: $vm.isReminderEnabled,
-                reminderTimes: $vm.reminderTimes
-            )
-        }
-        .rowBackground()
     }
 }

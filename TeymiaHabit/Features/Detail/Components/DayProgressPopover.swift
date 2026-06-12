@@ -23,22 +23,22 @@ struct DayProgressPopover: View {
 
     // MARK: - Body
     var body: some View {
-        VStack(spacing: DS.Spacing.reg) {
-            VStack(spacing: DS.Spacing.xxs) {
+        VStack(spacing: Spacing.reg) {
+            VStack(spacing: Spacing.xxs) {
                 Text(date.formatted(date: .abbreviated, time: .omitted))
-                    .font(DS.AppFont.subheadline)
-                    .foregroundStyle(DS.Colors.secondary)
+                    .font( .subheadline)
+                    .foregroundStyle(Color.secondary)
 
-                HStack(spacing: DS.Spacing.xxs) {
+                HStack(spacing: Spacing.xxs) {
                     Text(habit.formattedProgress(for: date))
                     Text("|")
                     Text(habit.formattedGoal)
                 }
-                .font(DS.AppFont.headline)
+                .font( .headline)
             }
 
             Divider()
-                .padding(.horizontal, DS.Spacing.reg)
+                .padding(.horizontal, Spacing.reg)
 
             Group {
                 if habit.type == .count {
@@ -60,37 +60,37 @@ struct DayProgressPopover: View {
                         )
                         .overlay(alignment: .trailing) {
                             Button {
-                                withAnimation(DS.Animations.spring) {
+                                withAnimation( Animations.spring) {
                                     inputText = ""
                                 }
                             } label: {
                                 Image(systemName: "xmark.circle.fill")
-                                    .foregroundStyle(DS.Colors.secondary.opacity(0.5))
-                                    .font(.system(size: DS.IconSize.sm))
+                                    .foregroundStyle(Color.secondary.opacity(0.5))
+                                    .font(.system(size: IconSize.sm))
                             }
                             .buttonStyle(.plain)
-                            .frame(size: DS.TouchTarget.minimum)
+                            .frame(size: TouchTarget.minimum)
                             .contentShape(.rect)
                             .opacity(inputText.isEmpty ?  0 : 1)
                             .scaleEffect(inputText.isEmpty ? 0.001 : 1)
-                            .animation(DS.Animations.spring, value: inputText.isEmpty)
+                            .animation( Animations.spring, value: inputText.isEmpty)
                             .disabled(inputText.isEmpty)
                         }
                 } else {
                     DatePicker("", selection: $selectedTime, displayedComponents: .hourAndMinute)
-                        .datePickerStyle(.wheel)
+                        .datePickerStyle(.compact)
                         .labelsHidden()
                         .frame(maxHeight: Layout.datePickerHeight)
                         .compositingGroup()
                 }
             }
-            .padding(.vertical, DS.Spacing.sm)
+            .padding(.vertical, Spacing.sm)
 
             actionButton("Add") {
                 addProgress()
             }
         }
-        .padding(DS.Spacing.md)
+        .padding( Spacing.md)
         .frame(width: Layout.popoverWidth)
         .onAppear {
             if habit.type == .count {
@@ -106,13 +106,13 @@ struct DayProgressPopover: View {
             dismiss()
         } label: {
             Text(label)
-                .font(DS.AppFont.bodyMedium)
-                .foregroundStyle(DS.Colors.onPrimary)
-                .padding(.vertical, DS.Spacing.xxs)
+                .fontWeight(.medium)
+                .foregroundStyle(.onPrimary)
+                .padding(.vertical, Spacing.xxs)
                 .frame(maxWidth: .infinity)
         }
         .buttonStyle(.plain)
-        .glassEffect(.regular.interactive().tint(DS.Colors.primaryButton), in: .capsule)
+        .glassEffect(.regular.interactive().tint(Color.primaryButton), in: .capsule)
     }
 
     // MARK: - Logic

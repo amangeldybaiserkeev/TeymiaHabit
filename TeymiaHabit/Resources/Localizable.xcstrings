@@ -5,6 +5,7 @@
       "shouldTranslate" : false
     },
     "%@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -259,6 +260,7 @@
       }
     },
     "Brands" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ru" : {
           "stringUnit" : {
@@ -475,6 +477,7 @@
       }
     },
     "Create a New Habit" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ru" : {
           "stringUnit" : {
@@ -599,6 +602,7 @@
       }
     },
     "Discover Your Habit Insights" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ru" : {
           "stringUnit" : {
@@ -955,6 +959,7 @@
       }
     },
     "Health" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ru" : {
           "stringUnit" : {
@@ -965,6 +970,7 @@
       }
     },
     "Hobbies" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ru" : {
           "stringUnit" : {
@@ -1009,6 +1015,7 @@
       }
     },
     "Join millions building better habits" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ru" : {
           "stringUnit" : {
@@ -1051,6 +1058,7 @@
       }
     },
     "Lifestyle" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ru" : {
           "stringUnit" : {
@@ -1192,6 +1200,9 @@
         }
       }
     },
+    "Minimalist Icons" : {
+
+    },
     "Mint" : {
       "localizations" : {
         "en" : {
@@ -1275,6 +1286,7 @@
       }
     },
     "No Archived Habits" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1290,7 +1302,11 @@
         }
       }
     },
+    "No Habits" : {
+
+    },
     "No habits yet" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ru" : {
           "stringUnit" : {
@@ -1349,6 +1365,7 @@
       }
     },
     "Other" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ru" : {
           "stringUnit" : {
@@ -1422,6 +1439,12 @@
         }
       }
     },
+    "Primary" : {
+
+    },
+    "PrimaryDark" : {
+
+    },
     "Privacy Policy" : {
       "localizations" : {
         "en" : {
@@ -1455,6 +1478,7 @@
       }
     },
     "Productivity" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ru" : {
           "stringUnit" : {
@@ -1597,6 +1621,7 @@
       }
     },
     "Reorder" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ru" : {
           "stringUnit" : {
@@ -1667,6 +1692,7 @@
       }
     },
     "Self-care" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ru" : {
           "stringUnit" : {
@@ -1813,6 +1839,7 @@
       }
     },
     "Sport" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ru" : {
           "stringUnit" : {
@@ -2008,6 +2035,9 @@
         }
       }
     },
+    "Templates" : {
+
+    },
     "Terms of Service" : {
       "localizations" : {
         "en" : {
@@ -2036,6 +2066,7 @@
       "shouldTranslate" : false
     },
     "Teymia Habit %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

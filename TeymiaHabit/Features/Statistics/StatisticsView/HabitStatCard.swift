@@ -13,18 +13,18 @@ struct HabitStatCard: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: DS.Spacing.sm) {
-            HStack(spacing: DS.Spacing.sm) {
-                HabitIconView(iconName: habit.iconName, color: habit.iconColor.baseColor)
+        VStack(alignment: .leading, spacing: Spacing.sm) {
+            HStack(spacing: Spacing.sm) {
+                HabitIconView(icon: habit.iconName, color: habit.iconColor)
 
-                VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
+                VStack(alignment: .leading, spacing: Spacing.xxs) {
                     Text(habit.title)
-                        .font(DS.AppFont.headline)
+                        .font( .headline)
 
                     Text("Goal: \(habit.formattedGoal)")
-                        .font(DS.AppFont.subheadline)
+                        .font( .subheadline)
                 }
-                .foregroundStyle(DS.Colors.primary)
+                .foregroundStyle(Color.primary)
                 .lineLimit(1)
             }
 
@@ -34,13 +34,11 @@ struct HabitStatCard: View {
                 total: vm.totalValue
             )
         }
-        .padding(DS.Spacing.reg)
+        .padding( Spacing.reg)
         .glassEffect(
-            .regular.interactive()
-            .tint(DS.Colors.rowBackground),
-            in: .rect(cornerRadius: DS.Radius.lg)
+            .regular.interactive(), in: .rect(cornerRadius: Radius.lg)
         )
-        .contentShape(.rect(cornerRadius: DS.Radius.lg))
+        .contentShape(.rect(cornerRadius: Radius.lg))
         .onTapGesture {
             showingStats = true
         }

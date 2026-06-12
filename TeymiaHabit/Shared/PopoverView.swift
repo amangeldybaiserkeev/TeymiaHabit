@@ -14,16 +14,14 @@ struct PopoverView<Label: View, Content: View>: View {
             isExpanded.toggle()
         } label: {
             label
-                .matchedTransitionSource(id: "POPOVER", in: namespace)
+                .matchedTransitionSource(id: TransitionID.popover, in: namespace)
         }
         .buttonStyle(.plain)
         .popover(isPresented: $isExpanded) {
             PopOverHelper {
                 content
             }
-            #if !targetEnvironment(macCatalyst)
-            .navigationTransition(.zoom(sourceID: "POPOVER", in: namespace))
-            #endif
+            .navigationTransition(.zoom(sourceID: TransitionID.popover, in: namespace))
         }
         .sensoryFeedback(.selection, trigger: isExpanded)
     }
@@ -38,7 +36,7 @@ private struct PopOverHelper<Content: View>: View {
             .opacity(isVisible ? 1 : 0)
             .task {
                 try? await Task.sleep(for: .seconds(0.1))
-                withAnimation(DS.Animations.snappy) {
+                withAnimation(Animations.snappy) {
                     isVisible = true
                 }
             }

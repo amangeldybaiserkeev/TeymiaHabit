@@ -3,7 +3,7 @@ import SwiftUI
 struct PremiumGradientColors {
     static var gradient: LinearGradient {
         LinearGradient(
-            colors: [DS.Colors.premiumBlue, DS.Colors.premiumPink],
+            colors: [.premiumBlue, .premiumPink],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )

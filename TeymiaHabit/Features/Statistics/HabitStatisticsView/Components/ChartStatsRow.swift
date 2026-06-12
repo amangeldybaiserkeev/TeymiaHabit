@@ -3,20 +3,20 @@ import SwiftUI
 struct ChartStatsRow: View {
     let averageLabel: String
     let totalLabel: String
-    private static let primaryColor: Color = DS.Colors.primary
-    private static let secondaryColor: Color = DS.Colors.secondary.opacity(0.8)
+    private static let primaryColor: Color = Color.primary
+    private static let secondaryColor: Color = Color.secondary.opacity(0.8)
 
     var body: some View {
         HStack {
-            VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
+            VStack(alignment: .leading, spacing: Spacing.xxs) {
                 Text("Average")
-                    .font(DS.AppFont.subheadline)
+                    .font( .subheadline)
                     .fontWeight(.semibold)
                     .foregroundStyle(Self.secondaryColor)
                     .textCase(.uppercase)
 
                 Text(averageLabel)
-                    .font(DS.AppFont.title2)
+                    .font( .title2)
                     .foregroundStyle(Self.primaryColor)
                     .contentTransition(.numericText())
             }
@@ -24,15 +24,15 @@ struct ChartStatsRow: View {
 
             Spacer()
 
-            VStack(alignment: .trailing, spacing: DS.Spacing.xxs) {
+            VStack(alignment: .trailing, spacing: Spacing.xxs) {
                 Text("Total")
-                    .font(DS.AppFont.subheadline)
+                    .font( .subheadline)
                     .fontWeight(.semibold)
                     .foregroundStyle(Self.secondaryColor)
                     .textCase(.uppercase)
 
                 Text(totalLabel)
-                    .font(DS.AppFont.title2)
+                    .font( .title2)
                     .foregroundStyle(Self.primaryColor)
                     .contentTransition(.numericText())
             }

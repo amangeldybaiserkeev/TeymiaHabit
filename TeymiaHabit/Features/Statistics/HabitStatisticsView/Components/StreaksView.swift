@@ -7,7 +7,7 @@ struct StreaksView: View {
     let total: Int
 
     var body: some View {
-        HStack(spacing: DS.Spacing.reg) {
+        HStack(spacing: Spacing.reg) {
             StatsCard(value: "\(current)", label: "Streak")
             StatsCard(value: "\(best)", label: "Best")
             StatsCard(value: "\(total)", label: "Total")
@@ -16,17 +16,17 @@ struct StreaksView: View {
 
     @ViewBuilder
     private func StatsCard(value: String, label: LocalizedStringKey) -> some View {
-        VStack(spacing: DS.Spacing.xxs) {
+        VStack(spacing: Spacing.xxs) {
             Text(value)
-                .font(DS.AppFont.title2)
+                .font( .title2)
                 .fontWeight(.heavy)
                 .imageScale(.small)
-                .foregroundStyle(DS.Colors.primary)
+                .foregroundStyle(Color.primary)
 
                 Text(label)
-                    .font(DS.AppFont.footnote)
+                    .font( .footnote)
                     .fontWeight(.semibold)
-                    .foregroundStyle(DS.Colors.secondary)
+                    .foregroundStyle(Color.secondary)
         }
         .frame(maxWidth: .infinity)
         .lineLimit(1)

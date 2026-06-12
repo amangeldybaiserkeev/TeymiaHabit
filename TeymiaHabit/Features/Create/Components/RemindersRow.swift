@@ -5,10 +5,12 @@ struct RemindersRow: View {
     @Binding var isReminderEnabled: Bool
     @Binding var reminderTimes: [Date]
 
-    @Environment(AppDependencyContainer.self) private var appContainer
+    @Environment(NotificationManager.self) private var notificationManager
+    @Environment(StoreKitService.self) private var storeKitService
 
     @State private var isNotificationPermissionAlertPresented = false
     @State private var isProcessingToggle = false
+    @State private var showingPaywall = false
 
     var body: some View {
         Section {
@@ -20,7 +22,7 @@ struct RemindersRow: View {
                         isProcessingToggle = true
                         Task { await handleReminderToggle(newValue) }
                     } else {
-                        withAnimation(DS.Animations.easeInOut) {
+                        withAnimation( Animations.easeInOut) {
                             isReminderEnabled = newValue
                         }
                     }
@@ -29,11 +31,11 @@ struct RemindersRow: View {
                 Label {
                     Text("Reminders")
                 } icon: {
-                    RowIcon(symbol: .notifications)
+                    RowIconView(symbol: .habitReminders)
                         .symbolEffect(.wiggle, value: isReminderEnabled)
                 }
             }
-            .tint(nil)
+            .tint(.toggle)
             .disabled(isProcessingToggle)
 
             if isReminderEnabled {
@@ -69,7 +71,7 @@ struct RemindersRow: View {
                     .datePickerStyle(.compact)
 
                     Button {
-                        withAnimation(DS.Animations.easeInOut) {
+                        withAnimation( Animations.easeInOut) {
                             guard reminderTimes.indices.contains(index) else { return }
                             reminderTimes.remove(at: index)
                         }
@@ -81,14 +83,14 @@ struct RemindersRow: View {
             }
 
             Button {
-                let maxCount = appContainer.storeKitService.maxRemindersCount
+                let maxCount = storeKitService.maxRemindersCount
 
                 if reminderTimes.count < maxCount {
-                    withAnimation(DS.Animations.easeInOut) {
+                    withAnimation( Animations.easeInOut) {
                         reminderTimes.append(Date())
                     }
                 } else {
-                    appContainer.showingPaywall = true
+                    showingPaywall = true
                 }
             } label: {
                 Label {
@@ -96,11 +98,11 @@ struct RemindersRow: View {
                         .fontWeight(.medium)
                 } icon: {
                     Image(systemName: "plus")
-                        .foregroundStyle(DS.Colors.primary)
-                        .font(.system(size: DS.IconSize.xxs))
+                        .foregroundStyle(Color.primary)
+                        .font(.system(size: IconSize.xxs))
                         .fontWeight(.bold)
-                        .frame(size: DS.IconSize.lg)
-                        .background(DS.Colors.tertiary, in: .circle)
+                        .frame(size: IconSize.lg)
+                        .background(Color.secondary, in: .circle)
                 }
             }
             .buttonStyle(.plain)
@@ -110,11 +112,11 @@ struct RemindersRow: View {
     // MARK: - Private Helpers
 
     private func handleReminderToggle(_ newValue: Bool) async {
-        let isAuthorized = await appContainer.notificationManager.ensureAuthorization()
+        let isAuthorized = await notificationManager.ensureAuthorization()
 
         await MainActor.run {
             isProcessingToggle = false
-            withAnimation(DS.Animations.easeInOut) {
+            withAnimation( Animations.easeInOut) {
                 if isAuthorized {
                     isReminderEnabled = newValue
                 } else {
@@ -129,4 +131,3 @@ struct RemindersRow: View {
         UIApplication.shared.open(url)
     }
 }
-

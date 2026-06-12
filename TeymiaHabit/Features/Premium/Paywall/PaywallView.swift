@@ -2,129 +2,111 @@ import SwiftUI
 import StoreKit
 
 struct PaywallView: View {
-    @State private var vm: PaywallViewModel
-
-    init(storeKitService: StoreKitService) {
-        _vm = State(
-            initialValue: PaywallViewModel(storeKitService: storeKitService)
-        )
-    }
-
-    var body: some View {
-        PaywallContentView(vm: vm)
-    }
-}
-
-// MARK: - Main Content View
-struct PaywallContentView: View {
+    @Environment(StoreKitService.self) private var storeKitService
     @Environment(\.openURL) private var openURL
     @Environment(\.dismiss) private var dismiss
-    @Bindable var vm: PaywallViewModel
+    @State private var selectedProduct: Product?
+    @State private var isPurchasing = false
+    @State private var alertMessage: LocalizedStringKey = ""
+    @State private var showingAlert = false
 
     var body: some View {
         NavigationStack {
             ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: DS.Spacing.xl) {
+                VStack(spacing: Spacing.xl) {
                     header
                     features
                     footer
                 }
-                .padding(.horizontal, DS.Spacing.reg)
-                .applyAdaptiveWidth()
+                .padding(.horizontal, Spacing.reg)
             }
-            .background {
-                LivelyFloatingBlobsBackground()
-            }
-            .toolbar {
-                CloseToolbarButton {
-                    dismiss()
-                }
-            }
+            .background { LivelyFloatingBlobsBackground() }
+            .toolbar { DismissToolbarButton() }
             .safeAreaBar(edge: .bottom) {
                 bottomBar
                     .preferredColorScheme(.dark)
-                    .applyAdaptiveWidth()
             }
         }
         .preferredColorScheme(.dark)
-        .onAppear { vm.selectDefaultProduct() }
-        .alert("Purchase Result", isPresented: $vm.showingAlert) {
+        .onAppear { selectDefaultProduct() }
+        .alert("Purchase Result", isPresented: $showingAlert) {
             Button("OK") {}
         } message: {
-            Text(vm.alertMessage)
+            Text(alertMessage)
         }
-        .tint(DS.Colors.primary)
+        .tint(.primary)
     }
 
     private var header: some View {
         VStack(alignment: .trailing, spacing: 0) {
             Text("Teymia Habit")
-                .font(DS.AppFont.largeTitle)
+                .font(.largeTitle).bold()
                 .fontDesign(.rounded)
                 .foregroundStyle(headerGradient)
 
             Text("Premium")
-                .font(DS.AppFont.footnoteMedium)
+                .font(.footnote)
+                .fontWeight(.medium)
                 .fontDesign(.serif)
-                .foregroundStyle(DS.Colors.onPrimary.gradient)
-                .padding(.horizontal, DS.Spacing.xs)
-                .padding(.vertical, DS.Spacing.xxs)
-                .background(DS.Colors.primary.gradient, in: .capsule)
-                .offset(x: DS.Spacing.xs)
+                .foregroundStyle(.onPrimary.gradient)
+                .padding(.horizontal, Spacing.xs)
+                .padding(.vertical, Spacing.xxs)
+                .background(Color.primary.gradient, in: .capsule)
+                .offset(x: Spacing.xs)
         }
     }
 
     private var headerGradient: LinearGradient {
         LinearGradient(
-            colors: [DS.Colors.primary, DS.Colors.primary.opacity(0.8), DS.Colors.onPrimary.opacity(0.8)],
+            colors: [Color.primary, Color.primary.opacity(0.8), .onPrimary.opacity(0.8)],
             startPoint: .top, endPoint: .bottom
         )
     }
 
     private var features: some View {
-        VStack(spacing: DS.Spacing.lg) {
+        VStack(spacing: Spacing.lg) {
             ForEach(PaywallFeature.allFeatures) { feature in
                 FeatureRow(feature: feature)
             }
         }
-        .padding(DS.Spacing.reg)
-        .glassEffect(.clear, in: .rect(cornerRadius: DS.Radius.xxl))
+        .padding(Spacing.reg)
+        .glassEffect(.clear, in: .rect(cornerRadius: Radius.xxl))
     }
 
     private var footer: some View {
-        VStack(spacing: DS.Spacing.md) {
+        VStack(spacing: Spacing.md) {
             Button {
-                vm.restorePurchases { dismiss() }
+                restorePurchases()
             } label: {
                 Text("Restore Purchases")
-                    .font(DS.AppFont.subheadline)
+                    .font( .subheadline)
                     .fontWeight(.semibold)
-                    .foregroundStyle(DS.Colors.primary)
+                    .foregroundStyle(Color.primary)
             }
 
             legalLinks
         }
-        .padding(.top, DS.Spacing.xxl)
+        .padding(.top, Spacing.xxl)
     }
 
     private var legalLinks: some View {
-        VStack(spacing: DS.Spacing.reg) {
+        VStack(spacing: Spacing.reg) {
             Button {
                 if let url = URL(string: "https://www.apple.com/family-sharing/") { openURL(url, prefersInApp: true) }
             } label: {
                 Label {
                     Text("Supports Family Sharing")
-                        .font(DS.AppFont.footnoteMedium)
-                        .foregroundStyle(DS.Colors.primary)
+                        .font(.footnote)
+                        .foregroundStyle(Color.primary)
                 } icon: {
                     Image(systemName: "person.3.sequence.fill")
-                        .font(DS.AppFont.footnoteMedium)
+                        .font(.footnote)
                         .symbolRenderingMode(.palette)
                         .foregroundStyle(.indigo.gradient, .blue.gradient, .mint.gradient)
                 }
             }
 
-            HStack(spacing: DS.Spacing.xxl) {
+            HStack(spacing: Spacing.xxl) {
                 Button("Terms of Service") {
                     if let url = URL(
                         string: "https://www.notion.so/Terms-of-Service-204d5178e65a80b89993e555ffd3511f"
@@ -139,50 +121,108 @@ struct PaywallContentView: View {
                     }
                 }
             }
-            .font(DS.AppFont.caption)
-            .foregroundStyle(DS.Colors.secondary)
+            .font( .caption)
+            .foregroundStyle(Color.secondary)
         }
     }
 
     private var bottomBar: some View {
-        VStack(spacing: DS.Spacing.reg) {
+        VStack(spacing: Spacing.reg) {
             ProductsRow(
-                products: vm.products,
-                selectedProduct: $vm.selectedProduct
+                products: storeKitService.products,
+                selectedProduct: $selectedProduct
             )
 
             PurchaseButton(
-                selectedProduct: vm.selectedProduct,
-                isPurchasing: vm.isPurchasing
+                selectedProduct: selectedProduct,
+                isPurchasing: isPurchasing
             ) {
-                vm.purchaseSelected { dismiss() }
+                purchaseSelected()
             }
         }
-        .padding(.horizontal, DS.Spacing.lg)
-        .padding(.top, DS.Spacing.reg)
-        .padding(.bottom, DS.Spacing.xs)
+        .padding(.horizontal, Spacing.lg)
+        .padding(.top, Spacing.reg)
+        .padding(.bottom, Spacing.xs)
     }
+
+    // MARK: - Actions
+
+    private func selectDefaultProduct() {
+        guard !storeKitService.products.isEmpty else { return }
+        selectedProduct = storeKitService.products.first { $0.id.contains("yearly") }
+        ?? storeKitService.products.first
+    }
+
+    private func purchaseSelected() {
+          guard let product = selectedProduct, !isPurchasing else { return }
+          isPurchasing = true
+
+          Task {
+              do {
+                  let result = try await storeKitService.purchase(product)
+                  isPurchasing = false
+                  switch result {
+                  case .success:
+                      await storeKitService.updatePremiumStatus()
+                      if storeKitService.isPremium {
+                          dismiss()
+                      }
+                  case .cancelled:
+                      break
+                  case .pending:
+                      alertMessage = "Your purchase is pending approval."
+                      showingAlert = true
+                  }
+              } catch {
+                  isPurchasing = false
+                  alertMessage = "Purchase failed. Please try again."
+                  showingAlert = true
+              }
+          }
+      }
+
+    private func restorePurchases() {
+         isPurchasing = true
+
+         Task {
+             do {
+                 try await storeKitService.restorePurchases()
+                 isPurchasing = false
+                 await storeKitService.updatePremiumStatus()
+                 if storeKitService.isPremium {
+                     dismiss()
+                 } else {
+                     alertMessage = "No previous purchases found."
+                     showingAlert = true
+                 }
+             } catch {
+                 isPurchasing = false
+                 alertMessage = "Restore failed. No purchases available."
+                 showingAlert = true
+             }
+         }
+     }
 }
 
 // MARK: - Feature Row
 private struct FeatureRow: View {
     let feature: PaywallFeature
     var body: some View {
-        HStack(spacing: DS.Spacing.reg) {
+        HStack(spacing: Spacing.reg) {
             Image(systemName: feature.icon)
-                .font(.system(size: DS.IconSize.sm, weight: .medium))
-                .frame(width: DS.IconSize.xxl, height: DS.IconSize.xxl)
-                .background(DS.Colors.secondary.opacity(0.1), in: .circle)
+                .font(.system(size: IconSize.sm, weight: .medium))
+                .frame(size: IconSize.xxl)
+                .background(.secondary.opacity(0.1), in: .circle)
 
-            VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
+            VStack(alignment: .leading, spacing: Spacing.xxs) {
                 Text(feature.title)
-                    .font(DS.AppFont.headline)
-                    .foregroundStyle(DS.Colors.primary)
+                    .font( .headline)
+                    .foregroundStyle(Color.primary)
 
                 if let desc = feature.description {
                     Text(desc)
-                        .font(DS.AppFont.subheadline)
-                        .foregroundStyle(DS.Colors.secondary)
+                        .font( .subheadline)
+                        .foregroundStyle(Color.secondary)
                 }
             }
             .lineLimit(1)
@@ -198,13 +238,13 @@ private struct ProductsRow: View {
     @Binding var selectedProduct: Product?
 
     var body: some View {
-        HStack(spacing: DS.Spacing.sm) {
+        HStack(spacing: Spacing.sm) {
             ForEach(products) { product in
                 PricingCardView(
                     product: product,
                     isSelected: selectedProduct?.id == product.id
                 ) {
-                    withAnimation(DS.Animations.easeInOut) {
+                    withAnimation( Animations.easeInOut) {
                         selectedProduct = product
                     }
                 }
@@ -228,30 +268,30 @@ private struct PricingCardView: View {
         Button {
             action()
         } label: {
-            VStack(spacing: DS.Spacing.xs) {
+            VStack(spacing: Spacing.xs) {
                 Image(systemName: config.icon)
-                    .font(.system(size: DS.IconSize.xs))
+                    .font(.system(size: IconSize.xs))
                 Text(config.title)
-                    .font(DS.AppFont.caption)
+                    .font( .caption)
                     .fontWeight(.semibold)
                 Text(product.displayPrice)
-                    .font(DS.AppFont.headline)
+                    .font( .headline)
                     .fontWeight(.bold)
                     .fontDesign(.monospaced)
             }
-            .foregroundStyle(isSelected ? DS.Colors.onPrimary : DS.Colors.primary)
+            .foregroundStyle(isSelected ? .onPrimary : .appPrimary)
             .frame(maxWidth: .infinity)
             .frame(height: 100)
             .contentShape(.rect)
-            .padding(.horizontal, DS.Spacing.xs)
+            .padding(.horizontal, Spacing.xs)
             .background {
-                RoundedRectangle(cornerRadius: DS.Radius.xl)
+                RoundedRectangle(cornerRadius: Radius.xl)
                     .fill(.white.gradient)
                     .opacity(isSelected ? 1 : 0)
             }
         }
         .buttonStyle(.plain)
-        .glassEffect(.clear.interactive(), in: .rect(cornerRadius: DS.Radius.xl))
+        .glassEffect(.clear.interactive(), in: .rect(cornerRadius: Radius.xl))
     }
 }
 
@@ -263,25 +303,25 @@ private struct PurchaseButton: View {
 
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: DS.Spacing.sm) {
+            HStack(spacing: Spacing.sm) {
                 if isPurchasing {
                     ProgressView()
                 }
 
                 Text(buttonTitle)
-                    .font(DS.AppFont.headline)
-                    .foregroundStyle(DS.Colors.primary.gradient)
+                    .font( .headline)
+                    .foregroundStyle(Color.primary.gradient)
                     .contentTransition(.numericText())
             }
             .frame(maxWidth: .infinity)
-            .frame(height: DS.TouchTarget.large)
+            .frame(height: TouchTarget.large)
             .contentShape(.capsule)
         }
         .borderBeam(
             border: .white.opacity(0.8),
             beam: [.green, .blue, .purple, .orange, .indigo],
             beamBlur: 15,
-            cornerRadius: DS.Radius.xl
+            cornerRadius: Radius.xl
         )
         .buttonStyle(.plain)
         .glassEffect(.clear.interactive(), in: .capsule)
@@ -323,14 +363,3 @@ extension Product {
         return "Subscribe"
     }
 }
-
-#Preview {
-    let container = PreviewContainer.container
-    let appContainer = AppDependencyContainer(modelContext: container.mainContext)
-    let vm = PaywallViewModel(storeKitService: appContainer.storeKitService)
-
-    PaywallContentView(vm: vm)
-        .environment(appContainer)
-        .modelContainer(container)
-}
-

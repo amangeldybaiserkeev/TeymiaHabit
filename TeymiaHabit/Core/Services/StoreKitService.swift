@@ -158,4 +158,3 @@ final class StoreKitService {
     }
     #endif
 }
-

@@ -75,7 +75,7 @@ final class NotificationManager {
         let calendar = Calendar.current
         let components = calendar.dateComponents([.hour, .minute], from: time)
 
-        for weekday in Weekday.allCases where habit.isActive(on: weekday) {
+        for weekday in Weekday.allCases where (habit.activeDaysBitmask & (1 << weekday.rawValue)) != 0 {
             var dateComp = DateComponents()
             dateComp.hour = components.hour
             dateComp.minute = components.minute

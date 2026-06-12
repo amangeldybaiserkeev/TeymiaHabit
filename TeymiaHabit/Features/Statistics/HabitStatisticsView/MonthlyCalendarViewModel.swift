@@ -7,7 +7,7 @@ final class MonthlyCalendarViewModel {
     var currentMonthIndex: Int = 0
     var monthCalendarCache: [Int: [[Date?]]] = [:]
     var progressCache: [Date: Double] = [:]
-    var detailSheetDate: Date? = nil
+    var detailSheetDate: Date?
 
     // MARK: - Dependencies
     let habit: Habit

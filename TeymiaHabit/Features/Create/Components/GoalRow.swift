@@ -2,8 +2,10 @@ import SwiftUI
 
 struct GoalRow: View {
     @Binding var selectedType: HabitType
-    @Binding var config: GoalConfiguration
-    @FocusState.Binding var focus: NewHabitField?
+    @Binding var countText: String
+    @Binding var hours: Int
+    @Binding var minutes: Int
+    var focus: FocusState<NewHabitField?>.Binding
 
     private enum Constants {
         static let rowHeight: CGFloat = 40
@@ -22,7 +24,7 @@ struct GoalRow: View {
                 goalRow(for: .time)
             }
             .frame(minHeight: Constants.rowHeight)
-            .animation(DS.Animations.spring, value: selectedType)
+            .animation( Animations.spring, value: selectedType)
         }
     }
 
@@ -40,7 +42,7 @@ struct GoalRow: View {
                 .frame(maxWidth: Constants.pickerWidth)
             }
         } icon: {
-            RowIcon(symbol: .habitGoal)
+            RowIconView(symbol: .habitGoal)
                 .symbolEffect(.bounce, value: selectedType)
         }
     }
@@ -57,7 +59,7 @@ struct GoalRow: View {
                     countStepper
                 } else {
                     Text("Choose time")
-                        .foregroundStyle(DS.Colors.secondary)
+                        .foregroundStyle(Color.secondary)
                     Spacer()
                     timePicker
                 }
@@ -65,10 +67,9 @@ struct GoalRow: View {
             .frame(height: Constants.rowHeight)
         } icon: {
             Image(systemName: type == .count ? "number" : "clock.arrow.2.circlepath")
-                .font(.system(size: DS.IconSize.xs, weight: .medium))
-                .foregroundStyle(DS.Colors.secondary)
+                .font(.system(size: IconSize.xs, weight: .medium))
+                .foregroundStyle(Color.secondary)
         }
-        .font(DS.AppFont.bodyMedium)
         .opacity(isActive ? 1 : 0)
         .blur(radius: isActive ? 0 : Constants.inactiveBlur)
         .offset(x: isActive ? 0 : (type == .count ? -Constants.inactiveOffset : Constants.inactiveOffset))
@@ -76,30 +77,42 @@ struct GoalRow: View {
     }
 
     private var countField: some View {
-        TextField("Enter count", text: $config.countText)
+        TextField("Enter count", text: $countText)
             .keyboardType(.numberPad)
-            .focused($focus, equals: .count)
-            .foregroundStyle(DS.Colors.primary)
-            .onChange(of: config.countText) { _, newValue in
+            .focused(focus, equals: .count)
+            .foregroundStyle(.primary)
+            .onChange(of: countText) { _, newValue in
                 let digits = newValue.filter(\.isNumber)
                 if let value = Int(digits), value > Constants.maxCount {
-                    config.countText = String(Constants.maxCount)
+                    countText = String(Constants.maxCount)
                 } else {
-                    config.countText = digits
+                    countText = digits
                 }
             }
     }
 
     private var countStepper: some View {
         Stepper("", value: Binding(
-            get: { config.parsedCount ?? 1 },
-            set: { config.countText = String(min(max(1, $0), Constants.maxCount)) }
+            get: { Int(countText) ?? 1 },
+            set: { countText = String(min(max(1, $0), Constants.maxCount)) }
         ), in: 1...Constants.maxCount)
         .labelsHidden()
     }
 
     private var timePicker: some View {
-        DatePicker("", selection: $config.dateRepresentation, displayedComponents: .hourAndMinute)
+        let binding = Binding(
+            get: {
+                let calendar = Calendar.current
+                return calendar.date(bySettingHour: hours, minute: minutes, second: 0, of: Date()) ?? Date()
+            },
+            set: { newDate in
+                let components = Calendar.current.dateComponents([.hour, .minute], from: newDate)
+                hours = components.hour ?? 0
+                minutes = components.minute ?? 0
+            }
+        )
+
+        return DatePicker("", selection: binding, displayedComponents: .hourAndMinute)
             .datePickerStyle(.compact)
             .labelsHidden()
     }

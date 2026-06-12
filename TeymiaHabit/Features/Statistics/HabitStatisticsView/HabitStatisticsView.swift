@@ -2,10 +2,10 @@ import SwiftUI
 
 struct HabitStatisticsView: View {
     let habit: Habit
-    @Environment(AppDependencyContainer.self) private var appContainer
+    @Environment(StoreKitService.self) private var storeKitService
     @Environment(\.dismiss) private var dismiss
     @State private var vm: HabitStatisticsViewModel
-    @State private var showingLocalPaywall = false
+    @State private var showingPaywall = false
 
     init(habit: Habit) {
         self.habit = habit
@@ -14,14 +14,14 @@ struct HabitStatisticsView: View {
 
     var body: some View {
         @Bindable var vm = vm
-        let isPremium = appContainer.storeKitService.isPremium
+        let isPremium = storeKitService.isPremium
 
         NavigationStack {
-            List {
+            Form {
                 Section {
                     HStack {
                         Text("Total all time")
-                            .foregroundStyle(DS.Colors.primary)
+                            .foregroundStyle(Color.primary)
 
                         Spacer()
 
@@ -37,7 +37,6 @@ struct HabitStatisticsView: View {
                             )
                     }
                 }
-                .rowBackground()
 
                 Section {
                     HStack(spacing: 0) {
@@ -54,46 +53,38 @@ struct HabitStatisticsView: View {
                         Spacer(minLength: 0)
                     }
                 }
-                .rowBackground()
                 .listRowInsets(EdgeInsets())
 
                 Section {
                     lockedOverlay(isLocked: !isPremium) {
-                        VStack(spacing: DS.Spacing.md) {
+                        VStack(spacing: Spacing.md) {
                             TimeRangePicker(selection: $vm.barChartTimeRange)
                             BarChartView(habit: habit, range: vm.barChartTimeRange)
                                 .id("\(habit.uuid.uuidString)-\(vm.barChartTimeRange.rawValue)")
                         }
-                        .padding(.top, DS.Spacing.reg)
+                        .padding(.top, Spacing.reg)
                     }
                 } footer: {
-                    HStack(spacing: DS.Spacing.xxs) {
+                    HStack(spacing: Spacing.xxs) {
                         Image(systemName: "hand.tap")
                         Text("Press and hold bars for details")
                     }
-                    .foregroundStyle(DS.Colors.secondary)
-                    .padding(.leading, DS.Spacing.reg)
+                    .foregroundStyle(Color.secondary)
+                    .padding(.leading, Spacing.reg)
                 }
-                .rowBackground()
                 .listRowInsets(EdgeInsets())
             }
-            .applyAdaptiveWidth()
-            .appBackground(.grouped)
+            .formStyle(.grouped)
             .navigationTitle(habit.title)
             .navigationSubtitle("Goal: \(habit.formattedGoal)")
-            .toolbar {
-                CloseToolbarButton {
-                    dismiss()
-                }
-            }
+            .toolbar { DismissToolbarButton() }
             .onChange(of: habit.completions) { _, _ in
                 vm.refresh()
             }
-            .sheet(isPresented: $showingLocalPaywall) {
-                PaywallView(storeKitService: appContainer.storeKitService)
+            .sheet(isPresented: $showingPaywall) {
+                PaywallView()
             }
         }
-        .presentationSizing(.page)
     }
 }
 
@@ -107,24 +98,24 @@ private extension HabitStatisticsView {
                     .allowsHitTesting(false)
 
                 Button {
-                    showingLocalPaywall = true
+                    showingPaywall = true
                 } label: {
-                    VStack(spacing: DS.Spacing.reg) {
-                        PremiumLockBadge(size: DS.IconSize.xxl)
+                    VStack(spacing: Spacing.reg) {
+                        PremiumLockBadge(size: IconSize.xxl)
 
                         Text("Unlock Detailed Statistics")
-                            .font(DS.AppFont.headline)
+                            .font( .headline)
                             .fontWeight(.bold)
-                            .foregroundStyle(DS.Colors.primary)
+                            .foregroundStyle(Color.primary)
                             .multilineTextAlignment(.center)
                     }
-                    .padding(.vertical, DS.Spacing.lg)
-                    .padding(.horizontal, DS.Spacing.xl)
+                    .padding(.vertical, Spacing.lg)
+                    .padding(.horizontal, Spacing.xl)
                     .frame(maxWidth: 280)
-                    .glassEffect(.regular.interactive(false), in: .rect(cornerRadius: DS.Radius.xl))
+                    .glassEffect(.regular.interactive(false), in: .rect(cornerRadius: Radius.xl))
                 }
                 .buttonStyle(.plain)
-                .padding(.horizontal, DS.Spacing.lg)
+                .padding(.horizontal, Spacing.lg)
             }
         } else {
             content()

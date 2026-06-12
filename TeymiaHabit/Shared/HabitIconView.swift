@@ -1,28 +1,28 @@
 import SwiftUI
 
 struct HabitIconView: View {
-    let iconName: String?
-    let color: Color
-    var size: CGFloat = DS.IconSize.sm
+    let icon: String?
+    let color: HabitIconColor
+    var size: CGFloat = IconSize.sm
     var showBackground: Bool = true
 
-    private static let backgroundScale: CGFloat  = 2.0
-    private static let backgroundOpacity: Double = 0.15
+    private let backgroundScale: CGFloat  = 2.0
+    private let backgroundOpacity: Double = 0.15
     private let fallbackIcon = "book"
 
     var body: some View {
         ZStack {
             if showBackground {
                 Circle()
-                    .fill(color.opacity(Self.backgroundOpacity))
+                    .fill(color.baseColor.opacity(backgroundOpacity))
             }
 
-            Image(iconName ?? fallbackIcon)
+            Image(icon ?? fallbackIcon)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(width: size, height: size)
-                .foregroundStyle(color.gradient)
+                .frame(size: size)
+                .foregroundStyle(color.baseColor.gradient)
         }
-        .frame(size: size * Self.backgroundScale)
+        .frame(size: size * backgroundScale)
     }
 }

@@ -1,7 +1,7 @@
 import SwiftUI
 
-struct CloseToolbarButton: ToolbarContent {
-    let dismiss: () -> Void
+struct DismissToolbarButton: ToolbarContent {
+    @Environment(\.dismiss) private var dismiss
 
     var body: some ToolbarContent {
         ToolbarItem(placement: .cancellationAction) {
@@ -9,16 +9,15 @@ struct CloseToolbarButton: ToolbarContent {
                 dismiss()
             } label: {
                 Image(systemName: "xmark")
-                    .foregroundStyle(DS.Colors.primary)
-                    .fontWeight(.semibold)
+                    .foregroundStyle(.appPrimary)
             }
         }
     }
 }
 
 struct ConfirmationToolbarButton: ToolbarContent {
-    let action: () -> Void
     let isDisabled: Bool
+    let action: () -> Void
 
     var body: some ToolbarContent {
         ToolbarItem(placement: .confirmationAction) {
@@ -29,8 +28,7 @@ struct ConfirmationToolbarButton: ToolbarContent {
                     .fontWeight(.semibold)
             }
             .buttonStyle(.glassProminent)
-            .buttonBorderShape(.circle)
-            .tint(DS.Colors.primary)
+            .tint(.main)
             .disabled(isDisabled)
         }
     }

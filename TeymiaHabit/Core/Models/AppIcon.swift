@@ -3,6 +3,8 @@ import SwiftUI
 enum AppIcon: String, CaseIterable, Identifiable {
     case main = "AppIcon"
     case dark = "AppIcon-Dark"
+    case primary = "AppIcon-Primary"
+    case primaryDark = "AppIcon-PrimaryDark"
     case mandarin = "AppIcon-Mandarin"
     case mint = "AppIcon-Mint"
     case raspberry = "AppIcon-Raspberry"
@@ -17,6 +19,8 @@ enum AppIcon: String, CaseIterable, Identifiable {
         switch self {
         case .main: return "Main"
         case .dark: return "Dark"
+        case .primary: return "Primary"
+        case .primaryDark: return "PrimaryDark"
         case .mandarin: return "Mandarin"
         case .mint: return "Mint"
         case .raspberry: return "Raspberry"
@@ -41,7 +45,7 @@ enum AppIcon: String, CaseIterable, Identifiable {
 extension AppIcon {
     var isFree: Bool {
         switch self {
-        case .main, .dark, .mandarin: return true
+        case .main, .dark, .primary, .primaryDark: return true
         default: return false
         }
     }

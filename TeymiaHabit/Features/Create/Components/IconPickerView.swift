@@ -15,7 +15,7 @@ struct IconRow: View {
                 Label {
                     Text("Icon")
                 } icon: {
-                    RowIcon(symbol: .habitIcon)
+                    RowIconView(symbol: .habitIcon)
                 }
 
                 Spacer()
@@ -24,7 +24,7 @@ struct IconRow: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .foregroundStyle(selectedColor.baseColor)
-                    .frame(size: DS.IconSize.sm)
+                    .frame(size: IconSize.sm)
             }
         }
     }
@@ -64,9 +64,9 @@ struct IconPickerView: View {
         ScrollView {
             if filteredSections.isEmpty {
                 ContentUnavailableView.search(text: searchText)
-                    .padding(.top, DS.Spacing.xxl)
+                    .padding(.top, Spacing.xxl)
             } else {
-                LazyVStack(alignment: .leading, spacing: DS.Spacing.md) {
+                LazyVStack(alignment: .leading, spacing: Spacing.md) {
                     ForEach(filteredSections) { section in
                         Section(header: sectionHeader(section.name)) {
                             LazyVGrid(columns: columns, spacing: Layout.gridSpacing) {
@@ -74,21 +74,20 @@ struct IconPickerView: View {
                                     iconButton(icon: icon)
                                 }
                             }
-                            .padding(.horizontal, DS.Spacing.reg)
+                            .padding(.horizontal, Spacing.reg)
                         }
                     }
                 }
-                .padding(.vertical, DS.Spacing.reg)
+                .padding(.vertical, Spacing.reg)
             }
         }
-        .appBackground()
         .navigationTitle("Icon")
-        .animation(DS.Animations.snappy, value: searchText)
+        .animation( Animations.snappy, value: searchText)
         .sensoryFeedback(.selection, trigger: selectedIcon)
         .safeAreaBar(edge: .bottom) {
             ColorSelectionView(selectedColor: $selectedColor)
-                .padding(.horizontal, DS.Spacing.reg)
-                .padding(.bottom, DS.Spacing.xxs)
+                .padding(.horizontal, Spacing.reg)
+                .padding(.bottom, Spacing.xxs)
         }
         .searchable(text: $searchText)
     }
@@ -97,10 +96,10 @@ struct IconPickerView: View {
 
     private func sectionHeader(_ title: LocalizedStringKey) -> some View {
         Text(title)
-            .font(DS.AppFont.title2)
-            .foregroundStyle(DS.Colors.primary)
-            .padding(.horizontal, DS.Spacing.reg)
-            .padding(.vertical, DS.Spacing.xs)
+            .font(.title2)
+            .foregroundStyle(.primary)
+            .padding(.horizontal, Spacing.reg)
+            .padding(.vertical, Spacing.xs)
             .frame(maxWidth: .infinity, alignment: .leading)
     }
 
@@ -108,7 +107,7 @@ struct IconPickerView: View {
         let isSelected = selectedIcon == icon
 
         return Button {
-            withAnimation(DS.Animations.spring) {
+            withAnimation( Animations.spring) {
                 selectedIcon = icon
             }
         } label: {
@@ -117,7 +116,7 @@ struct IconPickerView: View {
                     .fill(
                         isSelected
                         ? selectedColor.baseColor.opacity(Layout.backgroundOpacity)
-                        : DS.Colors.tertiary
+                        : .appTertiary
                     )
                     .overlay(
                         Circle()
@@ -126,14 +125,13 @@ struct IconPickerView: View {
 
                 Image(icon)
                     .resizable()
-                    .frame(size: DS.IconSize.reg)
-                    .foregroundStyle(isSelected ? selectedColor.baseColor : DS.Colors.primary)
+                    .frame(size: IconSize.reg)
+                    .foregroundStyle(isSelected ? selectedColor.baseColor : .primary)
             }
-            .frame(width: Layout.circleSize, height: Layout.circleSize)
+            .frame(size: Layout.circleSize)
             .contentShape(.circle)
             .scaleEffect(isSelected ? Layout.selectedScale : 1.0)
         }
         .buttonStyle(.plain)
     }
 }
-

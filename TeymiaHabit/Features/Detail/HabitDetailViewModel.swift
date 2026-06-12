@@ -1,17 +1,16 @@
+import Foundation
 import SwiftUI
-import SwiftData
 
 @Observable @MainActor
 final class HabitDetailViewModel {
 
     // MARK: - Dependencies
-    private let habit: Habit
-    private let habitService: any HabitServiceProtocol
+    private let habitService: HabitService
     private let timerService: TimerService
-    private let widgetService: WidgetService
     private let notificationManager: NotificationManager
     private let soundManager: SoundManager
-    private let habitLiveActivityManager: HabitLiveActivityManager
+
+    private let habit: Habit
     private let cachedHabitId: String
 
     // MARK: - Timer / Save debounce
@@ -22,11 +21,33 @@ final class HabitDetailViewModel {
     // MARK: - Displayed date
     private(set) var currentDisplayedDate: Date
 
+    // MARK: - Init
+    init(
+        habit: Habit,
+        initialDate: Date,
+        habitService: HabitService,
+        timerService: TimerService,
+        notificationManager: NotificationManager,
+        soundManager: SoundManager
+    ) {
+        self.habit = habit
+        self.currentDisplayedDate = initialDate
+        self.cachedHabitId = habit.uuid.uuidString
+        self.habitService = habitService
+        self.timerService = timerService
+        self.notificationManager = notificationManager
+        self.soundManager = soundManager
+    }
+
     // MARK: - Computed Properties
+
+    var title: String { habit.title }
+    var iconName: String { habit.iconName }
+    var ringColors: (dark: Color, light: Color) { habit.ringColors }
+    var formattedGoal: String { habit.formattedGoal }
+
     var isTimerRunning: Bool { timerService.isTimerRunning(for: cachedHabitId) }
     var timerStartTime: Date? { timerService.getTimerStartTime(for: cachedHabitId) }
-    var formattedGoal: String { habit.formattedGoal }
-    var hasActiveLiveActivity: Bool { habitLiveActivityManager.hasActiveActivity(for: cachedHabitId) }
 
     private var isToday: Bool { Calendar.current.isDateInToday(currentDisplayedDate) }
     private var isTimeHabitToday: Bool { habit.type == .time && isToday }
@@ -37,34 +58,17 @@ final class HabitDetailViewModel {
     }
 
     var completionPercentage: Double {
-        habit.goal > 0 ? Double(currentProgress) / Double(habit.goal) : 0
+        habitService.completionPercentage(for: habit, on: currentDisplayedDate)
     }
 
     var isAlreadyCompleted: Bool { currentProgress >= habit.goal }
 
-    // MARK: - Init
-    init(
-        habit: Habit,
-        initialDate: Date,
-        habitService: any HabitServiceProtocol,
-        timerService: TimerService,
-        widgetService: WidgetService,
-        notificationManager: NotificationManager,
-        soundManager: SoundManager,
-        habitLiveActivityManager: HabitLiveActivityManager
-    ) {
-        self.habit = habit
-        self.currentDisplayedDate = initialDate
-        self.habitService = habitService
-        self.timerService = timerService
-        self.widgetService = widgetService
-        self.notificationManager = notificationManager
-        self.soundManager = soundManager
-        self.habitLiveActivityManager = habitLiveActivityManager
-        self.cachedHabitId = habit.uuid.uuidString
+    var isSkipped: Bool {
+        habitService.isSkipped(habit, on: currentDisplayedDate)
     }
 
     // MARK: - Date Management
+
     func updateDisplayedDate(_ newDate: Date) {
         currentDisplayedDate = newDate
         habitService.clearTemporaryProgress(for: habit.uuid, date: newDate)
@@ -73,6 +77,7 @@ final class HabitDetailViewModel {
     }
 
     // MARK: - Goal Progress
+
     func checkGoalProgress(_ current: Int) {
         guard current >= habit.goal, !goalSoundPlayed else { return }
         goalSoundPlayed = true
@@ -85,6 +90,7 @@ final class HabitDetailViewModel {
     }
 
     // MARK: - Progress Actions
+
     func incrementProgress() {
         stopTimerIfNeeded()
         let step = habit.type == .count ? 1 : 60
@@ -92,32 +98,29 @@ final class HabitDetailViewModel {
         let new = min(currentProgress + step, maxVal)
         habitService.setTemporaryProgress(for: habit.uuid, date: currentDisplayedDate, progress: new)
         saveProgress(new)
-        updateLiveActivityIfNeeded(progress: new, timerRunning: false)
+        checkGoalProgress(new)
     }
 
     func decrementProgress() {
-        let current = currentProgress
         stopTimerIfNeeded()
         let step = habit.type == .count ? 1 : 60
-        let new = max(current - step, 0)
+        let new = max(currentProgress - step, 0)
         habitService.setTemporaryProgress(for: habit.uuid, date: currentDisplayedDate, progress: new)
         saveProgress(new)
-        updateLiveActivityIfNeeded(progress: new, timerRunning: false)
     }
 
     func resetProgress() {
-        stopTimerAndEndActivity()
         habitService.setTemporaryProgress(for: habit.uuid, date: currentDisplayedDate, progress: 0)
         habitService.resetProgress(for: habit, date: currentDisplayedDate)
-        updateLiveActivityIfNeeded(progress: 0, timerRunning: false)
+        goalSoundPlayed = false
+        goalNotificationSent = false
     }
 
     func completeHabit() {
         guard !isAlreadyCompleted else { return }
-        stopTimerAndEndActivity()
         habitService.setTemporaryProgress(for: habit.uuid, date: currentDisplayedDate, progress: habit.goal)
         saveProgress(habit.goal)
-        soundManager.playCompletionSound()
+        checkGoalProgress(habit.goal)
     }
 
     func addProgress(_ value: Int) {
@@ -125,83 +128,51 @@ final class HabitDetailViewModel {
         let new = min(currentProgress + value, maxValue)
         habitService.setTemporaryProgress(for: habit.uuid, date: currentDisplayedDate, progress: new)
         saveProgress(new)
+        checkGoalProgress(new)
     }
 
     // MARK: - Timer Actions
+
     func toggleTimer() {
         guard isTimeHabitToday else { return }
-        if isTimerRunning {
-            stopTimer()
-        } else {
-            startTimer()
-        }
+        isTimerRunning ? stopTimer() : startTimer()
     }
 
     private func startTimer() {
-        let base = habit.progressForDate(currentDisplayedDate)
+        let base = habitService.progress(for: habit, on: currentDisplayedDate)
         goalSoundPlayed = false
         goalNotificationSent = false
-        _ = timerService.startTimer(for: cachedHabitId, baseProgress: base)
-
-        Task {
-            guard let start = timerStartTime else { return }
-            await habitLiveActivityManager.startActivity(
-                for: habit,
-                currentProgress: base,
-                timerStartTime: start
-            )
-        }
+        timerService.startTimer(for: cachedHabitId, baseProgress: base)
     }
 
     private func stopTimer() {
         guard let final = timerService.stopTimer(for: cachedHabitId) else { return }
         saveProgress(final)
-        Task {
-            await habitLiveActivityManager.updateActivity(
-                for: cachedHabitId,
-                currentProgress: final,
-                isTimerRunning: false,
-                timerStartTime: nil
-            )
+        checkGoalProgress(final)
+    }
+
+    // MARK: - Actions
+
+    func toggleSkip() {
+        if isSkipped {
+            habitService.unskipDate(currentDisplayedDate, for: habit)
+        } else {
+            stopTimerIfNeeded()
+            habitService.skipDate(currentDisplayedDate, for: habit)
         }
     }
 
-    // MARK: - Private Helpers
-
-    private func saveProgress(_ value: Int) {
-        let dateAtMomentOfSave = currentDisplayedDate
-
-        habitService.saveProgress(value, for: habit, date: dateAtMomentOfSave)
-
-        saveTask?.cancel()
-        saveTask = Task {
-            try? await Task.sleep(for: .seconds(0.8))
-            guard !Task.isCancelled else { return }
-
-            habitService.clearTemporaryProgress(for: habit.uuid, date: dateAtMomentOfSave)
-            widgetService.reloadWidgetsAfterDataChange()
-        }
+    func archiveHabit() {
+        stopTimerIfNeeded()
+        habitService.archive(habit)
     }
 
-    private func stopTimerIfNeeded() {
-        guard isTimerRunning else { return }
-        stopTimer()
-    }
-
-    private func stopTimerAndEndActivity() {
-        _ = timerService.stopTimer(for: cachedHabitId)
-        Task { await habitLiveActivityManager.endActivity(for: cachedHabitId) }
-    }
-
-    private func updateLiveActivityIfNeeded(progress: Int, timerRunning: Bool) {
-        guard isTimeHabitToday, hasActiveLiveActivity else { return }
+    func deleteHabit() {
+        stopTimerIfNeeded()
+        prepareForDeletion()
         Task {
-            await habitLiveActivityManager.updateActivity(
-                for: cachedHabitId,
-                currentProgress: progress,
-                isTimerRunning: timerRunning,
-                timerStartTime: timerRunning ? timerStartTime : nil
-            )
+            try? await Task.sleep(for: .milliseconds(300))
+            habitService.delete(habit)
         }
     }
 
@@ -209,26 +180,22 @@ final class HabitDetailViewModel {
         saveTask?.cancel()
     }
 
-    // MARK: - Skip, Archive, Delete
+    // MARK: - Private
 
-    func toggleSkip(for habit: Habit, date: Date) {
-        if habit.isSkipped(on: date) {
-            habitService.unskipDate(date, for: habit)
-        } else {
-            habitService.skipDate(date, for: habit)
+    private func saveProgress(_ value: Int) {
+        let dateAtMomentOfSave = currentDisplayedDate
+        habitService.saveProgress(value, for: habit, date: dateAtMomentOfSave)
+
+        saveTask?.cancel()
+        saveTask = Task {
+            try? await Task.sleep(for: .seconds(0.8))
+            guard !Task.isCancelled else { return }
+            habitService.clearTemporaryProgress(for: habit.uuid, date: dateAtMomentOfSave)
         }
     }
 
-    func archiveHabit() {
-        habitService.archive(habit)
-    }
-
-    func deleteHabit() {
-        prepareForDeletion()
-        Task {
-            try? await Task.sleep(for: .milliseconds(300))
-            habitService.delete(habit)
-        }
+    private func stopTimerIfNeeded() {
+        guard isTimerRunning else { return }
+        stopTimer()
     }
 }
-

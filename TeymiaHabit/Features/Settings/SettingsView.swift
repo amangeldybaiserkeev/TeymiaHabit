@@ -1,59 +1,32 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @Environment(\.horizontalSizeClass) private var sizeClass
-
-    private var isIphone: Bool {
-        sizeClass == .compact
-    }
+    @AppStorage(AppStorageKeys.isMinimalistIcons) private var isMinimalistIcons = false
 
     var body: some View {
-        NavigationSplitView {
-            List {
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(spacing: Spacing.lg) {
                 PremiumRow()
 
-                Section {
-                    AppearanceRow()
+                ListSection(header: "Appearance") {
+                    ThemeRow()
                     AppIconRow()
                     LanguageRow()
                 }
-                .`if`(isIphone) { $0.rowBackground() }
 
-                Section {
+                ListSection(header: "Data") {
                     ArchiveRow()
                     SoundsRow()
                     NotificationsRow()
+                    MinimalistRow()
                 }
-                .`if`(isIphone) { $0.rowBackground() }
 
-                Section {
-                    RateRow()
-                    ShareRow()
-                    TermsRow()
-                    PrivacyRow()
-                } footer: {
-                    Text("Teymia Habit \(Bundle.main.appVersion)")
-                }
-                .`if`(isIphone) { $0.rowBackground() }
+                AboutSection()
             }
-            .`if`(isIphone) { $0.appBackground(.grouped) }
-            .navigationTitle("Settings")
-        } detail: {
-            Image(systemName: "gear")
-                .font(.system(size: 100))
-                .foregroundStyle(DS.Colors.secondary.opacity(0.5))
         }
-        .ignoresSafeArea(.all)
-    }
-}
-
-private extension View {
-    @ViewBuilder
-    func `if`<Content: View>(_ condition: Bool, transform: (Self) -> Content) -> some View {
-        if condition {
-            transform(self)
-        } else {
-            self
-        }
+        .navigationTitle("Settings")
+        .toolbarTitleDisplayMode(.large)
+        .background(.groupBackground)
+        .environment(\.isMinimalistIcons, isMinimalistIcons)
     }
 }

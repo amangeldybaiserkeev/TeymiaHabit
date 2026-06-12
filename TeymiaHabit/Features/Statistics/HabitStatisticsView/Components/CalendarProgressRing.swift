@@ -13,7 +13,7 @@ struct CalendarProgressRing: View {
     var body: some View {
         ZStack {
             Circle()
-                .stroke(DS.Colors.secondary.opacity(0.1), lineWidth: lineWidth)
+                .stroke(Color.secondary.opacity(0.1), lineWidth: lineWidth)
 
             Circle()
                 .trim(from: 0, to: clampedProgress)
@@ -27,9 +27,8 @@ struct CalendarProgressRing: View {
                     style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)
                 )
                 .rotationEffect(.degrees(-90))
-                .animation(DS.Animations.easeInOut, value: progress)
+                .animation( Animations.easeInOut, value: progress)
         }
-        .frame(width: size, height: size)
+        .frame(size: size)
     }
 }
-

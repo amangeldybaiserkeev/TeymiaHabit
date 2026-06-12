@@ -8,7 +8,7 @@ struct ActiveDaysRow: View {
     }
 
     var body: some View {
-        HStack(spacing: DS.Spacing.xs) {
+        HStack(spacing: Spacing.xs) {
             ForEach(orderedWeekdays, id: \.self) { weekday in
                 let index = weekday.arrayIndex
                 let isActive = activeDays[index]
@@ -18,13 +18,13 @@ struct ActiveDaysRow: View {
                     toggleDay(index)
                 } label: {
                     Text(dayName)
-                        .font(.system(size: DS.IconSize.xxs, weight: .semibold))
+                        .font(.system(size: IconSize.xxs, weight: .semibold))
                         .minimumScaleFactor(0.7)
-                        .foregroundStyle(isActive ? DS.Colors.onPrimary : DS.Colors.secondary)
-                        .frame(size: DS.IconSize.xxl)
+                        .foregroundStyle(isActive ? .onPrimary : Color.secondary)
+                        .frame(size: IconSize.xxl)
                         .background {
                             Circle()
-                                .fill(isActive ? DS.Colors.primary : .clear)
+                                .fill(isActive ? Color.primary : .clear)
                         }
                         .contentShape(.circle)
                 }
@@ -42,4 +42,3 @@ struct ActiveDaysRow: View {
         activeDays[index].toggle()
     }
 }
-

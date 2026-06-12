@@ -1,7 +1,6 @@
 import AVFoundation
 import Foundation
 
-// MARK: - SoundManager
 @Observable
 final class SoundManager {
     private var audioPlayer: AVAudioPlayer?
@@ -31,7 +30,7 @@ final class SoundManager {
             self.isSoundEnabled = userDefaults.bool(forKey: UserDefaults.SoundKeys.completionSoundEnabled)
         }
 
-//        setupAudioSession()
+        setupAudioSession()
     }
 
     deinit {
@@ -85,19 +84,19 @@ final class SoundManager {
         audioPlayer = nil
     }
 
-//    // MARK: - Private Methods
-//    private func setupAudioSession() {
-//        do {
-//            try AVAudioSession.sharedInstance().setCategory(
-//                .ambient,
-//                mode: .default,
-//                options: [.mixWithOthers]
-//            )
-//            try AVAudioSession.sharedInstance().setActive(true)
-//        } catch {
-//            // Silent fail
-//        }
-//    }
+    // MARK: - Private Methods
+    private func setupAudioSession() {
+        do {
+            try AVAudioSession.sharedInstance().setCategory(
+                .ambient,
+                mode: .default,
+                options: [.mixWithOthers]
+            )
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            // Silent fail
+        }
+    }
 }
 
 // MARK: - UserDefaults Keys
@@ -107,4 +106,3 @@ extension UserDefaults {
         static let completionSoundEnabled = "completionSoundEnabled"
     }
 }
-

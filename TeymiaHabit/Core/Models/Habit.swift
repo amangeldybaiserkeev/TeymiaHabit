@@ -3,7 +3,6 @@ import SwiftUI
 
 @Model
 final class Habit: Identifiable {
-    // MARK: - Core Properties
     var uuid: UUID = UUID()
     var title: String = ""
     var iconName: String = "book"
@@ -15,6 +14,11 @@ final class Habit: Identifiable {
     var isArchived: Bool = false
     var createdAt: Date = Date()
     var startDate: Date = Date()
+    var source: HabitSource
+    var healthKitMetric: HealthKitMetric?
+
+    var skippedDates: [Date] = []
+    var reminderTimes: [Date]?
 
     @Relationship(deleteRule: .cascade, inverse: \HabitCompletion.habit)
     var completions: [HabitCompletion]?
@@ -24,11 +28,10 @@ final class Habit: Identifiable {
         iconColor.ringPair
     }
 
-    // MARK: - Computed Data
     var activeDays: [Bool] {
         get {
             let orderedWeekdays = Weekday.orderedByUserPreference
-            return orderedWeekdays.map { isActive(on: $0) }
+            return orderedWeekdays.map { (activeDaysBitmask & (1 << $0.rawValue)) != 0 }
         }
         set {
             let orderedWeekdays = Weekday.orderedByUserPreference
@@ -42,10 +45,7 @@ final class Habit: Identifiable {
         }
     }
 
-    var skippedDates: [Date] = []
-    var reminderTimes: [Date]? = nil
-
-    // MARK: - Initializer
+    // MARK: - Init
     init(
         title: String = "",
         type: HabitType = .count,
@@ -55,7 +55,9 @@ final class Habit: Identifiable {
         createdAt: Date = Date(),
         activeDays: [Bool]? = nil,
         reminderTimes: [Date]? = nil,
-        startDate: Date = Date()
+        startDate: Date = Date(),
+        source: HabitSource,
+        healthKitMetric: HealthKitMetric? = nil
     ) {
         self.uuid = UUID()
         self.title = title
@@ -65,6 +67,8 @@ final class Habit: Identifiable {
         self.iconColor = iconColor
         self.createdAt = createdAt
         self.startDate = Calendar.current.startOfDay(for: startDate)
+        self.source = source
+        self.healthKitMetric = healthKitMetric
 
         if let days = activeDays {
             self.activeDays = days
@@ -74,7 +78,7 @@ final class Habit: Identifiable {
         self.reminderTimes = reminderTimes
     }
 
-    // MARK: - Configuration Structure
+    // MARK: - Configuration
     struct Configuration {
         var title: String = ""
         var type: HabitType = .count
@@ -82,8 +86,10 @@ final class Habit: Identifiable {
         var iconName: String = "book"
         var iconColor: HabitIconColor = .primary
         var activeDays: [Bool] = Array(repeating: true, count: 7)
-        var reminderTimes: [Date]? = nil
+        var reminderTimes: [Date]?
         var startDate: Date = Date()
+        var source: HabitSource
+        var healthKitMetric: HealthKitMetric?
     }
 
     func update(with config: Configuration) {
@@ -95,65 +101,66 @@ final class Habit: Identifiable {
         self.activeDays = config.activeDays
         self.reminderTimes = config.reminderTimes
         self.startDate = Calendar.current.startOfDay(for: config.startDate)
+        self.source = config.source
+        self.healthKitMetric = config.healthKitMetric
     }
 }
 
-// MARK: - Logic & Calculations (ReadOnly)
+// MARK: - Presentation Helpers
 extension Habit {
-
     func isActive(on weekday: Weekday) -> Bool {
-        (activeDaysBitmask & (1 << weekday.rawValue)) != 0
-    }
+          (activeDaysBitmask & (1 << weekday.rawValue)) != 0
+      }
 
-    func isActiveOnDate(_ date: Date) -> Bool {
-        let calendar = Calendar.current
-        if calendar.startOfDay(for: date) < calendar.startOfDay(for: startDate) { return false }
-        return isActive(on: Weekday.from(date: date))
-    }
+      func isActiveOnDate(_ date: Date) -> Bool {
+          let calendar = Calendar.current
+          if calendar.startOfDay(for: date) < calendar.startOfDay(for: startDate) { return false }
+          return isActive(on: Weekday.from(date: date))
+      }
 
-    func progressForDate(_ date: Date) -> Int {
-        guard let completions else { return 0 }
-        let calendar = Calendar.current
-        return completions
-            .filter { calendar.isDate($0.date, inSameDayAs: date) }
-            .reduce(0) { $0 + $1.value }
-    }
+      func progressForDate(_ date: Date) -> Int {
+          guard let completions else { return 0 }
+          let calendar = Calendar.current
+          return completions
+              .filter { calendar.isDate($0.date, inSameDayAs: date) }
+              .reduce(0) { $0 + $1.value }
+      }
 
-    func isSkipped(on date: Date) -> Bool {
-        let calendar = Calendar.current
-        let dateStart = calendar.startOfDay(for: date)
-        return skippedDates.contains { calendar.isDate($0, inSameDayAs: dateStart) }
-    }
+      func isSkipped(on date: Date) -> Bool {
+          let calendar = Calendar.current
+          let dateStart = calendar.startOfDay(for: date)
+          return skippedDates.contains { calendar.isDate($0, inSameDayAs: dateStart) }
+      }
 
-    func completionPercentageForDate(_ date: Date) -> Double {
-        guard goal > 0 else { return progressForDate(date) > 0 ? 1.0 : 0.0 }
+      func completionPercentageForDate(_ date: Date) -> Double {
+          guard goal > 0 else { return progressForDate(date) > 0 ? 1.0 : 0.0 }
 
-        let actualProgress = Double(progressForDate(date))
-        let targetGoal = Double(goal)
-        let percentage = actualProgress / targetGoal
+          let actualProgress = Double(progressForDate(date))
+          let targetGoal = Double(goal)
+          let percentage = actualProgress / targetGoal
 
-        return min(percentage, 1.0)
-    }
+          return min(percentage, 1.0)
+      }
 
-    func formatProgress(_ progress: Int) -> String {
-        switch type {
-        case .count:
-            return "\(progress)"
-        case .time:
-            return progress.formattedAsTime()
-        }
-    }
+      func formatProgress(_ progress: Int) -> String {
+          switch type {
+          case .count:
+              return "\(progress)"
+          case .time:
+              return progress.formattedAsTime()
+          }
+      }
 
-    func formattedProgress(for date: Date) -> String {
-        let progress = progressForDate(date)
-        return formatProgress(progress)
-    }
+      func formattedProgress(for date: Date) -> String {
+          let progress = progressForDate(date)
+          return formatProgress(progress)
+      }
 
-    var formattedGoal: String {
-        type == .count ? "\(goal)" : goal.formattedAsLocalizedDuration()
-    }
+      var formattedGoal: String {
+          type == .count ? "\(goal)" : goal.formattedAsLocalizedDuration()
+      }
 
-    func isExceededForDate(_ date: Date) -> Bool {
-        progressForDate(date) > goal
-    }
+      func isExceededForDate(_ date: Date) -> Bool {
+          progressForDate(date) > goal
+      }
 }

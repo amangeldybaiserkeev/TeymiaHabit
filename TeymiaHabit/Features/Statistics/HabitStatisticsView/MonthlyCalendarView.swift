@@ -18,7 +18,7 @@ struct MonthlyCalendarView: View {
                 monthGridContainer
             }
         }
-        .padding(.top, DS.Spacing.reg)
+        .padding(.top, Spacing.reg)
         .onAppear {
             vm.setup(selectedDate: selectedDate)
         }
@@ -28,7 +28,7 @@ struct MonthlyCalendarView: View {
         .sheet(item: $vm.detailSheetDate, onDismiss: {
             vm.clearDetailSheet()
         }) { date in
-            HabitDetailView(habit: vm.habit, date: date, showStatsButton: false)
+//            HabitDetailView(habit: vm.habit, date: date) TODO:
         }
     }
 
@@ -45,8 +45,8 @@ struct MonthlyCalendarView: View {
 
     private var weekdayHeader: some View {
         WeekdayHeaderView()
-            .padding(.horizontal, DS.Spacing.xxs)
-            .padding(.vertical, DS.Spacing.reg)
+            .padding(.horizontal, Spacing.xxs)
+            .padding(.vertical, Spacing.reg)
     }
 
     private var monthGridContainer: some View {
@@ -105,7 +105,7 @@ struct MonthlyCalendarView: View {
                 }
             }
         }
-        .padding(.horizontal, DS.Spacing.reg)
+        .padding(.horizontal, Spacing.reg)
     }
 }
 

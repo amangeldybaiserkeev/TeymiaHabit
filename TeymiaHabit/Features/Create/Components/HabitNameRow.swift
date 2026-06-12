@@ -21,24 +21,23 @@ struct HabitNameRow: View {
                     }
 
                 Button {
-                    withAnimation(DS.Animations.spring) {
+                    withAnimation(.smooth) {
                         title = ""
                     }
                 } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(DS.Colors.secondary.opacity(0.5))
-                        .font(.system(size: DS.IconSize.sm))
+                        .foregroundStyle(Color.secondary.opacity(0.5))
+                        .font(.system(size: IconSize.sm))
                 }
                 .buttonStyle(.plain)
                 .opacity(title.isEmpty ? 0 : 1)
                 .scaleEffect(title.isEmpty ? 0.001 : 1)
-                .animation(DS.Animations.spring, value: title.isEmpty)
+                .animation( Animations.spring, value: title.isEmpty)
                 .disabled(title.isEmpty)
             }
             .contentShape(.rect)
         } icon: {
-            RowIcon(symbol: .habitName)
+            RowIconView(symbol: .habitName)
         }
     }
 }
-

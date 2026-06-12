@@ -2,24 +2,24 @@ import SwiftUI
 
 struct PremiumLockCapsule: View {
     var body: some View {
-        HStack(spacing: DS.Spacing.xxs) {
+        HStack(spacing: Spacing.xxs) {
             Image(systemName: "lock.fill")
-                .font(.system(size: DS.IconSize.xxs))
+                .font(.system(size: IconSize.xxs))
 
             Text("Premium")
-                .font(DS.AppFont.caption)
+                .font( .caption)
                 .fontWeight(.semibold)
         }
         .foregroundStyle(.white)
-        .padding(.horizontal, DS.Spacing.xs)
-        .padding(.vertical, DS.Spacing.xxs)
+        .padding(.horizontal, Spacing.xs)
+        .padding(.vertical, Spacing.xxs)
         .background(PremiumGradientColors.gradient)
         .clipShape(.capsule)
     }
 }
 
 struct PremiumLockBadge: View {
-    var size = DS.IconSize.sm
+    var size =  IconSize.sm
 
     var body: some View {
         ZStack {
@@ -33,7 +33,7 @@ struct PremiumLockBadge: View {
         }
         .overlay {
             Circle()
-                .stroke(DS.Colors.onPrimary, lineWidth: 2)
+                .stroke(.onPrimary, lineWidth: 2)
                 .frame(size: size)
         }
     }

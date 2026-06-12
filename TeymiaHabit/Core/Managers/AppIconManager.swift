@@ -3,6 +3,7 @@ import SwiftUI
 @MainActor
 @Observable
 final class AppIconManager {
+
     private(set) var currentIcon: AppIcon = .main
 
     init() {
@@ -27,8 +28,7 @@ final class AppIconManager {
         currentIcon = icon
 
         UIApplication.shared.setAlternateIconName(iconName) { [weak self] error in
-            if let error {
-                print("Failed to change icon: \(error.localizedDescription)")
+            if error != nil {
                 Task { @MainActor in
                     self?.syncWithSystem()
                 }
@@ -36,4 +36,3 @@ final class AppIconManager {
         }
     }
 }
-

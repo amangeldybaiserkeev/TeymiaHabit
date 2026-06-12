@@ -8,7 +8,7 @@ struct StartDateRow: View {
             Label {
                 Text("Start Date")
             } icon: {
-                RowIcon(symbol: .habitStartDate)
+                RowIconView(symbol: .habitStartDate)
             }
 
             Spacer()
@@ -24,4 +24,3 @@ struct StartDateRow: View {
         }
     }
 }
-

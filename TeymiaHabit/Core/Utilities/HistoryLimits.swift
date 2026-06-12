@@ -23,4 +23,3 @@ enum HistoryLimits {
         earliestAllowedDate()...Date()
     }
 }
-

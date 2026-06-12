@@ -1,11 +1,12 @@
 import Foundation
+import ActivityKit
 
 @Observable @MainActor
 final class TimerService {
+
     private var activeTimers: [String: TimerData] = [:]
     private var uiTimer: Timer?
     private(set) var updateTrigger: Int = 0
-    private let maxTimers = 10
 
     private struct TimerData {
         let habitId: String
@@ -13,25 +14,20 @@ final class TimerService {
         let baseProgress: Int
     }
 
-    init() {}
-
-    // MARK: - Timer Management
-
-    func getLiveProgress(for habitId: String) -> Int? {
-        guard let timerData = activeTimers[habitId] else { return nil }
-        let elapsed = Int(Date().timeIntervalSince(timerData.startTime))
-        let currentProgress = timerData.baseProgress + elapsed
-        return min(currentProgress, 86400)
-    }
+    // MARK: - Public
 
     func isTimerRunning(for habitId: String) -> Bool {
         activeTimers[habitId] != nil
     }
 
-    func startTimer(for habitId: String, baseProgress: Int) -> Bool {
-        if activeTimers[habitId] != nil { return true }
+    func getLiveProgress(for habitId: String) -> Int? {
+        guard let timerData = activeTimers[habitId] else { return nil }
+        let elapsed = Int(Date().timeIntervalSince(timerData.startTime))
+        return timerData.baseProgress + elapsed
+    }
 
-        guard activeTimers.count < maxTimers else { return false }
+    func startTimer(for habitId: String, baseProgress: Int) {
+        guard activeTimers[habitId] == nil else { return }
 
         activeTimers[habitId] = TimerData(
             habitId: habitId,
@@ -44,7 +40,6 @@ final class TimerService {
         }
 
         triggerUIUpdate()
-        return true
     }
 
     @discardableResult
@@ -66,33 +61,6 @@ final class TimerService {
 
     func getTimerStartTime(for habitId: String) -> Date? {
         activeTimers[habitId]?.startTime
-    }
-
-    // MARK: - Status
-
-    var canStartNewTimer: Bool {
-        activeTimers.count < maxTimers
-    }
-
-    var remainingSlots: Int {
-        maxTimers - activeTimers.count
-    }
-
-    var hasActiveTimers: Bool {
-        !activeTimers.isEmpty
-    }
-
-    /// Stop all timers and return final progresses
-    func stopAllTimers() -> [String: Int] {
-        var finalProgresses: [String: Int] = [:]
-
-        for habitId in activeTimers.keys {
-            if let finalProgress = stopTimer(for: habitId) {
-                finalProgresses[habitId] = finalProgress
-            }
-        }
-
-        return finalProgresses
     }
 
     // MARK: - App Lifecycle

@@ -30,4 +30,3 @@ enum Weekday: Int, CaseIterable, Hashable, Sendable {
         return Array(firstPart + secondPart)
     }
 }
-

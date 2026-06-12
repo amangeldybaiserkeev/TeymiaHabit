@@ -3,8 +3,6 @@ import SwiftData
 
 struct StatisticsView: View {
 
-    @State private var showingNewHabit = false
-
     @Query(
         filter: #Predicate<Habit> { !$0.isArchived },
         sort: \Habit.displayOrder
@@ -13,28 +11,21 @@ struct StatisticsView: View {
     var body: some View {
         Group {
             if habits.isEmpty {
-                StatisticsEmptyView {
-                    showingNewHabit = true
-                }
+                ContentUnavailableView("No Habits", systemImage: "checkmark.circle.dotted")
             } else {
                 habitsList
             }
-        }
-        .appBackground()
-        .sheet(isPresented: $showingNewHabit) {
-            NewHabitView()
         }
     }
 
     private var habitsList: some View {
         ScrollView {
-            LazyVStack(spacing: DS.Spacing.reg) {
+            LazyVStack(spacing: Spacing.reg) {
                 ForEach(habits) { habit in
                     HabitStatCard(habit: habit)
-                        .padding(.horizontal, DS.Spacing.reg)
+                        .padding(.horizontal, Spacing.reg)
                 }
             }
-            .applyAdaptiveWidth()
         }
         .navigationTitle("Statistics")
     }
@@ -44,7 +35,7 @@ struct StatisticsView: View {
 
 private struct StatisticsEmptyView: View {
     let action: () -> Void
-    private let iconSize = DS.IconSize.lg
+    private let iconSize = IconSize.lg
 
     var body: some View {
         EmptyStateView(
@@ -63,9 +54,9 @@ private struct StatisticsEmptyView: View {
         Image(systemName: "chart.bar.xaxis.ascending")
             .font(.system(size: iconSize))
             .symbolRenderingMode(.palette)
-            .foregroundStyle(DS.Colors.secondary.gradient, DS.Colors.primary.gradient)
+            .foregroundStyle(Color.secondary.gradient, Color.primary.gradient)
             .frame(size: iconSize * 1.8)
-            .background(DS.Colors.tertiary, in: .circle)
+            .background(Color.secondary, in: .circle)
 
     }
 }

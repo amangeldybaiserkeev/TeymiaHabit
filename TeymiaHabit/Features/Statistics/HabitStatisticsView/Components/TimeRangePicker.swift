@@ -10,6 +10,6 @@ struct TimeRangePicker: View {
             }
         }
         .pickerStyle(.segmented)
-        .padding(.horizontal, DS.Spacing.xl)
+        .padding(.horizontal, Spacing.xl)
     }
 }

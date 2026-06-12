@@ -11,8 +11,8 @@ struct BarChartView: View {
     }
 
     private enum Constants {
-        static let xAxisColor = DS.Colors.secondary.opacity(0.7)
-        static let yAxisColor = DS.Colors.secondary.opacity(0.3)
+        static let xAxisColor = Color.secondary.opacity(0.7)
+        static let yAxisColor = Color.secondary.opacity(0.3)
         static let chartHeight: CGFloat = 180
         static let tabViewHeight: CGFloat = 280
         static let gridLineWidth: CGFloat = 0.5
@@ -59,7 +59,7 @@ struct BarChartView: View {
     private var chartView: some View {
         VStack(spacing: 0) {
             ChartStatsRow(averageLabel: vm.averageLabel, totalLabel: vm.totalLabel)
-                .padding(.bottom, DS.Spacing.md)
+                .padding(.bottom, Spacing.md)
 
             Chart(vm.chartData) { dataPoint in
                 selectionOverlay
@@ -73,7 +73,7 @@ struct BarChartView: View {
                 .opacity(vm.opacity(for: dataPoint.date))
             }
             .frame(height: Constants.chartHeight)
-            .chartXSelection(value: $vm.selectedDate.animation(DS.Animations.easeInOut))
+            .chartXSelection(value: $vm.selectedDate.animation( Animations.easeInOut))
             .chartXAxis { xAxisMarks }
             .chartYAxis { yAxisMarks }
             .chartYScale(domain: .automatic(includesZero: habit.type == .count))
@@ -88,9 +88,9 @@ struct BarChartView: View {
             AxisValueLabel {
                 if let date = value.as(Date.self) {
                     Text(vm.range.xAxisLabel(for: date, calendar: vm.calendar))
-                        .font(DS.AppFont.caption)
+                        .font( .caption)
                         .fontWeight(.medium)
-                        .foregroundStyle(DS.Colors.secondary)
+                        .foregroundStyle(Color.secondary)
                 }
             }
         }
@@ -104,8 +104,8 @@ struct BarChartView: View {
             AxisValueLabel {
                 if let minutes = value.as(Double.self) {
                     Text(vm.formatMinutesToReadable(minutes))
-                        .font(DS.AppFont.caption)
-                        .foregroundStyle(DS.Colors.secondary)
+                        .font( .caption)
+                        .foregroundStyle(Color.secondary)
                 }
             }
         }
@@ -143,7 +143,7 @@ private struct ChartContainer<Content: View>: View {
             ForEach(0..<count, id: \.self) { index in
                 content()
                     .tag(index)
-                    .padding(.horizontal, DS.Spacing.reg)
+                    .padding(.horizontal, Spacing.reg)
             }
         }
         .tabViewStyle(.page(indexDisplayMode: .never))
@@ -161,19 +161,19 @@ private struct ChartSelectionAnnotation: View {
     }
 
     var body: some View {
-        VStack(spacing: DS.Spacing.xxs) {
+        VStack(spacing: Spacing.xxs) {
             Text(title)
-                .font(DS.AppFont.headline)
+                .font( .headline)
 
             Text(valueLabel)
-                .font(DS.AppFont.title3)
+                .font( .title3)
                 .bold()
         }
-        .foregroundStyle(DS.Colors.onPrimary)
-        .padding(DS.Spacing.sm)
+        .foregroundStyle(.onPrimary)
+        .padding( Spacing.sm)
         .frame(width: LocalConstants.width)
         .background {
-            RoundedRectangle(cornerRadius: DS.Radius.reg)
+            RoundedRectangle(cornerRadius: Radius.reg)
                 .fill(color.opacity(0.8))
         }
     }

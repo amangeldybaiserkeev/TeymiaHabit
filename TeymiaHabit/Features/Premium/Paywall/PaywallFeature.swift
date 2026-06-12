@@ -4,7 +4,7 @@ struct PaywallFeature: Identifiable {
     let id = UUID()
     let icon: String
     let title: LocalizedStringKey
-    var description: LocalizedStringKey? = nil
+    var description: LocalizedStringKey?
 
     static let allFeatures: [Self] = [
         Self(
@@ -38,4 +38,3 @@ struct PaywallFeature: Identifiable {
         )
     ]
 }
-

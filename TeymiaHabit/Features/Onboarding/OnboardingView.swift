@@ -5,67 +5,57 @@ struct OnboardingCard: Identifiable {
     let symbol: String
     let title: LocalizedStringKey
     let subtitle: LocalizedStringKey
-    let primaryColor: Color
-    let secondaryColor: Color
 }
 
 struct OnboardingView: View {
     @Binding var hasCompletedOnboarding: Bool
 
-    private static let tint = DS.Colors.primary
-    private static let secondary = DS.Colors.secondary
+    private let tint = Color.primary
+    private let secondary = Color.secondary
 
     let cards: [OnboardingCard] = [
         OnboardingCard(
             symbol: "checkmark.circle.dotted",
             title: "Build Lasting Habits",
-            subtitle: "Count time, hit goals, and stay consistent with progress rings.",
-            primaryColor: tint,
-            secondaryColor: secondary
+            subtitle: "Count time, hit goals, and stay consistent with progress rings."
         ),
         OnboardingCard(
             symbol: "bell.badge",
             title: "Smart Reminders",
-            subtitle: "Set flexible schedules and get notified on the days that matter to you.",
-            primaryColor: secondary,
-            secondaryColor: tint
+            subtitle: "Set flexible schedules and get notified on the days that matter to you."
         ),
         OnboardingCard(
             symbol: "chart.bar.xaxis",
             title: "See Your Progress",
-            subtitle: "Weekly, monthly, and yearly charts show how far you've come.",
-            primaryColor: tint,
-            secondaryColor: secondary
+            subtitle: "Weekly, monthly, and yearly charts show how far you've come."
         )
     ]
 
     var body: some View {
-        VStack(spacing: DS.Spacing.xxl) {
-            Image("Preview-AppIcon")
+        VStack(spacing: Spacing.xxl) {
+            Image("AppIconBlank")
                 .resizable()
+                .aspectRatio(contentMode: .fit)
                 .frame(size: 100)
-                .overlay(
-                    RoundedRectangle(cornerRadius: DS.Radius.md)
-                        .stroke(DS.Colors.secondary.opacity(0.15), lineWidth: 0.8)
-                )
+                .foregroundStyle(.main.gradient)
                 .padding(.top, 60)
 
-            VStack(spacing: DS.Spacing.xxs) {
+            VStack(spacing: Spacing.xxs) {
                 Text("Welcome to")
-                    .foregroundStyle(Self.tint.gradient)
+                    .foregroundStyle(tint.gradient)
                     .minimumScaleFactor(0.8)
                 Text("Teymia Habit")
                     .foregroundStyle(
                         LinearGradient(
-                            colors: [Self.tint, Self.secondary.opacity(0.5)],
+                            colors: [tint, secondary.opacity(0.5)],
                             startPoint: .top,
                             endPoint: .bottom
                         )
                     )
             }
-            .font(DS.AppFont.largeTitle)
+            .font(.largeTitle.bold())
 
-            VStack(alignment: .leading, spacing: DS.Spacing.lg) {
+            VStack(alignment: .leading, spacing: Spacing.lg) {
                 ForEach(cards) { card in
                     OnboardingCardView(card: card)
                 }
@@ -74,25 +64,25 @@ struct OnboardingView: View {
 
             Spacer()
 
-            VStack(spacing: DS.Spacing.reg) {
+            VStack(spacing: Spacing.reg) {
                 footerContent
 
                 Button {
                     hasCompletedOnboarding = false
                 } label: {
                     Text("Continue")
-                        .font(DS.AppFont.headline)
-                        .foregroundStyle(DS.Colors.onPrimary)
+                        .font( .headline)
+                        .foregroundStyle(.onPrimary)
                         .frame(maxWidth: .infinity)
-                        .frame(height: DS.TouchTarget.minimum)
+                        .frame(height: TouchTarget.minimum)
                 }
-                .tint(Self.tint)
+                .tint(tint)
                 .buttonStyle(.glassProminent)
                 .sensoryFeedback(.selection, trigger: hasCompletedOnboarding)
             }
-            .padding(.bottom, DS.Spacing.reg)
+            .padding(.bottom, Spacing.reg)
         }
-        .padding(DS.Spacing.xxl)
+        .padding( Spacing.xxl)
         .frame(maxWidth: 400)
         .frame(maxWidth: .infinity)
         .interactiveDismissDisabled()
@@ -100,17 +90,17 @@ struct OnboardingView: View {
 
     @ViewBuilder
     var footerContent: some View {
-        VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
+        VStack(alignment: .leading, spacing: Spacing.xxs) {
             Image(systemName: "person.badge.shield.checkmark.fill")
-                .font(.system(size: DS.IconSize.md))
-                .foregroundStyle(Self.tint.gradient, Self.secondary.opacity(0.5).gradient)
+                .font(.system(size: IconSize.md))
+                .foregroundStyle(tint.gradient, secondary.opacity(0.5).gradient)
                 .symbolRenderingMode(.palette)
 
             Text(
                 "Your data never leaves your devices. Everything is stored locally and synced via iCloud."
             )
-                .font(DS.AppFont.footnote)
-                .foregroundStyle(Self.secondary)
+                .font( .footnote)
+                .foregroundStyle(secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
     }
@@ -120,24 +110,24 @@ struct OnboardingCardView: View {
     let card: OnboardingCard
 
     var body: some View {
-        HStack(spacing: DS.Spacing.reg) {
+        HStack(spacing: Spacing.reg) {
             Image(systemName: card.symbol)
-                .font(.system(size: DS.IconSize.reg))
+                .font(.system(size: IconSize.reg))
                 .foregroundStyle(
-                    card.primaryColor.gradient,
-                    card.secondaryColor.gradient,
+                    Color.primary.gradient,
+                    Color.secondary.gradient,
                 )
                 .symbolVariant(.fill)
                 .symbolRenderingMode(.palette)
-                .frame(width: DS.Spacing.xxl)
+                .frame(width: Spacing.xxl)
 
-            VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
+            VStack(alignment: .leading, spacing: Spacing.xxs) {
                 Text(card.title)
-                    .font(DS.AppFont.headline)
+                    .font(.headline)
                     .lineLimit(1)
                 Text(card.subtitle)
-                    .font(DS.AppFont.subheadline)
-                    .foregroundStyle(DS.Colors.primary.opacity(0.7))
+                    .font(.subheadline)
+                    .foregroundStyle(Color.primary.opacity(0.7))
                     .fixedSize(horizontal: false, vertical: true)
             }
         }

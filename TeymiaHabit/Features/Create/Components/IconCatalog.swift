@@ -266,4 +266,3 @@ enum IconCatalog {
         ])
     ]
 }
-

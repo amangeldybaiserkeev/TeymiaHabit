@@ -2,15 +2,15 @@ import SwiftUI
 
 struct WeekdayHeaderView: View {
     var body: some View {
-        HStack(spacing: DS.Spacing.reg) {
+        HStack(spacing: Spacing.reg) {
             ForEach(Weekday.orderedByUserPreference, id: \.self) { weekday in
                 Text(String(weekday.shortName.prefix(1)).capitalized)
-                    .font(DS.AppFont.subheadline)
+                    .font( .subheadline)
                     .fontWeight(.semibold)
-                    .foregroundStyle(DS.Colors.secondary)
+                    .foregroundStyle(Color.secondary)
                     .frame(maxWidth: .infinity)
             }
         }
-        .padding(.horizontal, DS.Spacing.reg)
+        .padding(.horizontal, Spacing.reg)
     }
 }

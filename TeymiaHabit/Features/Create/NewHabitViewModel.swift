@@ -1,74 +1,100 @@
 import SwiftUI
+import SwiftData
+import HealthKit
 
-@Observable @MainActor
+@Observable
 final class NewHabitViewModel {
-    private let habitService: any HabitServiceProtocol
-
-    let habit: Habit?
+    var source: HabitSource = .manual
+    var healthKitMetric: HealthKitMetric?
     var title = ""
     var selectedType: HabitType = .count
-    var goalConfig = GoalConfiguration()
+    var goalCountText = ""
+    var goalHours = 0
+    var minutes = 0
     var activeDays: [Bool] = Array(repeating: true, count: 7)
+    var startDate = Date()
     var isReminderEnabled = false
     var reminderTimes: [Date] = [Date()]
-    var startDate = Date()
     var selectedIcon = "book.fill"
     var selectedIconColor: HabitIconColor = .primary
+    var showingPaywall = false
+    var isRequestingHealthAuth = false
 
-    // MARK: - Init
-    init(habitService: any HabitServiceProtocol, habit: Habit?) {
-        self.habitService = habitService
-        self.habit = habit
+    init() {}
 
+    func setup(habit: Habit?, template: HabitTemplate?) {
         if let habit {
-            loadValues(from: habit)
+            loadHabit(habit)
+        } else if let template {
+            loadTemplate(template)
         }
-        self.initialSnapshot = makeSnapshot()
     }
 
-    private enum Constants {
-        static let secondsInHour = 3600
-        static let secondsInMinute = 60
-        static let maxSecondsInDay = 86_400
-        static let maxCount = 999_999
+    var effectiveGoal: Int {
+        switch selectedType {
+        case .count: return Int(goalCountText) ?? 1
+        case .time:  return (goalHours * 3600) + (minutes * 60)
+        }
     }
 
-    // MARK: - Computed UI Properties
     var isFormValid: Bool {
         let hasTitle = !title.trimmingCharacters(in: .whitespaces).isEmpty
         let hasGoal: Bool = switch selectedType {
-        case .count: goalConfig.parsedCount != nil
-        case .time: goalConfig.hours > 0 || goalConfig.minutes > 0
+        case .count: (Int(goalCountText) ?? 0) > 0
+        case .time:  goalHours > 0 || minutes > 0
         }
         return hasTitle && hasGoal
     }
 
-    var hasChanges: Bool {
-        guard let initial = initialSnapshot else {
-            return !title.isEmpty || isReminderEnabled || selectedType != .count
-        }
-        return initial != makeSnapshot()
-    }
+    private func loadHabit(_ habit: Habit) {
+        title = habit.title
+        selectedType = habit.type
+        startDate = habit.startDate
+        selectedIcon = habit.iconName
+        selectedIconColor = habit.iconColor
+        activeDays = habit.activeDays
+        isReminderEnabled = habit.reminderTimes?.isEmpty == false
+        reminderTimes = habit.reminderTimes ?? [Date()]
+        source = habit.source
+        healthKitMetric = habit.healthKitMetric
 
-    // MARK: - Private State
-    private var initialSnapshot: Snapshot?
-
-    private var effectiveGoal: Int {
-        switch selectedType {
-        case .count:
-            let value = goalConfig.parsedCount ?? 1
-            return min(value, Constants.maxCount)
-        case .time:
-            let total = goalConfig.hours * Constants.secondsInHour
-            + goalConfig.minutes * Constants.secondsInMinute
-            return min(total, Constants.maxSecondsInDay)
+        if habit.type == .count {
+            goalCountText = String(habit.goal)
+        } else {
+            goalHours = habit.goal / 3600
+            minutes = (habit.goal % 3600) / 60
         }
     }
 
-    // MARK: - Actions
-    func save() {
-        guard isFormValid else { return }
+    private func loadTemplate(_ template: HabitTemplate) {
+        title = template.name
+        selectedType = template.type
+        selectedIcon = template.icon
+        selectedIconColor = template.color
+        source = template.source
+        healthKitMetric = template.healthKitMetric
 
+        if template.type == .count {
+            goalCountText = String(template.goal)
+        } else {
+            goalHours = template.goal / 3600
+            minutes = (template.goal % 3600) / 60
+        }
+    }
+
+    func requestHealthKitPermission(using manager: HealthKitManager) {
+        guard source == .healthKit, let metric = healthKitMetric else { return }
+        Task {
+            isRequestingHealthAuth = true
+            let types: Set<HKObjectType> = metric == .steps
+            ? [HKQuantityType(.stepCount)]
+            : [HKCategoryType(.sleepAnalysis)]
+            await manager.requestAuthorization(for: types)
+            isRequestingHealthAuth = false
+        }
+    }
+
+    func save(context: ModelContext, existingHabit: Habit?) {
         let config = Habit.Configuration(
             title: title,
             type: selectedType,
@@ -77,61 +103,37 @@ final class NewHabitViewModel {
             iconColor: selectedIconColor,
             activeDays: activeDays,
             reminderTimes: isReminderEnabled ? reminderTimes : nil,
-            startDate: startDate
-        )
-
-        if let existing = habit {
-            habitService.updateHabit(existing, with: config)
-        } else {
-            habitService.createHabit(with: config)
-        }
-    }
-
-    // MARK: - Private Helpers
-    private func loadValues(from habit: Habit) {
-        title             = habit.title
-        selectedType      = habit.type
-        activeDays        = habit.activeDays
-        startDate         = habit.startDate
-        selectedIcon      = habit.iconName
-        selectedIconColor = habit.iconColor
-        isReminderEnabled = habit.reminderTimes?.isEmpty == false
-        reminderTimes     = habit.reminderTimes ?? [Date()]
-
-        switch habit.type {
-        case .count:
-            goalConfig.countText = String(habit.goal)
-        case .time:
-            goalConfig.hours   = habit.goal / Constants.secondsInHour
-            goalConfig.minutes = (habit.goal % Constants.secondsInHour) / Constants.secondsInMinute
-        }
-    }
-
-    // MARK: - Snapshot
-    private struct Snapshot: Equatable {
-        let title: String
-        let type: HabitType
-        let goal: Int
-        let activeDays: [Bool]
-        let isReminderEnabled: Bool
-        let reminderTimes: [Date]
-        let startDate: Date
-        let iconName: String
-        let iconColor: HabitIconColor
-    }
-
-    private func makeSnapshot() -> Snapshot {
-        Snapshot(
-            title: title,
-            type: selectedType,
-            goal: effectiveGoal,
-            activeDays: activeDays,
-            isReminderEnabled: isReminderEnabled,
-            reminderTimes: reminderTimes,
             startDate: startDate,
-            iconName: selectedIcon,
-            iconColor: selectedIconColor
+            source: source,
+            healthKitMetric: healthKitMetric
         )
+
+        if let existing = existingHabit {
+            print("📝 Попытка ОБНОВЛЕНИЯ привычки: \(title)")
+            existing.update(with: config)
+        } else {
+            print("➕ Попытка СОЗДАНИЯ новой привычки: \(title)")
+            let newHabit = Habit(
+                title: title,
+                type: selectedType,
+                goal: effectiveGoal,
+                iconName: selectedIcon,
+                iconColor: selectedIconColor,
+                activeDays: activeDays,
+                reminderTimes: isReminderEnabled ? reminderTimes : nil,
+                startDate: startDate,
+                source: source,
+                healthKitMetric: healthKitMetric
+            )
+            context.insert(newHabit)
+        }
+
+        do {
+            try context.save()
+            print("🚀 УСПЕХ: Данные сохранены в базу без ошибок!")
+        } catch {
+            print("❌ ОШИБКА сохранения SwiftData: \(error)")
+            print("ℹ️ Описание ошибки: \(error.localizedDescription)")
+        }
     }
 }
-

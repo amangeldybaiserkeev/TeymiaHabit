@@ -4,25 +4,28 @@ struct ColorSelectionView: View {
     @Binding var selectedColor: HabitIconColor
 
     private enum Layout {
-        static let buttonSize = DS.IconSize.lg
+        static let buttonSize = IconSize.lg
         static let fadeWidth: Double = 0.05
-
         static let threshold: CGFloat = 0.8
         static let minScale: CGFloat = 0.4
         static let selectionScale: CGFloat = 1.15
         static let innerStrokeScale: CGFloat = 0.9
+
+        static var innerStrokeSize: CGFloat {
+            buttonSize * innerStrokeScale
+        }
     }
 
     var body: some View {
         HStack {
             GeometryReader { geo in
                 ScrollView(.horizontal, showsIndicators: false) {
-                    LazyHStack(spacing: DS.Spacing.reg) {
+                    LazyHStack(spacing: Spacing.reg) {
                         ForEach(HabitIconColor.allCases, id: \.self) { iconColor in
                             colorButton(for: iconColor, in: geo)
                         }
                     }
-                    .padding(.horizontal, DS.Spacing.reg)
+                    .padding(.horizontal, Spacing.reg)
                 }
                 .mask {
                     LinearGradient(
@@ -67,7 +70,7 @@ struct ColorSelectionView: View {
             let opacity = 1.0 - edgeFactor
 
             Button {
-                withAnimation(DS.Animations.spring) {
+                withAnimation(Animations.spring) {
                     selectedColor = color
                 }
             } label: {
@@ -76,8 +79,8 @@ struct ColorSelectionView: View {
                     .frame(size: Layout.buttonSize)
                     .overlay(
                         Circle()
-                            .strokeBorder(DS.Colors.onPrimary, lineWidth: 2)
-                            .frame(size: Layout.buttonSize * Layout.innerStrokeScale)
+                            .strokeBorder(.onPrimary, lineWidth: 2)
+                            .frame(size: Layout.innerStrokeSize)
                             .opacity(isSelected ? 1 : 0)
                     )
                     .scaleEffect(isSelected ? scale * Layout.selectionScale : scale)

@@ -45,4 +45,3 @@ protocol HabitSoundProtocol: Identifiable {
     var rawValue: String { get }
     var isFree: Bool { get }
 }
-

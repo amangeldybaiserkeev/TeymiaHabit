@@ -10,8 +10,8 @@ struct StatsPeriodHeader: View {
     var body: some View {
         ZStack {
             Text(title)
-                .foregroundStyle(DS.Colors.primary)
-                .font(DS.AppFont.title3)
+                .foregroundStyle(Color.primary)
+                .font( .title3)
                 .fontWeight(.bold)
                 .frame(maxWidth: .infinity)
                 .contentTransition(.numericText())
@@ -19,7 +19,7 @@ struct StatsPeriodHeader: View {
             HStack {
                 Spacer()
 
-                HStack(spacing: DS.Spacing.reg) {
+                HStack(spacing: Spacing.reg) {
                     ChevronButton(systemImage: "chevron.left", isEnabled: canGoPrevious) {
                         onPrevious()
                     }
@@ -27,14 +27,14 @@ struct StatsPeriodHeader: View {
                         onNext()
                     }
                 }
-                .font(.system(size: DS.IconSize.sm))
+                .font(.system(size: IconSize.sm))
                 .fontWeight(.semibold)
                 .buttonStyle(.plain)
                 .contentShape(.rect)
             }
         }
-        .padding(.horizontal, DS.Spacing.reg)
-        .padding(.bottom, DS.Spacing.reg)
+        .padding(.horizontal, Spacing.reg)
+        .padding(.bottom, Spacing.reg)
     }
 }
 
@@ -45,13 +45,13 @@ private struct ChevronButton: View {
 
     var body: some View {
         Button {
-            withAnimation(DS.Animations.easeInOut) {
+            withAnimation( Animations.easeInOut) {
                 action()
             }
         } label: {
             Image(systemName: systemImage)
-                .foregroundStyle(DS.Colors.secondary.opacity(0.7))
-                .font(.system(size: DS.IconSize.sm))
+                .foregroundStyle(Color.secondary.opacity(0.7))
+                .font(.system(size: IconSize.sm))
                 .fontWeight(.semibold)
         }
         .disabled(!isEnabled)

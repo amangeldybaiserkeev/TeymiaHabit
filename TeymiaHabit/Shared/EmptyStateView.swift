@@ -3,9 +3,9 @@ import SwiftUI
 struct EmptyStateView<IconContent: View>: View {
     let title: String
     let message: String
-    var buttonTitle: String? = nil
-    var action: (() -> Void)? = nil
-    var footerText: String? = nil
+    var buttonTitle: String?
+    var action: (() -> Void)?
+    var footerText: String?
     @ViewBuilder let iconContent: IconContent
 
     init(
@@ -25,7 +25,7 @@ struct EmptyStateView<IconContent: View>: View {
     }
 
     var body: some View {
-        VStack(spacing: DS.Spacing.lg) {
+        VStack(spacing: Spacing.lg) {
             Spacer()
 
             iconContent
@@ -38,20 +38,20 @@ struct EmptyStateView<IconContent: View>: View {
 
             Spacer()
         }
-        .padding(.horizontal, DS.Spacing.xl)
+        .padding(.horizontal, Spacing.xl)
         .frame(maxWidth: 400)
         .frame(maxWidth: .infinity, alignment: .center)
     }
 
     private var titleAndMessage: some View {
-        VStack(spacing: DS.Spacing.xs) {
+        VStack(spacing: Spacing.xs) {
             Text(title)
-                .font(DS.AppFont.title3).bold()
-                .foregroundStyle(DS.Colors.primary)
+                .font( .title3).bold()
+                .foregroundStyle(Color.primary)
 
             Text(message)
-                .font(DS.AppFont.subheadline)
-                .foregroundStyle(DS.Colors.secondary)
+                .font( .subheadline)
+                .foregroundStyle(Color.secondary)
                 .lineLimit(3)
         }
         .multilineTextAlignment(.center)
@@ -59,20 +59,20 @@ struct EmptyStateView<IconContent: View>: View {
 
     @ViewBuilder
     private func actionButton(title: String, action: @escaping () -> Void) -> some View {
-        VStack(spacing: DS.Spacing.xs) {
+        VStack(spacing: Spacing.xs) {
             Button(action: action) {
                 Text(title)
-                    .font(DS.AppFont.headline)
-                    .foregroundStyle(DS.Colors.primaryButtonText)
-                    .frame(maxWidth: .infinity, minHeight: DS.TouchTarget.minimum)
+                    .font( .headline)
+                    .foregroundStyle(Color.primaryButtonText)
+                    .frame(maxWidth: .infinity, minHeight: TouchTarget.minimum)
             }
             .buttonStyle(.glassProminent)
-            .tint(DS.Colors.primaryButton)
+            .tint(Color.primaryButton)
 
             if let footerText {
                 Text(footerText)
-                    .font(DS.AppFont.footnote)
-                    .foregroundStyle(DS.Colors.secondary.opacity(0.8))
+                    .font(.footnote)
+                    .foregroundStyle(Color.secondary.opacity(0.8))
             }
         }
     }

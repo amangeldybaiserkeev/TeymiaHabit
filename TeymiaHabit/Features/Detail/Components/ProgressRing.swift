@@ -9,7 +9,7 @@ struct ProgressRing: View {
     let size: CGFloat
 
     var isTimerRunning: Bool = false
-    var lineWidth: CGFloat? = nil
+    var lineWidth: CGFloat?
     var hideContent: Bool = false
 
     private enum Metrics {
@@ -41,7 +41,7 @@ struct ProgressRing: View {
         // Behavior
         static let iconReplaceSpeed: Double = 1.5
         static let compactSizeBreakpoint: CGFloat = 80
-        static let animation: Animation = DS.Animations.easeInOut
+        static let animation: Animation =  Animations.easeInOut
     }
 
     // MARK: - Computed Properties
@@ -69,7 +69,7 @@ struct ProgressRing: View {
     var body: some View {
         ZStack {
             Circle()
-                .stroke(DS.Colors.secondary.opacity(0.1), lineWidth: adaptiveLineWidth)
+                .stroke(.appTertiary, lineWidth: adaptiveLineWidth)
 
             mainProgressRing
 
@@ -80,7 +80,7 @@ struct ProgressRing: View {
                 ringContent
             }
         }
-        .frame(width: size, height: size)
+        .frame(size: size)
     }
 }
 
@@ -115,7 +115,7 @@ private extension ProgressRing {
 
             ZStack {
                 Circle()
-                    .frame(width: adaptiveLineWidth, height: adaptiveLineWidth)
+                    .frame(size: adaptiveLineWidth)
                     .offset(y: -size / 2)
                     .foregroundStyle(ringColors.light)
                     .mask {
@@ -124,7 +124,7 @@ private extension ProgressRing {
                             startPoint: .leading,
                             endPoint: .trailing
                         )
-                        .frame(width: adaptiveLineWidth, height: adaptiveLineWidth)
+                        frame(size: adaptiveLineWidth)
                         .offset(y: -size / 2)
                     }
                     .shadow(
@@ -164,7 +164,7 @@ private extension ProgressRing {
                         startPoint: .topTrailing, endPoint: .bottomLeading
                     )
                 )
-                : AnyShapeStyle(DS.Colors.primary)
+                : AnyShapeStyle(Color.primary)
             )
             .contentTransition(.symbolEffect(.replace))
             .animation(Metrics.animation, value: isCompleted)
@@ -184,7 +184,7 @@ private extension ProgressRing {
             .lineLimit(Metrics.lineLimit)
             .frame(width: size * Metrics.textFrameWidthRatio, height: size * Metrics.textFrameHeightRatio)
             .contentTransition(.numericText())
-            .animation(DS.Animations.bouncy, value: currentValue)
+            .animation( Animations.bouncy, value: currentValue)
     }
 }
 
@@ -194,7 +194,8 @@ private extension ProgressRing {
         type: .count,
         goal: 10,
         iconName: "book",
-        iconColor: .lusciousLime
+        iconColor: .lusciousLime,
+        source: .manual
     )
 
     let size: CGFloat = 200

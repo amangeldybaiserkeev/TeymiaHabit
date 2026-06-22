@@ -11,21 +11,7 @@ struct IconRow: View {
                 selectedColor: $selectedColor
             )
         } label: {
-            HStack {
-                Label {
-                    Text("Icon")
-                } icon: {
-                    RowIconView(symbol: .habitIcon)
-                }
-
-                Spacer()
-
-                Image(selectedIcon)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .foregroundStyle(selectedColor.baseColor)
-                    .frame(size: IconSize.sm)
-            }
+            NewHabitRow(item: .icon)
         }
     }
 }

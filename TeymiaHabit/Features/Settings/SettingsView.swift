@@ -1,32 +1,30 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @AppStorage(AppStorageKeys.isMinimalistIcons) private var isMinimalistIcons = false
 
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            VStack(spacing: Spacing.lg) {
+        List {
+            Section {
                 PremiumRow()
-
-                ListSection(header: "Appearance") {
-                    ThemeRow()
-                    AppIconRow()
-                    LanguageRow()
-                }
-
-                ListSection(header: "Data") {
-                    ArchiveRow()
-                    SoundsRow()
-                    NotificationsRow()
-                    MinimalistRow()
-                }
-
-                AboutSection()
             }
+            .listRowBackground(Color.clear)
+
+            Section {
+                ThemeRow()
+                AppIconRow()
+                LanguageRow()
+            }
+
+            Section {
+                ArchiveRow()
+                SoundsRow()
+                NotificationsRow()
+            }
+
+            AboutSection()
         }
         .navigationTitle("Settings")
-        .toolbarTitleDisplayMode(.large)
+        .scrollContentBackground(.hidden)
         .background(.groupBackground)
-        .environment(\.isMinimalistIcons, isMinimalistIcons)
     }
 }

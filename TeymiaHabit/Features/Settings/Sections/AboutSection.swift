@@ -3,61 +3,44 @@ import SwiftUI
 struct AboutSection: View {
     @Environment(\.openURL) private var openURL
 
-    private let rateOption = SettingsOption.rate
-    private let shareOption = SettingsOption.share
-    private let termsOption = SettingsOption.terms
-    private let privacyOption = SettingsOption.privacy
-
     var body: some View {
-        ListSection(
-            header: "About",
-            footer: "Teymia Habit \(Bundle.main.appVersion)"
-        ) {
+        Section {
             shareButton
             rateButton
             termsButton
             privacyButton
+        } footer: {
+            Text("Teymia Habit \(Bundle.main.appVersion)")
         }
     }
 
     private var shareButton: some View {
         ShareLink(item: AppConfig.appStoreURL) {
-            ListRow {
-                SettingsRowIcon(option: shareOption)
-
-                Text(shareOption.title)
-                    .foregroundStyle(.appPrimary)
-
-                Spacer()
-            }
+            SettingsRow(item: .share)
         }
-        .hasIcon(true)
     }
 
     private var rateButton: some View {
-        ExternalLinkRow(
-            title: rateOption.title,
-            icon: SettingsRowIcon(option: rateOption),
-        ) {
-            openURL(AppConfig.rateURL)
+        Button {
+            openURL(AppConfig.rateURL, prefersInApp: true)
+        } label: {
+            SettingsRow(item: .rate)
         }
     }
 
     private var termsButton: some View {
-        ExternalLinkRow(
-            title: termsOption.title,
-            icon: SettingsRowIcon(option: termsOption),
-        ) {
-            openURL(AppConfig.termsURL)
+        Button {
+            openURL(AppConfig.termsURL, prefersInApp: true)
+        } label: {
+            SettingsRow(item: .terms)
         }
     }
 
     private var privacyButton: some View {
-        ExternalLinkRow(
-            title: privacyOption.title,
-            icon: SettingsRowIcon(option: privacyOption),
-        ) {
-            openURL(AppConfig.privacyURL)
+        Button {
+            openURL(AppConfig.privacyURL, prefersInApp: true)
+        } label: {
+            SettingsRow(item: .privacy)
         }
     }
 }

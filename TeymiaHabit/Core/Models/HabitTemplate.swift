@@ -9,6 +9,7 @@ struct HabitTemplate: Identifiable, Hashable {
     let goal: Int
     let source: HabitSource
     var healthKitMetric: HealthKitMetric?
+    var videoName: String?
 
     static let allTemplates: [Self] = [
         Self(
@@ -17,7 +18,8 @@ struct HabitTemplate: Identifiable, Hashable {
             color: .yellowOrange,
             type: .time,
             goal: 600,
-            source: .manual
+            source: .manual,
+            videoName: "template-reading"
         ),
         Self(
             name: "Meditate",

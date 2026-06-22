@@ -54,7 +54,6 @@ struct PremiumRow: View {
                 tryNowText
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding( Spacing.reg)
             .background {
                 ZStack {
                     Color.clear

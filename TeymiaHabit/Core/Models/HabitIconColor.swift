@@ -1,7 +1,7 @@
 import SwiftUI
 
 enum HabitIconColor: String, CaseIterable, Codable {
-    
+
     case primary, red, orange, yellow, mint, green, blue, purple
     case pink, brown, gray, softLavender, sky, coral, bluePink, oceanBlue
     case antarctica, sweetMorning, lusciousLime, celestial, yellowOrange, cloudBurst, candy, colorPicker

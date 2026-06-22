@@ -1,55 +1,71 @@
+import AVFoundation
 import SwiftUI
 import SwiftData
 
 struct TemplatesView: View {
     @Environment(\.modelContext) private var modelContext
-    @State private var viewModel = TemplatesViewModel()
+    @Environment(\.dismiss) private var dismiss
+
     @State private var selectedTemplate: HabitTemplate?
+    @State private var shouldDismissAfterSave = false
 
     private let columns = [
-        GridItem(.flexible(), spacing: Spacing.reg),
-        GridItem(.flexible(), spacing: Spacing.reg)
+        GridItem(.flexible(), spacing: Spacing.xs),
+        GridItem(.flexible(), spacing: Spacing.xs),
+        GridItem(.flexible(), spacing: Spacing.xs)
     ]
+
+    private var manualTemplates: [HabitTemplate] {
+        HabitTemplate.allTemplates.filter { $0.source == .manual }
+    }
+
+    private var healthKitTemplates: [HabitTemplate] {
+        HabitTemplate.allTemplates.filter { $0.source == .healthKit }
+    }
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: Spacing.xl) {
-
-                    if !viewModel.manualTemplates.isEmpty {
+                VStack(alignment: .leading, spacing: Spacing.lg) {
+                    if !manualTemplates.isEmpty {
                         TemplateSection(
                             title: "Popular",
                             columns: columns,
-                            templates: viewModel.manualTemplates,
+                            templates: manualTemplates,
                             selectedTemplate: $selectedTemplate
                         )
                     }
 
-                    if !viewModel.healthKitTemplates.isEmpty {
+                    if !healthKitTemplates.isEmpty {
                         TemplateSection(
                             title: "Apple Health",
                             columns: columns,
-                            templates: viewModel.healthKitTemplates,
+                            templates: healthKitTemplates,
                             selectedTemplate: $selectedTemplate
                         )
                     }
                 }
-                .padding(Spacing.reg)
+                .padding(Spacing.sm)
             }
+            .preferredColorScheme(.dark)
             .navigationTitle("Templates")
             .toolbarTitleDisplayMode(.inline)
             .toolbar { DismissToolbarButton() }
-            .sheet(item: $selectedTemplate) { template in
-                NavigationStack {
-                    NewHabitView(template: template)
+            .sheet(item: $selectedTemplate, onDismiss: {
+                guard shouldDismissAfterSave else { return }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                    dismiss()
                 }
+            }) { template in
+                NewHabitView(template: template, onSave: {
+                    shouldDismissAfterSave = true
+                })
                 .environment(\.modelContext, modelContext)
             }
         }
     }
 }
 
-// MARK: - Вспомогательный Сабвью для Секции
 private struct TemplateSection: View {
     let title: String
     let columns: [GridItem]
@@ -78,18 +94,50 @@ private struct TemplateSection: View {
     }
 }
 
-@Observable
-final class TemplatesViewModel {
-    let manualTemplates: [HabitTemplate]
-    let healthKitTemplates: [HabitTemplate]
+struct TemplateGridCard: View {
+    let template: HabitTemplate
 
-    init() {
-        self.manualTemplates = HabitTemplate.allTemplates.filter { $0.source == .manual }
-        self.healthKitTemplates = HabitTemplate.allTemplates.filter { $0.source == .healthKit }
+    var body: some View {
+        if let videoName = template.videoName {
+            VideoTemplateCard(template: template, videoName: videoName)
+        } else {
+            DefaultTemplateCard(template: template)
+        }
     }
 }
 
-struct TemplateGridCard: View {
+private struct VideoTemplateCard: View {
+    let template: HabitTemplate
+    let videoName: String
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            LoopingVideoPlayer(videoName: videoName)
+
+            LinearGradient(
+                colors: [.clear, .black.opacity(0.8)],
+                startPoint: .center,
+                endPoint: .bottom
+            )
+
+            Text(template.name)
+                .font(.footnote)
+                .fontWeight(.medium)
+                .foregroundStyle(.white)
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, Spacing.sm)
+                .padding(.vertical, Spacing.xs)
+        }
+        .frame(maxWidth: .infinity)
+        .aspectRatio(0.75, contentMode: .fit)
+        .clipShape(.rect(cornerRadius: Radius.sm))
+        .glassEffect(.clear.interactive(), in: .rect(cornerRadius: Radius.sm))
+    }
+}
+
+private struct DefaultTemplateCard: View {
     let template: HabitTemplate
 
     var body: some View {
@@ -107,6 +155,6 @@ struct TemplateGridCard: View {
         }
         .padding(Spacing.reg)
         .frame(maxWidth: .infinity, minHeight: 110, alignment: .leading)
-        .glassEffect(.clear, in: .rect(cornerRadius: Radius.xl))
+        .glassEffect(.clear.interactive(), in: .rect(cornerRadius: Radius.sm))
     }
 }

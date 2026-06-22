@@ -63,11 +63,11 @@ struct EmptyStateView<IconContent: View>: View {
             Button(action: action) {
                 Text(title)
                     .font( .headline)
-                    .foregroundStyle(Color.primaryButtonText)
+                    .foregroundStyle(.onPrimary)
                     .frame(maxWidth: .infinity, minHeight: TouchTarget.minimum)
             }
             .buttonStyle(.glassProminent)
-            .tint(Color.primaryButton)
+            .tint(.appPrimary)
 
             if let footerText {
                 Text(footerText)

@@ -5,6 +5,8 @@ struct GoalRow: View {
     @Binding var countText: String
     @Binding var hours: Int
     @Binding var minutes: Int
+
+    private let item = NewHabitItem.goal
     var focus: FocusState<NewHabitField?>.Binding
 
     private enum Constants {
@@ -32,7 +34,7 @@ struct GoalRow: View {
     private var typeSelectorRow: some View {
         Label {
             HStack {
-                Text("daily_goal")
+                Text(item.title)
                 Spacer()
                 Picker("", selection: $selectedType.animation(.snappy)) {
                     Text("Count").tag(HabitType.count)
@@ -42,7 +44,8 @@ struct GoalRow: View {
                 .frame(maxWidth: Constants.pickerWidth)
             }
         } icon: {
-            RowIconView(symbol: .habitGoal)
+            Image(systemName: item.icon)
+                .rowIconStyle()
                 .symbolEffect(.bounce, value: selectedType)
         }
     }
@@ -59,16 +62,15 @@ struct GoalRow: View {
                     countStepper
                 } else {
                     Text("Choose time")
-                        .foregroundStyle(Color.secondary)
+                        .foregroundStyle(.appSecondary)
                     Spacer()
                     timePicker
                 }
             }
             .frame(height: Constants.rowHeight)
         } icon: {
-            Image(systemName: type == .count ? "number" : "clock.arrow.2.circlepath")
-                .font(.system(size: IconSize.xs, weight: .medium))
-                .foregroundStyle(Color.secondary)
+            Image(systemName: type == .count ? "numbers.rectangle" : "clock")
+                .rowIconStyle(isInverted: true)
         }
         .opacity(isActive ? 1 : 0)
         .blur(radius: isActive ? 0 : Constants.inactiveBlur)

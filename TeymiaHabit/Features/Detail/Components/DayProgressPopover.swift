@@ -112,7 +112,7 @@ struct DayProgressPopover: View {
                 .frame(maxWidth: .infinity)
         }
         .buttonStyle(.plain)
-        .glassEffect(.regular.interactive().tint(Color.primaryButton), in: .capsule)
+        .glassEffect(.regular.interactive().tint(.appPrimary), in: .capsule)
     }
 
     // MARK: - Logic

@@ -1,7 +1,7 @@
 import Foundation
 
 enum TransitionID {
-    static let listToTemplates = "ListToTemplates"
-    static let templatesToNewHabit = "TemplatesToNewHabit"
+    static let templates = "Templates"
+    static let newHabit = "NewHabit"
     static let popover = "Popover"
 }

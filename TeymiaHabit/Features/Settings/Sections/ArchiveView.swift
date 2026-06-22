@@ -2,14 +2,13 @@ import SwiftUI
 import SwiftData
 
 struct ArchiveRow: View {
-    private let option = SettingsOption.archive
 
     var body: some View {
-        NavigationRow(
-            title: option.title,
-            icon: SettingsRowIcon(option: option),
-            destination: ArchiveView()
-        )
+        NavigationLink {
+            ArchiveView()
+        } label: {
+            SettingsRow(item: .archive)
+        }
     }
 }
 

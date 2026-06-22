@@ -2,14 +2,13 @@ import SwiftUI
 import SwiftData
 
 struct SoundsRow: View {
-    private let option = SettingsOption.sounds
 
     var body: some View {
-        NavigationRow(
-            title: option.title,
-            icon: SettingsRowIcon(option: option),
-            destination: SoundsView()
-        )
+        NavigationLink {
+            SoundsView()
+        } label: {
+            SettingsRow(item: .sounds)
+        }
     }
 }
 
@@ -33,7 +32,7 @@ struct SoundsView: View {
     }
 
     var body: some View {
-        Form {
+        List {
             Section {
                 HStack {
                     Spacer()
@@ -75,7 +74,6 @@ struct SoundsView: View {
                         withAnimation(.snappy) { soundManager.setSoundEnabled(newValue) }
                     }
                 ))
-                .tint(.toggle)
             }
 
             if soundManager.isSoundEnabled {

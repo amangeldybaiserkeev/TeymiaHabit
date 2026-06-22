@@ -1,86 +1,49 @@
 import SwiftUI
 
-struct ThemeRow: View {
-    @AppStorage(AppStorageKeys.theme) private var theme: Theme = .system
-    @Environment(\.dismiss) private var dismiss
+enum Theme: String, CaseIterable, Identifiable {
+    case system, light, dark
 
-    private var option: SettingsOption {
-        SettingsOption.appearance(theme)
+    var id: String { rawValue }
+
+    private var UIFields: (name: LocalizedStringKey, icon: String) {
+        switch self {
+        case .system: ("System", "inset.filled.lefthalf.rectangle.portrait")
+        case .light:  ("Light", "sun.horizon")
+        case .dark:   ("Dark", "moon.stars")
+        }
     }
 
-    var body: some View {
-        PopoverView {
-            ListRow {
-                SettingsRowIcon(option: option)
-                    .contentTransition(.symbolEffect(.replace))
+    var name: LocalizedStringKey { UIFields.name }
+    var icon: String { UIFields.icon }
 
-                Text(option.title)
-                    .font(.body)
-                    .foregroundStyle(.appPrimary)
-
-                Spacer()
-
-                HStack(spacing: Spacing.xs) {
-                    Text(theme.name)
-                        .foregroundStyle(.appSecondary)
-
-                    Image(systemName: "chevron.up.chevron.down")
-                        .font(.footnote)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.iconSecondary)
-                }
-            }
-            .contentShape(.rect)
-        } content: {
-            VStack(spacing: 0) {
-                ForEach(Theme.allCases, id: \.self) { mode in
-                    Button {
-                        withAnimation(.snappy) {
-                            theme = mode
-                        }
-                        dismiss()
-                    } label: {
-                        HStack(spacing: Spacing.reg) {
-                            Image(systemName: mode.iconName)
-                                .foregroundStyle(theme == mode ? .appPrimary : .appSecondary)
-
-                            Text(mode.name)
-                                .foregroundStyle(theme == mode ? .appPrimary : .appSecondary)
-
-                            Spacer()
-
-                            if theme == mode {
-                                Image(systemName: "checkmark")
-                                    .font(.footnote)
-                                    .fontWeight(.bold)
-                                    .foregroundStyle(.main)
-                            }
-                        }
-                        .padding(.vertical, Spacing.sm)
-                        .padding(.horizontal, Spacing.reg)
-                        .contentShape(.rect)
-                    }
-                    .buttonStyle(.plain)
-
-                    if mode != Theme.allCases.last {
-                        Divider()
-                            .padding(.horizontal, Spacing.reg)
-                    }
-                }
-            }
-            .padding(.vertical, Spacing.xs)
-            .frame(width: 220)
-            .presentationDetents([.height(160)])
+    var colorScheme: ColorScheme? {
+        switch self {
+        case .system: .none
+        case .light:  .light
+        case .dark:   .dark
         }
     }
 }
 
-private extension Theme {
-    var iconName: String {
-        switch self {
-        case .system: return "iphone"
-        case .light:  return "sun.max"
-        case .dark:   return "moon"
+struct ThemeRow: View {
+    @AppStorage(AppStorageKeys.theme) private var theme: Theme = .system
+
+    var body: some View {
+        Picker(selection: $theme) {
+            ForEach(Theme.allCases) { mode in
+                Text(mode.name).tag(mode)
+            }
+        } label: {
+            Label {
+                Text("Appearance")
+                    .foregroundStyle(.appPrimary)
+            } icon: {
+                Image(systemName: theme.icon)
+                    .rowIconStyle()
+            }
+            .contentTransition(.symbolEffect(.replace))
         }
+        .pickerStyle(.menu)
+        .tint(.secondary)
     }
 }

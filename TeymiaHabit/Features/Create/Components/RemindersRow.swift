@@ -12,6 +12,8 @@ struct RemindersRow: View {
     @State private var isProcessingToggle = false
     @State private var showingPaywall = false
 
+    private let item = NewHabitItem.reminders
+
     var body: some View {
         Section {
             Toggle(isOn: Binding(
@@ -28,14 +30,10 @@ struct RemindersRow: View {
                     }
                 }
             )) {
-                Label {
-                    Text("Reminders")
-                } icon: {
-                    RowIconView(symbol: .habitReminders)
-                        .symbolEffect(.wiggle, value: isReminderEnabled)
-                }
+                NewHabitRow(item: .reminders)
+                    .symbolEffect(.wiggle, value: isReminderEnabled)
             }
-            .tint(.toggle)
+            .tint(nil)
             .disabled(isProcessingToggle)
 
             if isReminderEnabled {

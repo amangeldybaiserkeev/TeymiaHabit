@@ -31,7 +31,7 @@ private struct HabitsContentView: View {
     @State private var viewModel: HabitsViewModel
     @State private var selectedHabit: Habit?
     @State private var habitToEdit: Habit?
-    @State private var showingNewHabit = false
+    @State private var showingTemplates = false
     @State private var showingPaywall = false
 
     private let storeKitService: StoreKitService
@@ -57,7 +57,7 @@ private struct HabitsContentView: View {
     var body: some View {
         Group {
             if viewModel.activeHabits(for: selectedDate).isEmpty {
-                HabitsEmptyView { showingNewHabit = true }
+                HabitsEmptyView(showingTemplates: $showingTemplates, namespace: namespace)
             } else {
                 habitsList
             }
@@ -65,12 +65,13 @@ private struct HabitsContentView: View {
         .onChange(of: allHabits, initial: true) { _, habits in
             viewModel.allBaseHabits = habits
         }
-        .fullScreenCover(isPresented: $showingNewHabit) {
+        .fullScreenCover(isPresented: $showingTemplates) {
             TemplatesView()
-                .navigationTransition(.zoom(sourceID: TransitionID.listToTemplates, in: namespace))
+                .navigationTransition(.zoom(sourceID: TransitionID.templates, in: namespace))
         }
         .sheet(item: $habitToEdit) { habit in
             NewHabitView(habit: habit)
+                .navigationTransition(.zoom(sourceID: habit.id, in: namespace))
         }
         .sheet(item: $selectedHabit) { habit in
             HabitDetailView(habit: habit, date: selectedDate)
@@ -96,6 +97,7 @@ private struct HabitsContentView: View {
                         .onTapGesture {
                             selectedHabit = habit
                         }
+                        .matchedTransitionSource(id: habit.id, in: namespace)
                     }
                     .padding(.horizontal, Spacing.reg)
                 }
@@ -122,13 +124,13 @@ private struct HabitsContentView: View {
         ToolbarItem(placement: .primaryAction) {
             Button {
                 if viewModel.allBaseHabits.count < storeKitService.maxHabitsCount {
-                    showingNewHabit = true
+                    showingTemplates = true
                 } else {
                     showingPaywall = true
                 }
             } label: {
                 Image(systemName: "plus")
-                    .matchedTransitionSource(id: TransitionID.listToTemplates, in: namespace)
+                    .matchedTransitionSource(id: TransitionID.templates, in: namespace)
             }
             .tint(.appPrimary)
         }
@@ -138,23 +140,56 @@ private struct HabitsContentView: View {
 // MARK: - HabitsEmptyView
 
 private struct HabitsEmptyView: View {
-    let action: () -> Void
+    @Binding var showingTemplates: Bool
+    let namespace: Namespace.ID
+
     private let iconSize = IconSize.reg
 
     var body: some View {
-        EmptyStateView(
-            title: "No habits yet",
-            message: message,
-            buttonTitle: "Build new Habits",
-            action: action,
-            footerText: "Join millions building better habits"
-        ) {
+        VStack(spacing: Spacing.lg) {
+            Spacer()
+
             HStack(spacing: Spacing.md) {
                 Icon(name: "book.person.fill")
                 Icon(name: "massage.fill")
                 Icon(name: "person.swimmer.fill")
             }
+
+            VStack(spacing: Spacing.xs) {
+                Text("No habits yet")
+                    .font(.title3).bold()
+                    .foregroundStyle(.appPrimary)
+
+                Text(message)
+                    .font(.subheadline)
+                    .foregroundStyle(.appSecondary)
+                    .lineLimit(3)
+            }
+            .multilineTextAlignment(.center)
+
+            VStack(spacing: Spacing.xs) {
+                Button {
+                    showingTemplates = true
+                } label: {
+                    Text("Build new Habits")
+                        .font(.headline)
+                        .foregroundStyle(.onPrimary)
+                        .frame(maxWidth: .infinity, minHeight: TouchTarget.minimum)
+                        .matchedTransitionSource(id: TransitionID.templates, in: namespace)
+                }
+                .buttonStyle(.glassProminent)
+                .tint(.appPrimary)
+
+                Text("Join millions building better habits")
+                    .font(.footnote)
+                    .foregroundStyle(.appSecondary)
+            }
+
+            Spacer()
         }
+        .padding(.horizontal, Spacing.xl)
+        .frame(maxWidth: 400)
+        .frame(maxWidth: .infinity, alignment: .center)
     }
 
     private var message: String {

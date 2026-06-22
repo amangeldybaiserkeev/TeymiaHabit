@@ -182,12 +182,12 @@ struct HabitDetailView: View {
                     .animation(.snappy, value: vm.isAlreadyCompleted)
             }
             .font(.headline)
-            .foregroundStyle(.primaryButtonText)
+            .foregroundStyle(.onPrimary)
             .frame(maxWidth: 400, minHeight: TouchTarget.large)
             .contentShape(.capsule)
         }
         .buttonStyle(.plain)
-        .glassEffect(.regular.interactive().tint(.primaryButton), in: .capsule)
+        .glassEffect(.regular.interactive().tint(.appPrimary), in: .capsule)
         .disabled(habit.type == .count && vm.isAlreadyCompleted)
     }
 

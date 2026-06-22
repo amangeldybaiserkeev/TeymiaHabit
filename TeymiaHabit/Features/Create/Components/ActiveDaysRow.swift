@@ -20,11 +20,11 @@ struct ActiveDaysRow: View {
                     Text(dayName)
                         .font(.system(size: IconSize.xxs, weight: .semibold))
                         .minimumScaleFactor(0.7)
-                        .foregroundStyle(isActive ? .onPrimary : Color.secondary)
+                        .foregroundStyle(isActive ? .black : .appSecondary)
                         .frame(size: IconSize.xxl)
                         .background {
                             Circle()
-                                .fill(isActive ? Color.primary : .clear)
+                                .fill(isActive ? .white : .clear)
                         }
                         .contentShape(.circle)
                 }

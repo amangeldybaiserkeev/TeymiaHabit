@@ -4,6 +4,7 @@ import SwiftData
 struct NewHabitView: View {
     let habit: Habit?
     let template: HabitTemplate?
+    var onSave: (() -> Void)? = nil
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
@@ -12,15 +13,16 @@ struct NewHabitView: View {
     @State private var viewModel = NewHabitViewModel()
     @FocusState private var focusField: NewHabitField?
 
-    init(habit: Habit? = nil, template: HabitTemplate? = nil) {
+    init(habit: Habit? = nil, template: HabitTemplate? = nil, onSave: (() -> Void)? = nil) {
         self.habit = habit
         self.template = template
+        self.onSave = onSave
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: Spacing.md) {
-                ListSection {
+        NavigationStack {
+            List {
+                Section {
                     HabitNameRow(
                         title: $viewModel.title,
                         focus: $focusField
@@ -31,7 +33,7 @@ struct NewHabitView: View {
                     )
                 }
 
-                ListSection(header: "Goal Settings") {
+                Section {
                     GoalRow(
                         selectedType: $viewModel.selectedType,
                         countText: $viewModel.goalCountText,
@@ -41,7 +43,7 @@ struct NewHabitView: View {
                     )
                 }
 
-                ListSection(header: "Schedule") {
+                Section {
                     ActiveDaysRow(activeDays: $viewModel.activeDays)
                     StartDateRow(startDate: $viewModel.startDate)
                     RemindersRow(
@@ -50,34 +52,34 @@ struct NewHabitView: View {
                     )
                 }
             }
-            .padding(.top, Spacing.reg)
-        }
-        .navigationTitle(habit == nil ? "Create Habit" : "Edit Habit")
-        .toolbarTitleDisplayMode(.inline)
-        .scrollDismissesKeyboard(.immediately)
-        .toolbar {
-            ConfirmationToolbarButton(isDisabled: !viewModel.isFormValid) {
-                viewModel.save(context: modelContext, existingHabit: habit)
-                dismiss()
-            }
-
-            ToolbarItemGroup(placement: .keyboard) {
-                Spacer()
-                Button {
-                    focusField = nil
-                } label: {
-                    Image(systemName: "keyboard.chevron.compact.down")
+            .navigationTitle(habit == nil ? "Create Habit" : "Edit Habit")
+            .toolbarTitleDisplayMode(.inline)
+            .scrollDismissesKeyboard(.immediately)
+            .toolbar {
+                ConfirmationToolbarButton(isDisabled: !viewModel.isFormValid) {
+                    viewModel.save(context: modelContext, existingHabit: habit)
+                    onSave?()
+                    dismiss()
                 }
-                .tint(.appPrimary)
+
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button {
+                        focusField = nil
+                    } label: {
+                        Image(systemName: "keyboard.chevron.compact.down")
+                    }
+                    .tint(.appPrimary)
+                }
             }
-        }
-        .onAppear {
-            viewModel.setup(habit: habit, template: template)
-            focusField = .title
-            viewModel.requestHealthKitPermission(using: healthKitManager)
-        }
-        .fullScreenCover(isPresented: $viewModel.showingPaywall) {
-            PaywallView()
+            .onAppear {
+                viewModel.setup(habit: habit, template: template)
+                focusField = .title
+                viewModel.requestHealthKitPermission(using: healthKitManager)
+            }
+            .fullScreenCover(isPresented: $viewModel.showingPaywall) {
+                PaywallView()
+            }
         }
     }
 }

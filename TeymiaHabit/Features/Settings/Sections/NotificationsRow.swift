@@ -8,25 +8,17 @@ struct NotificationsRow: View {
 
     @State private var isPermissionAlertPresented = false
 
-    private let option = SettingsOption.notifications
+    private let item = SettingsItem.notifications
 
     var body: some View {
-        ActionRow(
-            title: option.title,
-            icon: SettingsRowIcon(option: option)
-                .symbolEffect(.wiggle, value: notificationManager.notificationsEnabled),
-            action: {
-                let nextValue = !notificationManager.notificationsEnabled
-                triggerToggle(to: nextValue)
-            }
-        ) {
-            Toggle("", isOn: Binding(
-                get: { notificationManager.notificationsEnabled },
-                set: { newValue in triggerToggle(to: newValue) }
-            ))
-            .labelsHidden()
-            .tint(.toggle)
+        Toggle(isOn: Binding(
+            get: { notificationManager.notificationsEnabled },
+            set: { newValue in triggerToggle(to: newValue) }
+        )) {
+            SettingsRow(item: .notifications)
+                .symbolEffect(.wiggle, value: notificationManager.notificationsEnabled)
         }
+        .tint(nil)
         .alert("Allow Notifications", isPresented: $isPermissionAlertPresented) {
             Button("Cancel", role: .cancel) { }
             Button("Settings") { openSettings() }

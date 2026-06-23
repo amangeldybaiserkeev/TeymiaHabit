@@ -1,13 +1,12 @@
 import AVFoundation
 import SwiftUI
-import SwiftData
 
 struct TemplatesView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Environment(\.dismiss) private var dismiss
+    @Binding var isPresented: Bool
 
     @State private var selectedTemplate: HabitTemplate?
-    @State private var shouldDismissAfterSave = false
+    @State private var showingCustomHabit = false
+    @State private var pendingClose = false
 
     private let columns = [
         GridItem(.flexible(), spacing: Spacing.xs),
@@ -51,16 +50,44 @@ struct TemplatesView: View {
             .navigationTitle("Templates")
             .toolbarTitleDisplayMode(.inline)
             .toolbar { DismissToolbarButton() }
-            .sheet(item: $selectedTemplate, onDismiss: {
-                guard shouldDismissAfterSave else { return }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-                    dismiss()
+            .safeAreaBar(edge: .bottom) {
+                Button {
+                    showingCustomHabit = true
+                } label: {
+                    Text("Custom Habit")
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                        .frame(maxWidth: .infinity, minHeight: TouchTarget.minimum)
                 }
-            }) { template in
+                .buttonStyle(.glassProminent)
+                .tint(.clear)
+                .padding(.horizontal, Spacing.reg)
+                .padding(.bottom, Spacing.xxs)
+            }
+            .fullScreenSheet(item: $selectedTemplate) { template, safeArea in
                 NewHabitView(template: template, onSave: {
-                    shouldDismissAfterSave = true
+                    pendingClose = true
+                    selectedTemplate = nil
                 })
-                .environment(\.modelContext, modelContext)
+                .safeAreaPadding(.top, safeArea.top + 35)
+            } background: {
+                ConcentricRectangle(corners: .concentric, isUniform: true)
+                    .fill(.black.gradient)
+            }
+            .sheet(isPresented: $showingCustomHabit) {
+                NewHabitView(onSave: {
+                    showingCustomHabit = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                        isPresented = false
+                    }
+                })
+            }
+            .onChange(of: selectedTemplate) { _, newValue in
+                guard newValue == nil, pendingClose else { return }
+                pendingClose = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                    isPresented = false
+                }
             }
         }
     }

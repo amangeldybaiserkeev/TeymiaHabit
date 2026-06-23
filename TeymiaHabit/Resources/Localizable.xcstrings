@@ -522,6 +522,9 @@
         }
       }
     },
+    "Custom Habit" : {
+
+    },
     "daily_goal" : {
       "comment" : "A label displayed above the segmented control in the goal section.",
       "extractionState" : "stale",
@@ -1697,6 +1700,12 @@
         }
       }
     },
+    "Select" : {
+
+    },
+    "Selected" : {
+
+    },
     "Self-care" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -2189,6 +2198,9 @@
           }
         }
       }
+    },
+    "Unlock" : {
+
     },
     "Unlock Detailed Statistics" : {
       "localizations" : {

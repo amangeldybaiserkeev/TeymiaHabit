@@ -4,7 +4,7 @@ struct DismissToolbarButton: ToolbarContent {
     @Environment(\.dismiss) private var dismiss
 
     var body: some ToolbarContent {
-        ToolbarItem(placement: .cancellationAction) {
+        ToolbarItem(placement: .topBarTrailing) {
             Button(role: .close) {
                 dismiss()
             } label: {
@@ -21,7 +21,7 @@ struct ConfirmationToolbarButton: ToolbarContent {
 
     var body: some ToolbarContent {
         ToolbarItem(placement: .confirmationAction) {
-            Button(role: .confirm) {
+            Button {
                 action()
             } label: {
                 Image(systemName: "checkmark")

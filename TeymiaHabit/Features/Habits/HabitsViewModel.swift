@@ -8,9 +8,6 @@ final class HabitsViewModel {
     private let soundManager: SoundManager
     let timerService: TimerService
 
-    // MARK: - State
-    var allBaseHabits: [Habit] = []
-
     // MARK: - Init
     init(habitService: HabitService, soundManager: SoundManager, timerService: TimerService) {
         self.habitService = habitService
@@ -19,18 +16,6 @@ final class HabitsViewModel {
     }
 
     // MARK: - Public Methods
-
-    func activeHabits(for date: Date) -> [Habit] {
-        allBaseHabits.filter { habit in
-            !habit.isArchived &&
-            habit.isActiveOnDate(date) &&
-            date >= habit.startDate
-        }
-    }
-
-    func navigationTitle(for date: Date) -> String {
-        date.formattedAsNavigationTitle()
-    }
 
     func isHabitSkipped(_ habit: Habit, on date: Date) -> Bool {
         habitService.isSkipped(habit, on: date)
@@ -85,30 +70,6 @@ final class HabitsViewModel {
 
     func deleteHabit(_ habit: Habit) {
         habitService.delete(habit)
-    }
-
-    // MARK: - Reorder
-
-    func moveHabits(from source: IndexSet, to destination: Int, date: Date) {
-        let visible = activeHabits(for: date)
-        var all = allBaseHabits.sorted { $0.displayOrder < $1.displayOrder }
-
-        let habitsToMove = source.map { visible[$0] }
-        let targetIndex: Int
-        if destination < visible.count {
-            let targetHabit = visible[destination]
-            targetIndex = all.firstIndex(of: targetHabit) ?? all.count
-        } else {
-            if let last = visible.last, let lastIdx = all.firstIndex(of: last) {
-                targetIndex = lastIdx + 1
-            } else {
-                targetIndex = all.count
-            }
-        }
-
-        let sourceIndices = IndexSet(habitsToMove.compactMap { all.firstIndex(of: $0) })
-        all.move(fromOffsets: sourceIndices, toOffset: targetIndex)
-        habitService.reorderHabits(all)
     }
 
     // MARK: - Timer

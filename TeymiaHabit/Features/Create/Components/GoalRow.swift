@@ -26,7 +26,7 @@ struct GoalRow: View {
                 goalRow(for: .time)
             }
             .frame(minHeight: Constants.rowHeight)
-            .animation( Animations.spring, value: selectedType)
+            .animation(Animations.spring, value: selectedType)
         }
     }
 

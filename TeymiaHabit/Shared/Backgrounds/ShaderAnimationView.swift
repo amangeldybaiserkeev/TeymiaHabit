@@ -18,3 +18,7 @@ struct ShaderAnimationView: View {
         }.ignoresSafeArea()
     }
 }
+
+#Preview {
+    ShaderAnimationView()
+}

@@ -19,30 +19,47 @@ final class LoopingVideoView: UIView {
     private let playerLayer = AVPlayerLayer()
     private var playerLooper: AVPlayerLooper?
     private var player: AVQueuePlayer?
+    private var isStopped = false
 
     init(videoName: String) {
         super.init(frame: .zero)
-        guard let url = Bundle.main.url(forResource: videoName, withExtension: "mp4") else { return }
-
-        let item = AVPlayerItem(url: url)
-        let player = AVQueuePlayer()
-        self.player = player
-        playerLooper = AVPlayerLooper(player: player, templateItem: item)
-
-        playerLayer.player = player
         playerLayer.videoGravity = .resizeAspectFill
         layer.addSublayer(playerLayer)
 
-        player.isMuted = true
-        player.play()
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            guard let url = Bundle.main.url(forResource: videoName, withExtension: "mp4") else { return }
+            let item = AVPlayerItem(url: url)
+            item.preferredMaximumResolution = CGSize(width: 480, height: 854)
+            let queuePlayer = AVQueuePlayer()
+            queuePlayer.automaticallyWaitsToMinimizeStalling = false
+            queuePlayer.isMuted = true
+            let looper = AVPlayerLooper(player: queuePlayer, templateItem: item)
+
+            DispatchQueue.main.async { [weak self] in
+                guard let self, !self.isStopped else {
+                    looper.disableLooping()
+                    queuePlayer.pause()
+                    return
+                }
+                self.player = queuePlayer
+                self.playerLooper = looper
+                self.playerLayer.player = queuePlayer
+                queuePlayer.play()
+            }
+        }
     }
 
     func stop() {
-        playerLooper?.disableLooping()
-        player?.pause()
+        isStopped = true
         playerLayer.player = nil
+        let looper = playerLooper
+        let capturedPlayer = player
         playerLooper = nil
         player = nil
+        DispatchQueue.global(qos: .utility).async {
+            looper?.disableLooping()
+            capturedPlayer?.pause()
+        }
     }
 
     override func layoutSubviews() {

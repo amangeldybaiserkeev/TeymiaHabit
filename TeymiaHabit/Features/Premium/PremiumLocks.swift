@@ -19,7 +19,7 @@ struct PremiumLockCapsule: View {
 }
 
 struct PremiumLockBadge: View {
-    var size =  IconSize.sm
+    var size = IconSize.sm
 
     var body: some View {
         ZStack {

@@ -54,23 +54,27 @@ private struct HabitsContentView: View {
         ))
     }
 
+    private var activeHabits: [Habit] {
+        allHabits.filter {
+            !$0.isArchived && $0.isActiveOnDate(selectedDate) && selectedDate >= $0.startDate
+        }
+    }
+
     var body: some View {
         Group {
-            if viewModel.activeHabits(for: selectedDate).isEmpty {
+            if activeHabits.isEmpty {
                 HabitsEmptyView(showingTemplates: $showingTemplates, namespace: namespace)
             } else {
                 habitsList
             }
         }
-        .onChange(of: allHabits, initial: true) { _, habits in
-            viewModel.allBaseHabits = habits
-        }
+        .animation(.spring(duration: 0.4), value: activeHabits.isEmpty)
         .fullScreenCover(isPresented: $showingTemplates) {
-            TemplatesView()
+            TemplatesView(isPresented: $showingTemplates)
                 .navigationTransition(.zoom(sourceID: TransitionID.templates, in: namespace))
         }
         .sheet(item: $habitToEdit) { habit in
-            NewHabitView(habit: habit)
+            NewHabitView(habit: habit, onSave: { habitToEdit = nil })
                 .navigationTransition(.zoom(sourceID: habit.id, in: namespace))
         }
         .sheet(item: $selectedHabit) { habit in
@@ -87,7 +91,7 @@ private struct HabitsContentView: View {
                 LazyVStack(spacing: Spacing.sm) {
                     WeeklyCalendarView(selectedDate: $selectedDate)
 
-                    ForEach(viewModel.activeHabits(for: selectedDate)) { habit in
+                    ForEach(activeHabits) { habit in
                         HabitCard(
                             viewModel: viewModel,
                             habit: habit,
@@ -123,7 +127,7 @@ private struct HabitsContentView: View {
 
         ToolbarItem(placement: .primaryAction) {
             Button {
-                if viewModel.allBaseHabits.count < storeKitService.maxHabitsCount {
+                if allHabits.count < storeKitService.maxHabitsCount {
                     showingTemplates = true
                 } else {
                     showingPaywall = true
@@ -175,10 +179,10 @@ private struct HabitsEmptyView: View {
                         .font(.headline)
                         .foregroundStyle(.onPrimary)
                         .frame(maxWidth: .infinity, minHeight: TouchTarget.minimum)
-                        .matchedTransitionSource(id: TransitionID.templates, in: namespace)
                 }
                 .buttonStyle(.glassProminent)
                 .tint(.appPrimary)
+                .matchedTransitionSource(id: TransitionID.templates, in: namespace)
 
                 Text("Join millions building better habits")
                     .font(.footnote)

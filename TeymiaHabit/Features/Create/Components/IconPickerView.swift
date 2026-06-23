@@ -68,7 +68,7 @@ struct IconPickerView: View {
             }
         }
         .navigationTitle("Icon")
-        .animation( Animations.snappy, value: searchText)
+        .animation(Animations.snappy, value: searchText)
         .sensoryFeedback(.selection, trigger: selectedIcon)
         .safeAreaBar(edge: .bottom) {
             ColorSelectionView(selectedColor: $selectedColor)

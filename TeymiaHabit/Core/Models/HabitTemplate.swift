@@ -29,7 +29,35 @@ struct HabitTemplate: Identifiable, Hashable {
             goal: 600,
             source: .manual
         ),
+        Self(
+            name: "Smile",
+            icon: "face.smile",
+            color: .yellow,
+            type: .count,
+            goal: 5,
+            source: .manual,
+            videoName: "template-smile"
+        ),
+        Self(
+            name: "Walking",
+            icon: "barefoot",
+            color: .brown,
+            type: .count,
+            goal: 1,
+            source: .manual,
+            videoName: "template-walking"
+        ),
+        Self(
+            name: "Play an instrument",
+            icon: "piano.keyboard",
+            color: .primary,
+            type: .time,
+            goal: 600,
+            source: .manual,
+            videoName: "template-piano"
+        ),
 
+        // Apple Health
         Self(
             name: "Sleep",
             icon: "bed.fill",
